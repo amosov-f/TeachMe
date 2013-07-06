@@ -1,4 +1,4 @@
-package com.kk.vkrent;
+package com.kk.teachme;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
