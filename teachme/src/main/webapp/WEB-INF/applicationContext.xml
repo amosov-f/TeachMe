@@ -16,5 +16,13 @@
         <constructor-arg ref="dataSource"/>
     </bean>
 
+    <bean id="tagDepot" class="com.kk.teachme.db.TagDepot" init-method="init">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
+
+    <bean id="problemDepot" class="com.kk.teachme.db.ProblemDepot">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="tagDepot" ref="tagDepot"/>
+    </bean>
 
 </beans>
