@@ -1,6 +1,7 @@
 CREATE DATABASE teachme
   DEFAULT CHARACTER SET utf8;
 
+
 CREATE TABLE tag (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   name text
@@ -13,12 +14,13 @@ CREATE TABLE checker (
 
 CREATE TABLE problem (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  name text,
   situation text,
-  checker_id
+  checker_id integer
 );
 
-CREATE TABLE problem_tag {
+CREATE TABLE problem_tag (
   problem_id INTEGER,
   tag_id INTEGER
-};
+);
 

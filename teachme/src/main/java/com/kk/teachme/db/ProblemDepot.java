@@ -73,6 +73,11 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return byId;
     }
 
+    public List<Problem> getByTag(Tag tag) {
+        final List<Problem> result = jdbcTemplate.query("select * from problem inner join (select * from problem_tag where tag_id = ?) t on problem.id = t.problem_id", getRowMapper(), tag.getId());
+        return result;
+    }
+
     @Override
     protected ParameterizedRowMapper<Problem> getRowMapper() {
         return new ParameterizedRowMapper<Problem>() {
