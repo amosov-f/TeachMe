@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * User: akonst
@@ -78,6 +79,43 @@ public class ProblemController {
             array.put(toJson(problem));
         }
         result.put("problems", array);
+        return result.toString();
+    }
+
+
+    @RequestMapping(value = "/add_tag_to_problem", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String addTagToProblem(@RequestParam int problem_id, @RequestParam int tag_id) throws JSONException {
+        Problem problem = problemDepot.getById(problem_id);
+        if (problem == null) {
+            JSONObject result = new JSONObject();
+            result.put("result", "error");
+            result.put("error", "Incorrect id");
+            return result.toString();
+        }
+        Tag tag = tagDepot.getCached(tag_id);
+        if (tag == null) {
+            JSONObject result = new JSONObject();
+            result.put("result", "error");
+            result.put("error", "Incorrect id");
+            return result.toString();
+        }
+
+        if (!problemDepot.addTagToProblem(problem_id, tag_id)) {
+            JSONObject result = new JSONObject();
+            result.put("result", "error");
+            result.put("error", "this tag is already exist");
+            return result.toString();
+        }
+
+        List<Tag> list = new ArrayList<Tag>();
+        list.add(tag);
+        problem.addTags(list);
+
+        JSONObject result = new JSONObject();
+        result.put("result", "ok");
+        JSONObject json = toJson(problem);
+        result.put("problem", json);
         return result.toString();
     }
 }

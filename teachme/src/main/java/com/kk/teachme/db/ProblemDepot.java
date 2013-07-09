@@ -78,6 +78,22 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return result;
     }
 
+    public boolean addTagToProblem(int problem_id, int tag_id) {
+        //if (getById(problem_id) == null) {
+        //    return false;
+        //}
+        //if (!jdbcTemplate.queryForList("select * from tag where tag_id = ?", tag_id).isEmpty()) {
+        //    return false;
+        //}
+
+        if (!jdbcTemplate.queryForList("select * from problem_tag where problem_id = ? and tag_id = ?", problem_id, tag_id).isEmpty()) {
+            return false;
+        }
+
+        jdbcTemplate.update("insert into problem_tag values (?, ?)", problem_id, tag_id);
+        return true;
+    }
+
     @Override
     protected ParameterizedRowMapper<Problem> getRowMapper() {
         return new ParameterizedRowMapper<Problem>() {
