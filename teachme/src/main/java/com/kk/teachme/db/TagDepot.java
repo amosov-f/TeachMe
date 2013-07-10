@@ -110,4 +110,9 @@ public class TagDepot extends AbstractDepot<Tag> {
         final ArrayList<Tag> tags = new ArrayList<Tag>(id2tag.values());
         return tags.subList(0, min(tags.size(), 100));
     }
+    
+    public List<Tag> getAllTags() {
+        final List<Tag> result = jdbcTemplate.queryForList("select distinct name from tag");
+        return result;
+    }
 }
