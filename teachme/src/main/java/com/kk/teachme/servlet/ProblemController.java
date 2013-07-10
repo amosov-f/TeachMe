@@ -86,20 +86,19 @@ public class ProblemController {
     @RequestMapping(value = "/add_tag_to_problem", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String addTagToProblem(@RequestParam int problem_id, @RequestParam int tag_id) throws JSONException {
-        Problem problem = problemDepot.getById(problem_id);
-        if (problem == null) {
+        if (problemDepot.getById(problem_id) == null) {
             JSONObject result = new JSONObject();
             result.put("result", "error");
-            result.put("error", "Incorrect id");
+            result.put("error", "Incorrect problem id");
             return result.toString();
         }
-        Tag tag = tagDepot.getCached(tag_id);
-        if (tag == null) {
+        if (tagDepot.getCached(tag_id) == null) {
             JSONObject result = new JSONObject();
             result.put("result", "error");
-            result.put("error", "Incorrect id");
+            result.put("error", "Incorrect tag id");
             return result.toString();
         }
+
 
         if (!problemDepot.addTagToProblem(problem_id, tag_id)) {
             JSONObject result = new JSONObject();
@@ -108,13 +107,10 @@ public class ProblemController {
             return result.toString();
         }
 
-        List<Tag> list = new ArrayList<Tag>();
-        list.add(tag);
-        problem.addTags(list);
 
         JSONObject result = new JSONObject();
         result.put("result", "ok");
-        JSONObject json = toJson(problem);
+        JSONObject json = toJson(problemDepot.getById(problem_id));
         result.put("problem", json);
         return result.toString();
     }
