@@ -59,6 +59,13 @@ public class ProblemController {
         return json;
     }
 
+    private JSONObject toJson(Tag tag) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("id", tag.getId());
+        json.put("name", tag.getName());
+        return json;
+    }
+
     @RequestMapping(value = "/by_tag", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String getProblemsByTagId(@RequestParam int tag_id) throws JSONException {
@@ -112,6 +119,18 @@ public class ProblemController {
         result.put("result", "ok");
         JSONObject json = toJson(problemDepot.getById(problem_id));
         result.put("problem", json);
+        return result.toString();
+    }
+
+    @RequestMapping(value = "/all_tags", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String getAllTags() throws JSONException {
+
+        JSONArray result = new JSONArray();
+        for (Tag tag : tagDepot.getAllTags()) {
+            result.put(toJson(tag));
+        }
+
         return result.toString();
     }
 }

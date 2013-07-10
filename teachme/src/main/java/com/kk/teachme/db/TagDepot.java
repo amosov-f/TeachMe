@@ -106,9 +106,9 @@ public class TagDepot extends AbstractDepot<Tag> {
         return "select * from tag where id = ?";
     }
 
-    public List<Tag> getTagList() {
+    public List<Tag> getTagList(int numTags) {
         final ArrayList<Tag> tags = new ArrayList<Tag>(id2tag.values());
-        return tags.subList(0, min(tags.size(), 100));
+        return tags.subList(0, min(tags.size(), numTags));
     }
     
     public List<Tag> getAllTags() {
