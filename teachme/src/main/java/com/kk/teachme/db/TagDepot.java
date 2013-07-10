@@ -112,7 +112,10 @@ public class TagDepot extends AbstractDepot<Tag> {
     }
     
     public List<Tag> getAllTags() {
-        final List<Tag> result = jdbcTemplate.queryForList("select distinct name from tag");
+        List<Tag> result = new ArrayList<Tag>();
+        for (Map<String, Object> record : jdbcTemplate.queryForList("select * from tag")) {
+            result.add(new Tag((Integer)record.get("id"), (String)record.get("name")));
+        }
         return result;
     }
 }
