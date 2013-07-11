@@ -102,14 +102,17 @@ public class ProblemController {
         if (problemDepot.getById(problem_id) == null) {
             return makeErrorJSON("Incorrect problem id");
         }
-        if (tagDepot.getCached(tag_id) == null) {
+
+        Tag tag = tagDepot.getCached(tag_id);
+        if (tag == null) {
             return makeErrorJSON("Incorrect tag id");
         }
-        if (!problemDepot.addTagToProblem(problem_id, tag_id)) {
-           return makeErrorJSON("this tag  already exists");
+
+        if (!problemDepot.addTagToProblem(problem_id, tag)) {
+           return makeErrorJSON("this tag already exists");
         }
-        JSONObject json = toJson(problemDepot.getById(problem_id));
-        return makeJSONResult(json).toString();
+
+        return makeJSONResult(toJson(problemDepot.getById(problem_id))).toString();
     }
 
     @RequestMapping(value = "/all_tags", produces = "application/json; charset=utf-8")
