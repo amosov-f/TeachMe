@@ -87,20 +87,30 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return true;
     }
 
-    public boolean changeProblemStatement(int problem_id, String new_text ) {
-        if (jdbcTemplate.queryForList("select * from problem where id = ?", problem_id).isEmpty()) {
-            return false;
-        }
-        jdbcTemplate.update("update problem set statement = ? where id = ?", new_text, problem_id);
+    public boolean changeProblemStatement(Problem problem, String new_text ) {
+        jdbcTemplate.update("update problem set statement = ? where id = ?", new_text, problem.getId());
         return true;
     }
+         /*
+    public boolean checkProblem(int problem_id, String user_answer ) {
+        final Problem answerProblem = getById(problem_id);
+        // now we think that answer can be only int
+        int solution_id = answerProblem.getSolutionId();
 
+
+
+
+
+    }
+
+        */
     @Override
     protected ParameterizedRowMapper<Problem> getRowMapper() {
         return new ParameterizedRowMapper<Problem>() {
             public Problem mapRow(ResultSet resultSet, int i) throws SQLException {
-                return new Problem(resultSet.getInt("id"),
+                return new Problem(resultSet.getInt("id"), resultSet.getString("name"),
                         resultSet.getString("statement")
+
                 );
             }
         };

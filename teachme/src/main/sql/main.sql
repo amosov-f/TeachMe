@@ -14,8 +14,7 @@ CREATE TABLE solution (
 CREATE TABLE problem (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   name text,
-  statement text,
-  solution_id integer
+  statement text
 );
 
 CREATE TABLE problem_tag (
