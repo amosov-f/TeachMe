@@ -35,16 +35,11 @@ public class TagDepot extends AbstractDepot<Tag> {
             public void run() {
                 while (true) {
                     try {
-                        jdbcTemplate.getJdbcOperations().query("select * from tag", new RowCallbackHandler() {
-                            @Override
-                            public void processRow(ResultSet resultSet) throws SQLException {
-                                int id = resultSet.getInt("id");
-                                String name = resultSet.getString("name");
-                                final Tag tag = new Tag(id, name);
-                                id2tag.put(id, tag);
-                                name2tag.put(name, tag);
-                            }
-                        });
+                        List<Tag> tags = getAllTags();
+                        for (Tag tag : tags) {
+                            id2tag.put(tag.getId(), tag);
+                            name2tag.put(tag.getName(), tag);
+                        }
                         System.out.println("Loaded");
                     } catch (Throwable tr) {
                         tr.printStackTrace();
@@ -112,10 +107,6 @@ public class TagDepot extends AbstractDepot<Tag> {
     }
     
     public List<Tag> getAllTags() {
-        List<Tag> result = new ArrayList<Tag>();
-        for (Map<String, Object> record : jdbcTemplate.queryForList("select * from tag")) {
-            result.add(new Tag((Integer)record.get("id"), (String)record.get("name")));
-        }
-        return result;
+        return new ArrayList<Tag>(jdbcTemplate.query("select * from tag", getRowMapper()));
     }
 }
