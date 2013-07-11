@@ -87,14 +87,13 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return true;
     }
 
-    public boolean changeProblemStatement(int problem_id, String new_text ) {
-        if (jdbcTemplate.queryForList("select * from problem where id = ?", problem_id).isEmpty()) {
-            return false;
-        }
-        jdbcTemplate.update("update problem set statement = ? where id = ?", new_text, problem_id);
-        return true;
+    public void changeProblemStatement(Problem problem, String new_text ) {
+        jdbcTemplate.update("update problem set statement = ? where id = ?", new_text, problem.getId());
     }
 
+    public int getTaskNumberByTag(int tag_id){
+                return (jdbcTemplate.queryForList("select * from problem_tag where tag_id = ?",tag_id).size());
+            }
     @Override
     protected ParameterizedRowMapper<Problem> getRowMapper() {
         return new ParameterizedRowMapper<Problem>() {

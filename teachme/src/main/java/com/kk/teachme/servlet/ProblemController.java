@@ -125,20 +125,20 @@ public class ProblemController {
     @RequestMapping(value = "/change_statement", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String changeProblemStatement(@RequestParam int problem_id, @RequestParam String new_text) throws JSONException {
-        if (problemDepot.getById(problem_id) == null) {
+           Problem problem = problemDepot.getById(problem_id);
+        if (problem == null) {
           return makeErrorJSON("Incorrect problem id");
         }
-        if (!problemDepot.changeProblemStatement(problem_id,new_text)){
-            return makeErrorJSON("Couldn't change statement");
-        }
-        JSONObject json = toJson(problemDepot.getById(problem_id));
-        return makeJSONResult(json).toString();
+        problemDepot.changeProblemStatement(problem, new_text);
+        JSONObject result = new JSONObject();
+        result.put("result", "ok");
+        return result.toString();
     }
     @RequestMapping(value = "/tasksWithTag", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String getTaskNumberByTag(@RequestParam int tag_id) throws JSONException{
         JSONObject result = new JSONObject();
-        result.put("Number of tasks",problemDepot.getTaskNumberByTag(tag_id));
+        result.put("Number of tasks", problemDepot.getTaskNumberByTag(tag_id));
         return  result.toString();
     }
 }
