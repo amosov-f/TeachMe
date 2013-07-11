@@ -87,6 +87,14 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return true;
     }
 
+    public boolean changeProblemText(int problem_id, String new_text ) {
+        if (jdbcTemplate.queryForList("select * from problem where id = ?", problem_id).isEmpty()) {
+            return false;
+        }
+        jdbcTemplate.update("update problem set situation = ? where id = ?",new_text, problem_id );
+        return true;
+    }
+
     @Override
     protected ParameterizedRowMapper<Problem> getRowMapper() {
         return new ParameterizedRowMapper<Problem>() {

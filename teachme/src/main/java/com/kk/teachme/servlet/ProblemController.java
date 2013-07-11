@@ -30,21 +30,31 @@ public class ProblemController {
     @Autowired
     TagDepot tagDepot;
 
+    String makeErrorJSON(String error_text) throws JSONException {
+        /* create json with error from error_text */
+        JSONObject result = new JSONObject();
+        result.put("result", "error");
+        result.put("error", error_text);
+        return result.toString();
+    }
+
+    JSONObject  makeJSONResult(JSONObject json) throws JSONException {
+        /* create json with result from json */
+        JSONObject result = new JSONObject();
+        result.put("result", "ok");
+        result.put("problem", json);
+        return result;
+    }
+
     @RequestMapping(value = "/problem_{problem_id:\\d+}", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String getProblems(@PathVariable int problem_id) throws JSONException {
         Problem problem = problemDepot.getById(problem_id);
         if (problem == null) {
-            JSONObject result = new JSONObject();
-            result.put("result", "error");
-            result.put("error", "Incorrect id");
-            return result.toString();
+            return makeErrorJSON("Incorrect id");
         }
-        JSONObject result = new JSONObject();
-        result.put("result", "ok");
         JSONObject json = toJson(problem);
-        result.put("problem", json);
-        return result.toString();
+        return makeJSONResult(json).toString();
     }
 
     private JSONObject toJson(Problem problem) throws JSONException {
@@ -71,10 +81,7 @@ public class ProblemController {
     public String getProblemsByTagId(@RequestParam int tag_id) throws JSONException {
         Tag tag = tagDepot.getCached(tag_id);
         if (tag == null) {
-            JSONObject result = new JSONObject();
-            result.put("result", "error");
-            result.put("error", "Incorrect id");
-            return result.toString();
+            return makeErrorJSON("Incorrect id");
         }
 
         List<Problem> problems = problemDepot.getByTag(tag);
@@ -94,32 +101,16 @@ public class ProblemController {
     @ResponseBody
     public String addTagToProblem(@RequestParam int problem_id, @RequestParam int tag_id) throws JSONException {
         if (problemDepot.getById(problem_id) == null) {
-            JSONObject result = new JSONObject();
-            result.put("result", "error");
-            result.put("error", "Incorrect problem id");
-            return result.toString();
+            return makeErrorJSON("Incorrect problem id");
         }
         if (tagDepot.getCached(tag_id) == null) {
-            JSONObject result = new JSONObject();
-            result.put("result", "error");
-            result.put("error", "Incorrect tag id");
-            return result.toString();
+            return makeErrorJSON("Incorrect tag id");
         }
-
-
         if (!problemDepot.addTagToProblem(problem_id, tag_id)) {
-            JSONObject result = new JSONObject();
-            result.put("result", "error");
-            result.put("error", "this tag is already exist");
-            return result.toString();
+           return makeErrorJSON("this tag  already exists");
         }
-
-
-        JSONObject result = new JSONObject();
-        result.put("result", "ok");
         JSONObject json = toJson(problemDepot.getById(problem_id));
-        result.put("problem", json);
-        return result.toString();
+        return makeJSONResult(json).toString();
     }
 
     @RequestMapping(value = "/all_tags", produces = "application/json; charset=utf-8")
@@ -129,7 +120,19 @@ public class ProblemController {
         for (Tag tag : tagDepot.getAllTags()) {
             result.put(toJson(tag));
         }
-
         return result.toString();
+    }
+
+    @RequestMapping(value = "/change_text", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String changeProblemText(@RequestParam int problem_id, @RequestParam String new_text) throws JSONException {
+        if (problemDepot.getById(problem_id) == null) {
+          return makeErrorJSON("Incorrect problem id");
+        }
+        if (!problemDepot.changeProblemText(problem_id,new_text)){
+            return makeErrorJSON("Couldn't change text");
+        }
+        JSONObject json = toJson(problemDepot.getById(problem_id));
+        return makeJSONResult(json).toString();
     }
 }
