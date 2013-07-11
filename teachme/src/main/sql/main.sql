@@ -7,8 +7,9 @@ CREATE TABLE tag (
 );
 
 CREATE TABLE solution (
-  id INTEGER PRIMARY KEY AUTO_INCREMENT,
-  bean_name text
+  id INTEGER PRIMARY KEY,
+  solution_text text
+  checker_type text
 );
 
 CREATE TABLE problem (
