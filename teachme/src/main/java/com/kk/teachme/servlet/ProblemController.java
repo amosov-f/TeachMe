@@ -134,4 +134,11 @@ public class ProblemController {
         JSONObject json = toJson(problemDepot.getById(problem_id));
         return makeJSONResult(json).toString();
     }
+    @RequestMapping(value = "/tasksWithTag", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String getTaskNumberByTag(@RequestParam int tag_id) throws JSONException{
+        JSONObject result = new JSONObject();
+        result.put("Number of tasks",problemDepot.getTaskNumberByTag(tag_id));
+        return  result.toString();
+    }
 }

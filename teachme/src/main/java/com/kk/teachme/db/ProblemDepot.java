@@ -95,6 +95,10 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return true;
     }
 
+    public int getTaskNumberByTag(int tag_id){
+        return (jdbcTemplate.queryForList("select * from problem_tag where tag_id = ?",tag_id).size());
+    }
+
     @Override
     protected ParameterizedRowMapper<Problem> getRowMapper() {
         return new ParameterizedRowMapper<Problem>() {
