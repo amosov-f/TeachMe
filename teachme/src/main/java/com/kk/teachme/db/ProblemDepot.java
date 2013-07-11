@@ -79,13 +79,6 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     }
 
     public boolean addTagToProblem(int problem_id, int tag_id) {
-        //if (getById(problem_id) == null) {
-        //    return false;
-        //}
-        //if (!jdbcTemplate.queryForList("select * from tag where tag_id = ?", tag_id).isEmpty()) {
-        //    return false;
-        //}
-
         if (!jdbcTemplate.queryForList("select * from problem_tag where problem_id = ? and tag_id = ?", problem_id, tag_id).isEmpty()) {
             return false;
         }

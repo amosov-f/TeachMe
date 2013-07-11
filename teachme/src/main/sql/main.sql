@@ -7,7 +7,7 @@ CREATE TABLE tag (
   name text
 );
 
-CREATE TABLE checker (
+CREATE TABLE statement (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   bean_name text
 );
@@ -16,7 +16,7 @@ CREATE TABLE problem (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   name text,
   situation text,
-  checker_id integer
+  statement_id integer
 );
 
 CREATE TABLE problem_tag (

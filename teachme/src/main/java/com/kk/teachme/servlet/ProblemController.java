@@ -125,7 +125,6 @@ public class ProblemController {
     @RequestMapping(value = "/all_tags", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String getAllTags() throws JSONException {
-
         JSONArray result = new JSONArray();
         for (Tag tag : tagDepot.getAllTags()) {
             result.put(toJson(tag));
