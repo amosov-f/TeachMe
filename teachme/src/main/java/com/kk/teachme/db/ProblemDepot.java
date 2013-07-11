@@ -31,9 +31,9 @@ public class ProblemDepot extends AbstractDepot<Problem> {
                 new PreparedStatementCreator() {
                     public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
                         PreparedStatement preparedStatement =
-                                conn.prepareStatement("insert into problem (situation, checker_id) values(?, -1)"
+                                conn.prepareStatement("insert into problem (statement, solution_id) values(?, -1)"
                                         , Statement.RETURN_GENERATED_KEYS);
-                        preparedStatement.setString(1, problem.getSituation());
+                        preparedStatement.setString(1, problem.getStatement());
                         return preparedStatement;
                     }
                 }, keyHolder);
@@ -91,7 +91,7 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         if (jdbcTemplate.queryForList("select * from problem where id = ?", problem_id).isEmpty()) {
             return false;
         }
-        jdbcTemplate.update("update problem set situation = ? where id = ?",new_text, problem_id );
+        jdbcTemplate.update("update problem set statement = ? where id = ?", new_text, problem_id);
         return true;
     }
 
@@ -100,7 +100,7 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return new ParameterizedRowMapper<Problem>() {
             public Problem mapRow(ResultSet resultSet, int i) throws SQLException {
                 return new Problem(resultSet.getInt("id"),
-                        resultSet.getString("situation")
+                        resultSet.getString("statement")
                 );
             }
         };

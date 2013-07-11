@@ -8,13 +8,13 @@ import java.util.List;
  */
 public class Problem {
     private int id;
-    private String situation;
+    private String statement;
 
     private List<Tag> tags = new ArrayList<Tag>();
 
-    public Problem(int id, String situation) {
+    public Problem(int id, String statement) {
         this.id = id;
-        this.situation = situation;
+        this.statement = statement;
     }
 
     public int getId() {
@@ -25,8 +25,8 @@ public class Problem {
         return tags;
     }
 
-    public String getSituation() {
-        return situation;
+    public String getStatement() {
+        return statement;
     }
 
     public void setId(int id) {

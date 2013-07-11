@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * User: akonst
@@ -60,7 +59,7 @@ public class ProblemController {
     private JSONObject toJson(Problem problem) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("id", problem.getId());
-        json.put("situation", problem.getSituation());
+        json.put("statement", problem.getStatement());
         JSONArray tags = new JSONArray();
         for (Tag t: problem.getTags()) {
             tags.put(t.getName());

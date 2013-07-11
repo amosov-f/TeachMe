@@ -1,13 +1,12 @@
 CREATE DATABASE teachme
   DEFAULT CHARACTER SET utf8;
 
-
 CREATE TABLE tag (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   name text
 );
 
-CREATE TABLE statement (
+CREATE TABLE solution (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   bean_name text
 );
@@ -15,8 +14,8 @@ CREATE TABLE statement (
 CREATE TABLE problem (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   name text,
-  situation text,
-  statement_id integer
+  statement text,
+  solution_id integer
 );
 
 CREATE TABLE problem_tag (
