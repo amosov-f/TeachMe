@@ -9,14 +9,14 @@ import java.util.List;
 public class Problem {
     private int id;
     private String statement;
-    private String name;
+   // private String name;
 
 
     private List<Tag> tags = new ArrayList<Tag>();
 
-    public Problem(int id, String name, String statement) {
+    public Problem(int id, String statement) {
         this.id = id;
-        this.name = name;
+       // this.name = name;
         this.statement = statement;
     }
 
