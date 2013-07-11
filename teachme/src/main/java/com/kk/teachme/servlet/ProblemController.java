@@ -122,14 +122,14 @@ public class ProblemController {
         return result.toString();
     }
 
-    @RequestMapping(value = "/change_text", produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/change_statement", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String changeProblemText(@RequestParam int problem_id, @RequestParam String new_text) throws JSONException {
+    public String changeProblemStatement(@RequestParam int problem_id, @RequestParam String new_text) throws JSONException {
         if (problemDepot.getById(problem_id) == null) {
           return makeErrorJSON("Incorrect problem id");
         }
-        if (!problemDepot.changeProblemText(problem_id,new_text)){
-            return makeErrorJSON("Couldn't change text");
+        if (!problemDepot.changeProblemStatement(problem_id,new_text)){
+            return makeErrorJSON("Couldn't change statement");
         }
         JSONObject json = toJson(problemDepot.getById(problem_id));
         return makeJSONResult(json).toString();

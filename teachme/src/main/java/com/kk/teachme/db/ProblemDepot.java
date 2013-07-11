@@ -87,7 +87,7 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return true;
     }
 
-    public boolean changeProblemText(int problem_id, String new_text ) {
+    public boolean changeProblemStatement(int problem_id, String new_text ) {
         if (jdbcTemplate.queryForList("select * from problem where id = ?", problem_id).isEmpty()) {
             return false;
         }
