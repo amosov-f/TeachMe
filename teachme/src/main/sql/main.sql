@@ -50,6 +50,8 @@ INSERT INTO problem_status (status) values("solved");
 INSERT INTO checker (bean_name) values ("intChecker");
 INSERT INTO checker (bean_name) values ("stringChecker");
 
+# add indexes
+
 
 
 

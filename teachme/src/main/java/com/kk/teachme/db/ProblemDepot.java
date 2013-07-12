@@ -81,6 +81,7 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     }
 
     public boolean addTagToProblem(Problem problem, Tag tag) {
+        //todo add some code to second sql (on exists) and remove first call
         if (!jdbcTemplate.queryForList("select * from problem_tag where problem_id = ? and tag_id = ?", problem.getId(), tag.getId()).isEmpty()) {
             return false;
         }

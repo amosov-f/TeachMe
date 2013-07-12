@@ -13,7 +13,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class AdminController {
-    public String addProblem(String name, String text, int checkerId, String answer, List<Tag> tags) {
+    public String addProblem(String name, String text, int checkerId, String answer, List<String> tags) {
         return null;
     }
 
