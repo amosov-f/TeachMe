@@ -8,7 +8,7 @@ CREATE TABLE tag (
 
 CREATE TABLE solution (
   id INTEGER PRIMARY KEY,
-  solution_text text
+  solution_text text,
   checker_id int
 );
 

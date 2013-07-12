@@ -109,4 +109,8 @@ public class TagDepot extends AbstractDepot<Tag> {
     public List<Tag> getAllTags() {
         return new ArrayList<Tag>(jdbcTemplate.query("select * from tag", getRowMapper()));
     }
+
+    public void changeTagName(Tag tag, String newName) {
+        jdbcTemplate.update("update tag set name = ? where id = ?", newName, tag.getId());
+    }
 }

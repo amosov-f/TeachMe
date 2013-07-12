@@ -98,6 +98,19 @@ public class ProblemController {
         return result.toString();
     }
 
+    @RequestMapping(value = "/change_tag_name", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String changeTagName(@RequestParam int tag_id, String new_name) throws JSONException {
+        Tag tag = tagDepot.getById(tag_id);
+        if (tag == null) {
+            return makeErrorJSON("Incorrect tag id");
+        }
+        tagDepot.changeTagName(tag, new_name);
+        JSONObject result = new JSONObject();
+        result.put("result", "ok");
+        return result.toString();
+    }
+
     @RequestMapping(value = "/change_statement", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String changeProblemStatement(@RequestParam int problem_id, @RequestParam String new_text) throws JSONException {

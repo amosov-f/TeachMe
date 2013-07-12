@@ -2,6 +2,7 @@ package com.kk.teachme.db;
 
 
 import com.kk.teachme.checker.Checker;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CheckerDepot {
+    @Autowired
     ApplicationContext applicationContext;
     SimpleJdbcTemplate jdbcTemplate;
 
@@ -51,7 +53,7 @@ public class CheckerDepot {
         }).start();
     }
 
-    @Required
+  //  @Required
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }

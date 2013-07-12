@@ -25,8 +25,13 @@
         <property name="tagDepot" ref="tagDepot"/>
     </bean>
 
-    <bean id="checkerDepot" class="com.kk.teachme.db.CheckerDepot">
+    <bean id="checkerDepot" class="com.kk.teachme.db.CheckerDepot" init-method="init">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
+
+    <bean id="solutionDepot" class="com.kk.teachme.db.SolutionDepot">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="checkerDepot" ref="checkerDepot"/>
     </bean>
 
 </beans>
