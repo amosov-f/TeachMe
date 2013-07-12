@@ -35,11 +35,6 @@ public class ProblemController {
     @Autowired
     SolutionDepot solutionDepot;
 
-
-    public String addProblem(String name, String text, int checkerId, String answer, List<Tag> tags) {
-        return null;
-    }
-
     public String register(String login) {
         return null;
     }
@@ -48,20 +43,6 @@ public class ProblemController {
         //check if exists
         //add to session
         return null;
-    }
-
-    public String admin(Model model) {
-        //return JSP with admin page
-
-        //collect all checker
-        //collect all tags
-        //put it to Model
-        return "admin";
-    }
-
-    public String adminList(Model model, String tag) {
-        //show all problems by tag (maybe null)
-        return "problems";
     }
 
     @RequestMapping(value = "/problem_{problem_id:\\d+}", produces = "application/json; charset=utf-8")
