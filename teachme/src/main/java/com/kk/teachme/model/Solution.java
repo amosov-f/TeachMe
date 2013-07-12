@@ -1,23 +1,18 @@
 package com.kk.teachme.model;
 
 
-public class Solution {
-    private int id;
-    private String solution_text;
-    private int checker_id;
+import com.kk.teachme.checker.Checker;
 
-    public Solution(int id, String solutionId, int checkerId){
-        this.id = id;
-        this.solution_text = solutionId;
-        this.checker_id = checkerId;
+public class Solution {
+    private String solutionText;
+    private Checker checker;
+
+    public Solution(String solutionText, Checker checker){
+        this.solutionText = solutionText;
+        this.checker = checker;
     }
-    public int getId(){
-        return id;
-    }
-    public String getSolution_text(){
-        return solution_text;
-    }
-    public int getChecker_id(){
-        return checker_id;
+
+    public boolean ckeck(String answer) {
+        return checker.check(answer);
     }
 }

@@ -1,40 +1,63 @@
 package com.kk.teachme.db;
 
 
-import com.kk.teachme.checker.IntChecker;
-import com.kk.teachme.model.Solution;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import com.kk.teachme.checker.Checker;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-public class CheckerDepot extends AbstractDepot<Solution>{
-    @Override
-    public int addObject(Solution solution) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+public class CheckerDepot {
+    ApplicationContext applicationContext;
+    SimpleJdbcTemplate jdbcTemplate;
+
+    private final Map<Integer, Checker> id2checker = new HashMap<Integer, Checker>();
+
+    public Checker getChecker(int id) {
+        return id2checker.get(id);
     }
 
-    @Override
-    protected ParameterizedRowMapper<Solution> getRowMapper() {
-        return new ParameterizedRowMapper<Solution>() {
-            public Solution mapRow(ResultSet resultSet, int i) throws SQLException {
-                return new Solution(resultSet.getInt("id"),
-                        resultSet.getString("solution_text"),
-                        resultSet.getInt("checker_id")
-                );
+    public void init() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        jdbcTemplate.getJdbcOperations().query("select * from checker", new RowCallbackHandler() {
+                            @Override
+                            public void processRow(ResultSet resultSet) throws SQLException {
+                                int id = resultSet.getInt("id");
+                                String beanName = resultSet.getString("bean_name");
+                                Checker checker = (Checker) applicationContext.getBean(beanName);
+                                id2checker.put(id, checker);
+                            }
+                        });
+                    } catch (Throwable tr) {
+                        tr.printStackTrace();
+                    } finally {
+                        try {
+                            Thread.sleep(60000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
-        };
+        }).start();
     }
 
-    @Override
-    protected String getQueryForOne() {
-        return "select * from solution where id = ?";
+    @Required
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
-    public boolean checkProblem(int problemId, String userAnswer){
-        final List<Solution> results = jdbcTemplate.query(getQueryForOne(), getRowMapper(), problemId);
-        Solution solution = results.get(0);
-        IntChecker checker = new IntChecker(solution.getSolution_text());
-        return checker.check(userAnswer);
+
+    @Required
+    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 }
