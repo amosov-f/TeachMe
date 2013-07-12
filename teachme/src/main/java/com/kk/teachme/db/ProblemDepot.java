@@ -31,9 +31,10 @@ public class ProblemDepot extends AbstractDepot<Problem> {
                 new PreparedStatementCreator() {
                     public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
                         PreparedStatement preparedStatement =
-                                conn.prepareStatement("insert into problem (statement, solution_id) values(?, -1)"
+                                conn.prepareStatement("insert into problem (name,statement) values(?,?)"
                                         , Statement.RETURN_GENERATED_KEYS);
-                        preparedStatement.setString(1, problem.getStatement());
+                        preparedStatement.setString(1, problem.getName());
+                        preparedStatement.setString(2, problem.getStatement());
                         return preparedStatement;
                     }
                 }, keyHolder);
@@ -74,31 +75,32 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     }
 
     public List<Problem> getByTag(Tag tag) {
-        final List<Problem> result = jdbcTemplate.query("select * from problem inner join (select * from problem_tag where tag_id = ?) t on problem.id = t.problem_id", getRowMapper(), tag.getId());
-        return result;
+        return jdbcTemplate.query("select * from problem inner join (select * from problem_tag where tag_id = ?) t on problem.id = t.problem_id", getRowMapper(), tag.getId());
     }
 
-    public boolean addTagToProblem(int problem_id, Tag tag) {
-        if (!jdbcTemplate.queryForList("select * from problem_tag where problem_id = ? and tag_id = ?", problem_id, tag.getId()).isEmpty()) {
+    public boolean addTagToProblem(Problem problem, Tag tag) {
+        if (!jdbcTemplate.queryForList("select * from problem_tag where problem_id = ? and tag_id = ?", problem.getId(), tag.getId()).isEmpty()) {
             return false;
         }
 
-        jdbcTemplate.update("insert into problem_tag values (?, ?)", problem_id, tag.getId());
+        jdbcTemplate.update("insert into problem_tag values (?, ?)", problem.getId(), tag.getId());
         return true;
     }
 
-    public void changeProblemStatement(Problem problem, String new_text ) {
-        jdbcTemplate.update("update problem set statement = ? where id = ?", new_text, problem.getId());
+    public void changeProblemStatement(Problem problem, String newStatement) {
+        jdbcTemplate.update("update problem set statement = ? where id = ?", newStatement, problem.getId());
     }
 
-    public int getTaskNumberByTag(int tag_id){
-                return (jdbcTemplate.queryForList("select * from problem_tag where tag_id = ?",tag_id).size());
-            }
+    public int getTaskNumberByTag(Tag tag){
+        return jdbcTemplate.queryForInt("select * from problem_tag where tag_id = ?", tag.getId());
+    }
+
     @Override
     protected ParameterizedRowMapper<Problem> getRowMapper() {
         return new ParameterizedRowMapper<Problem>() {
             public Problem mapRow(ResultSet resultSet, int i) throws SQLException {
                 return new Problem(resultSet.getInt("id"),
+                        resultSet.getString("name"),
                         resultSet.getString("statement")
                 );
             }

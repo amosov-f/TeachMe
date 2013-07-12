@@ -29,22 +29,6 @@ public class ProblemController {
     @Autowired
     TagDepot tagDepot;
 
-    String makeErrorJSON(String error_text) throws JSONException {
-        /* create json with error from error_text */
-        JSONObject result = new JSONObject();
-        result.put("result", "error");
-        result.put("error", error_text);
-        return result.toString();
-    }
-
-    JSONObject  makeJSONResult(JSONObject json) throws JSONException {
-        /* create json with result from json */
-        JSONObject result = new JSONObject();
-        result.put("result", "ok");
-        result.put("problem", json);
-        return result;
-    }
-
     @RequestMapping(value = "/problem_{problem_id:\\d+}", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String getProblems(@PathVariable int problem_id) throws JSONException {
@@ -54,25 +38,6 @@ public class ProblemController {
         }
         JSONObject json = toJson(problem);
         return makeJSONResult(json).toString();
-    }
-
-    private JSONObject toJson(Problem problem) throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put("id", problem.getId());
-        json.put("statement", problem.getStatement());
-        JSONArray tags = new JSONArray();
-        for (Tag t: problem.getTags()) {
-            tags.put(t.getName());
-        }
-        json.put("tags", tags);
-        return json;
-    }
-
-    private JSONObject toJson(Tag tag) throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put("id", tag.getId());
-        json.put("name", tag.getName());
-        return json;
     }
 
     @RequestMapping(value = "/by_tag", produces = "application/json; charset=utf-8")
@@ -85,8 +50,7 @@ public class ProblemController {
 
         List<Problem> problems = problemDepot.getByTag(tag);
 
-        JSONObject result = new JSONObject();
-        result.put("result", "ok");
+        JSONObject result = okJson();
         JSONArray array = new JSONArray();
         for (Problem problem : problems) {
             array.put(toJson(problem));
@@ -99,7 +63,8 @@ public class ProblemController {
     @RequestMapping(value = "/add_tag_to_problem", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String addTagToProblem(@RequestParam int problem_id, @RequestParam int tag_id) throws JSONException {
-        if (problemDepot.getById(problem_id) == null) {
+        Problem problem = problemDepot.getById(problem_id);
+        if (problem == null) {
             return makeErrorJSON("Incorrect problem id");
         }
 
@@ -108,40 +73,85 @@ public class ProblemController {
             return makeErrorJSON("Incorrect tag id");
         }
 
-        if (!problemDepot.addTagToProblem(problem_id, tag)) {
-           return makeErrorJSON("this tag already exists");
+        if (!problemDepot.addTagToProblem(problem, tag)) {
+            return makeErrorJSON("This tag already exists");
         }
 
-        return makeJSONResult(toJson(problemDepot.getById(problem_id))).toString();
+        return okJson().toString();
     }
 
     @RequestMapping(value = "/all_tags", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String getAllTags() throws JSONException {
-        JSONArray result = new JSONArray();
+        JSONObject result = okJson();
+        JSONArray tags = new JSONArray();
         for (Tag tag : tagDepot.getAllTags()) {
-            result.put(toJson(tag));
+            tags.put(toJson(tag));
         }
+        result.put("tags", tags);
         return result.toString();
     }
 
     @RequestMapping(value = "/change_statement", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String changeProblemStatement(@RequestParam int problem_id, @RequestParam String new_text) throws JSONException {
-           Problem problem = problemDepot.getById(problem_id);
+        Problem problem = problemDepot.getById(problem_id);
         if (problem == null) {
-          return makeErrorJSON("Incorrect problem id");
+            return makeErrorJSON("Incorrect problem id");
         }
         problemDepot.changeProblemStatement(problem, new_text);
-        JSONObject result = new JSONObject();
-        result.put("result", "ok");
-        return result.toString();
+        return okJson().toString();
     }
+
     @RequestMapping(value = "/tasksWithTag", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getTaskNumberByTag(@RequestParam int tag_id) throws JSONException{
+    public String getTaskNumberByTag(@RequestParam int tag_id) throws JSONException {
+        Tag tag = tagDepot.getCached(tag_id);
+        if (tag == null) {
+            return makeErrorJSON("No tag");
+        }
+        JSONObject result = okJson();
+        result.put("count", problemDepot.getTaskNumberByTag(tag));
+        return result.toString();
+    }
+
+    private String makeErrorJSON(String error_text) throws JSONException {
+        /* create json with error from error_text */
         JSONObject result = new JSONObject();
-        result.put("Number of tasks", problemDepot.getTaskNumberByTag(tag_id));
-        return  result.toString();
+        result.put("result", "error");
+        result.put("error", error_text);
+        return result.toString();
+    }
+
+    private JSONObject makeJSONResult(JSONObject json) throws JSONException {
+        /* create json with result from json */
+        JSONObject result = okJson();
+        result.put("problem", json);
+        return result;
+    }
+
+    private JSONObject okJson() throws JSONException {
+        JSONObject result = new JSONObject();
+        result.put("result", "ok");
+        return result;
+    }
+
+    private JSONObject toJson(Problem problem) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("id", problem.getId());
+        json.put("statement", problem.getStatement());
+        JSONArray tags = new JSONArray();
+        for (Tag t : problem.getTags()) {
+            tags.put(t.getName());
+        }
+        json.put("tags", tags);
+        return json;
+    }
+
+    private JSONObject toJson(Tag tag) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("id", tag.getId());
+        json.put("name", tag.getName());
+        return json;
     }
 }
