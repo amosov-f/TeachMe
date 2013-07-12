@@ -12,7 +12,7 @@ public class Solution {
         this.checker = checker;
     }
 
-    public boolean ckeck(String answer) {
-        return checker.check(answer);
+    public boolean check(String answer) {
+        return checker.check(answer, solutionText);
     }
 }

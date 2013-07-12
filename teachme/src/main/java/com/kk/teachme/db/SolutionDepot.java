@@ -16,7 +16,7 @@ public class SolutionDepot {
     public boolean check(int problemId, String userAnswer) {
         Solution solution = getSolution(problemId);
         if (solution == null) throw new IllegalStateException();
-        return solution.ckeck(userAnswer);
+        return solution.check(userAnswer);
     }
 
     private Solution getSolution(int problemId) {
