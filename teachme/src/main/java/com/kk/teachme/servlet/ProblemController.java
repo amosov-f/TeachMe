@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +35,34 @@ public class ProblemController {
     @Autowired
     SolutionDepot solutionDepot;
 
+
+    public String addProblem(String name, String text, int checkerId, String answer, List<Tag> tags) {
+        return null;
+    }
+
+    public String register(String login) {
+        return null;
+    }
+
+    public String login(String login) {
+        //check if exists
+        //add to session
+        return null;
+    }
+
+    public String admin(Model model) {
+        //return JSP with admin page
+
+        //collect all checker
+        //collect all tags
+        //put it to Model
+        return "admin";
+    }
+
+    public String adminList(Model model, String tag) {
+        //show all problems by tag (maybe null)
+        return "problems";
+    }
 
     @RequestMapping(value = "/problem_{problem_id:\\d+}", produces = "application/json; charset=utf-8")
     @ResponseBody

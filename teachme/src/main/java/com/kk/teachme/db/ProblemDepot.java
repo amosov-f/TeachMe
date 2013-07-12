@@ -2,6 +2,8 @@ package com.kk.teachme.db;
 
 import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Tag;
+import com.kk.teachme.model.User;
+import com.kk.teachme.model.UserProblem;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -110,5 +112,9 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     @Override
     protected String getQueryForOne() {
         return "select * from problem where id = ?";
+    }
+
+    public List<UserProblem> getUserProblems(User user) {
+        return new ArrayList<UserProblem>();
     }
 }
