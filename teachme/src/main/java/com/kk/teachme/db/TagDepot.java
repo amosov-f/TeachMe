@@ -17,8 +17,8 @@ import static java.lang.Math.min;
  */
 
 public class TagDepot extends AbstractDepot<Tag> {
-    final Map<Integer, Tag> id2tag = new HashMap<Integer, Tag>();
-    final Map<String, Tag> name2tag = new HashMap<String, Tag>();
+    Map<Integer, Tag> id2tag = new HashMap<Integer, Tag>();
+    Map<String, Tag> name2tag = new HashMap<String, Tag>();
 
     public Tag getCached(int id) {
         Tag byId = id2tag.get(id);
@@ -36,10 +36,14 @@ public class TagDepot extends AbstractDepot<Tag> {
                 while (true) {
                     try {
                         List<Tag> tags = getAllTags();
+                        Map<Integer, Tag> id2tag = new HashMap<Integer, Tag>();
+                        Map<String, Tag> name2tag = new HashMap<String, Tag>();
                         for (Tag tag : tags) {
                             id2tag.put(tag.getId(), tag);
                             name2tag.put(tag.getName(), tag);
                         }
+                        TagDepot.this.id2tag = id2tag;
+                        TagDepot.this.name2tag = name2tag;
                         System.out.println("Loaded");
                     } catch (Throwable tr) {
                         tr.printStackTrace();

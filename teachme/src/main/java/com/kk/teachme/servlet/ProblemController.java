@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -179,8 +180,8 @@ public class ProblemController {
 
     @RequestMapping(value = "/check_answer", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String checkAnswer(@RequestParam int problemId, @RequestParam String userAnswer) throws JSONException {
-        if (solutionDepot.check(problemId, userAnswer)){
+    public String checkAnswer(@RequestParam int problem_id, @RequestParam String user_answer, HttpServletRequest request) throws JSONException {
+        if (solutionDepot.check(problem_id, user_answer)){
             return okJson().toString();
         }
         else {

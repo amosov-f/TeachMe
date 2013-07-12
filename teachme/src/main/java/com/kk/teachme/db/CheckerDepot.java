@@ -18,7 +18,7 @@ public class CheckerDepot {
     ApplicationContext applicationContext;
     SimpleJdbcTemplate jdbcTemplate;
 
-    private final Map<Integer, Checker> id2checker = new HashMap<Integer, Checker>();
+    private Map<Integer, Checker> id2checker = new HashMap<Integer, Checker>();
 
     public Checker getChecker(int id) {
         return id2checker.get(id);
@@ -30,15 +30,17 @@ public class CheckerDepot {
             public void run() {
                 while (true) {
                     try {
+                        final Map<Integer, Checker> map = new HashMap<Integer, Checker>();
                         jdbcTemplate.getJdbcOperations().query("select * from checker", new RowCallbackHandler() {
                             @Override
                             public void processRow(ResultSet resultSet) throws SQLException {
                                 int id = resultSet.getInt("id");
                                 String beanName = resultSet.getString("bean_name");
                                 Checker checker = (Checker) applicationContext.getBean(beanName);
-                                id2checker.put(id, checker);
+                                map.put(id, checker);
                             }
                         });
+                        id2checker = map;
                     } catch (Throwable tr) {
                         tr.printStackTrace();
                     } finally {
