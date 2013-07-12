@@ -6,10 +6,10 @@ public class Solution {
     private String solution_text;
     private int checker_id;
 
-    public Solution(int id, String solution_id, int checker_id){
+    public Solution(int id, String solutionId, int checkerId){
         this.id = id;
-        this.solution_text = solution_id;
-        this.checker_id = checker_id;
+        this.solution_text = solutionId;
+        this.checker_id = checkerId;
     }
     public int getId(){
         return id;
