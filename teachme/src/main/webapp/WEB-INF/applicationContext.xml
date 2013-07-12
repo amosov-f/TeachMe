@@ -25,4 +25,8 @@
         <property name="tagDepot" ref="tagDepot"/>
     </bean>
 
+    <bean id="checkerDepot" class="com.kk.teachme.db.CheckerDepot">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
+
 </beans>

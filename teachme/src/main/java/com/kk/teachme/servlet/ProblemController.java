@@ -1,5 +1,6 @@
 package com.kk.teachme.servlet;
 
+import com.kk.teachme.db.CheckerDepot;
 import com.kk.teachme.db.ProblemDepot;
 import com.kk.teachme.db.TagDepot;
 import com.kk.teachme.model.Problem;
@@ -28,6 +29,10 @@ public class ProblemController {
 
     @Autowired
     TagDepot tagDepot;
+
+    @Autowired
+   CheckerDepot checkerDepot;
+
 
     @RequestMapping(value = "/problem_{problem_id:\\d+}", produces = "application/json; charset=utf-8")
     @ResponseBody
@@ -146,6 +151,17 @@ public class ProblemController {
         }
         json.put("tags", tags);
         return json;
+    }
+
+    @RequestMapping(value = "/check_answer", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String checkAnswer(@RequestParam int problemId, @RequestParam String userAnswer) throws JSONException {
+        if (checkerDepot.checkProblem(problemId,userAnswer)){
+            return okJson().toString();
+        }
+        else {
+            return makeErrorJSON("wrong answer");
+        }
     }
 
     private JSONObject toJson(Tag tag) throws JSONException {
