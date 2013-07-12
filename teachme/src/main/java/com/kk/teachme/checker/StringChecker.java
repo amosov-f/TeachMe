@@ -1,5 +1,7 @@
 package com.kk.teachme.checker;
 
+import sun.misc.Regexp;
+
 public class StringChecker implements Checker {
     public enum CaseOption {
         EqualsIgnoreCase, EqualsWithCase
@@ -11,8 +13,9 @@ public class StringChecker implements Checker {
 
     @Override
     public boolean check(String userAnswer, String correctAnswer) {
-        String reducedUserAnswer = userAnswer.replace(" +\n", " ").trim();
-        String reducedCorrectAnswer = correctAnswer.replace(" +\n", " ").trim();
+        String regexp = "[\\s+\n]";
+        String reducedUserAnswer = userAnswer.replace(regexp, " ").trim();
+        String reducedCorrectAnswer = correctAnswer.replace(regexp, " ").trim();
 
         if (option.equals(CaseOption.EqualsIgnoreCase)) {
             if (reducedUserAnswer.equalsIgnoreCase(reducedCorrectAnswer)) {
