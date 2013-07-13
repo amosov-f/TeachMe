@@ -1,10 +1,11 @@
 package com.kk.teachme.db;
 
-
 import com.kk.teachme.checker.Checker;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -13,12 +14,23 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CheckerDepot {
+public class CheckerDepot implements ApplicationContextAware {
+
     @Autowired
     ApplicationContext applicationContext;
     SimpleJdbcTemplate jdbcTemplate;
 
     private Map<Integer, Checker> id2checker = new HashMap<Integer, Checker>();
+
+    @Required
+    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 
     public Checker getChecker(int id) {
         return id2checker.get(id);
@@ -55,8 +67,4 @@ public class CheckerDepot {
         }).start();
     }
 
-    @Required
-    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 }
