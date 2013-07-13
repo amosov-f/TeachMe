@@ -1,13 +1,21 @@
 package com.kk.teachme.model;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Mary
- * Date: 12.07.13
- * Time: 20:19
- * To change this template use File | Settings | File Templates.
- */
 public class User {
+
+    public User(int id, String login) {
+        this.id = id;
+        this.login = login;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
     private int id;
     private String login;
+
 }
