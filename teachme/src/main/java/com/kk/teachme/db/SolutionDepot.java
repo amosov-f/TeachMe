@@ -1,5 +1,6 @@
 package com.kk.teachme.db;
 
+import com.kk.teachme.checker.Checker;
 import com.kk.teachme.model.Solution;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -13,7 +14,7 @@ public class SolutionDepot {
     CheckerDepot checkerDepot;
     SimpleJdbcTemplate jdbcTemplate;
 
-    public boolean check(int problemId, String userAnswer) {
+    public Checker.SolveStatus check(int problemId, String userAnswer) {
         Solution solution = getSolution(problemId);
         if (solution == null) throw new IllegalStateException();
         return solution.check(userAnswer);
