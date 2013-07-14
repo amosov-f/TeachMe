@@ -19,7 +19,16 @@ public class SolutionDepot {
         return solution.check(userAnswer);
     }
 
-    private Solution getSolution(int problemId) {
+    public void addSolution(int problem_id, String solution,  int checker_id) {
+        jdbcTemplate.update(
+                "insert into solution (id, solution_text, checker_id) values (?, ?, ?)",
+                problem_id,
+                solution,
+                checker_id
+        );
+    }
+
+    public Solution getSolution(int problemId) {
         List<Solution> solutions = jdbcTemplate.query("select * from solution where id = ?", new ParameterizedRowMapper<Solution>() {
             @Override
             public Solution mapRow(ResultSet resultSet, int i) throws SQLException {
