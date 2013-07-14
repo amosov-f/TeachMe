@@ -1,4 +1,6 @@
 <%@ page import="com.kk.teachme.servlet.AdminController" %>
+<%@ page import="javafx.util.Pair" %>
+<%@ page import="java.util.List" %>
 <%--
   Created by IntelliJ IDEA.
   User: Mary
@@ -27,32 +29,40 @@
 
 <form method="post" action="/add_problem">
 
-    name of problem:
-    <input type = "text" name = "name" value="test"/>
+    Create your problem<br>
+
     <br>
 
-    problem statement:
-    <input type = "text" name = "statement" value="test"/>
+    Name:
+    <input type = "text" name = "name" value="name"/><br>
+
     <br>
 
-    problem solution:
-    <input type ="text" name = "solution" value="test"/>
+    Statement:<br>
+    <textarea name = "statement">statement</textarea><br>
+
     <br>
 
-    checker_id:
-    <input type = "number" name = "checker_id" value="1"/>
+    Solution:<br>
+    <textarea name = "solution">solution</textarea><br>
+
+    <br>
+
+    Checker:
+    <select name="checker_id" size="1">
+<%  for (Pair<Integer, String> checkerName : (List<Pair<Integer, String>>)request.getAttribute("checkerNameList")) { %>
+        <option value=<%=checkerName.getKey()%>>
+            <%=checkerName.getValue()%>
+        </option>
+<%  }   %>
+    </select><br>
+
     <br>
 
     <input type = "submit"/>
 
-
 </form>
 
-<% //adminController.addProblem(name, statement) />
-    //AdminController controller = new AdminController();
-    //controller.addProblem()
-
-%>
 
 </body>
 </html>

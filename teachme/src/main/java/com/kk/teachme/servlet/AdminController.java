@@ -1,5 +1,6 @@
 package com.kk.teachme.servlet;
 
+import com.kk.teachme.db.CheckerDepot;
 import com.kk.teachme.db.ProblemDepot;
 import com.kk.teachme.db.SolutionDepot;
 import com.kk.teachme.db.TagDepot;
@@ -27,6 +28,9 @@ public class AdminController {
     @Autowired
     SolutionDepot solutionDepot;
 
+    @Autowired
+    CheckerDepot checkerDepot;
+
     @RequestMapping(value = "/add_problem")
     public String addProblem(
             @RequestParam String name,
@@ -34,6 +38,10 @@ public class AdminController {
             @RequestParam String solution,
             @RequestParam int checker_id
     ) {
+        name = name.trim();
+        statement = statement.trim();
+        solution = solution.trim();
+
         List<Tag> tags = new ArrayList<Tag>();
         //for (String tagName : tagNames) {
         //    tags.add(tagDepot.getByName(tagName));
@@ -51,19 +59,36 @@ public class AdminController {
     @RequestMapping(value = "/admin")
     public String admin(Model model) {
         //return JSP with admin page
-
         //collect all checker
         //collect all tags
         //put it to Model
+
+        model.addAttribute("checkerNameList", checkerDepot.getAllCheckerNames());
+        model.addAllAttributes(tagDepot.getAllTags());
+
         return "admin";
     }
 
-    @RequestMapping(value = "/problems")
-    public String adminList(Model model, String tag) {
-        //show all problems by tag (maybe null)
+    @RequestMapping(value = "/problems_by_tag")
+    public String adminList(Model model, @RequestParam String tag) {
+        //show all problems by tag
 
-        model = model.addAttribute(problemDepot.getAllProblems());
+        List<Problem> problems = problemDepot.getByTag(tagDepot.getByName(tag));
 
+        if (problems == null) {
+            problems = new ArrayList<Problem>();
+        }
+
+        model.addAttribute("problemList", problems);
         return "problems";
     }
+
+    @RequestMapping(value = "/problems")
+    public String adminList(Model model) {
+        //show all problems
+
+        model.addAttribute("problemList", problemDepot.getAllProblems());
+        return "problems";
+    }
+
 }
