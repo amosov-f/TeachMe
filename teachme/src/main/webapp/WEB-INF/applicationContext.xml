@@ -39,4 +39,14 @@
         <constructor-arg value="EqualsWithCase"/>
     </bean>
 
+    <bean id="statusDepot" class="com.kk.teachme.db.StatusDepot">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
+
+    <bean id="userDepot" class="com.kk.teachme.db.UserDepot">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="problemDepot" ref="problemDepot"/>
+        <property name="statusDepot" ref="statusDepot"/>
+    </bean>
+
 </beans>
