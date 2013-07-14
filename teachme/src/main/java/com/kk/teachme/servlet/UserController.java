@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -44,14 +45,14 @@ public class UserController {
             array.put(JSONCreator.valueOf(problem));
         }
 
-        result.put("solved problems", array);
+        result.put("solved", array);
 
         return JSONCreator.resultJSON(result).toString();
     }
 
     @RequestMapping(value = "/status", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getStatus(@PathVariable int user_id, @PathVariable int problem_id) throws JSONException {
+    public String getStatus(@RequestParam int user_id, @RequestParam int problem_id) throws JSONException {
         User user = userDepot.getById(user_id);
         if (user == null) {
             return JSONCreator.errorJSON("Incorrect user id");
