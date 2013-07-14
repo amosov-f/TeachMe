@@ -119,6 +119,15 @@ public class TagDepot extends AbstractDepot<Tag> {
     }
 
     public Tag getByName(String name) {
-        return jdbcTemplate.query("select * frpm tag where name = ?", getRowMapper(), name).get(0);
+         if (name == null) {
+             return null;
+         }
+
+        List<Tag> result = jdbcTemplate.query("select * from tag where name = ?", getRowMapper(), name);
+
+        if (result.isEmpty()) {
+            return null;
+        }
+        return result.get(0);
     }
 }

@@ -14,15 +14,10 @@
 </head>
 <body>
 
-<%
-    for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {
-%>
+<%  for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {    %>
         <%=problem%>
         <br>
-<%
-    }
-%>
-
+<%  }   %>
 
 </body>
 </html>
