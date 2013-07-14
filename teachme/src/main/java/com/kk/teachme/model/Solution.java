@@ -12,7 +12,7 @@ public class Solution {
         this.checker = checker;
     }
 
-    public boolean check(String answer) {
+    public Checker.SolveStatus check(String answer) {
         return checker.check(answer, solutionText);
     }
 }

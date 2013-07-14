@@ -1,5 +1,6 @@
 package com.kk.teachme.servlet;
 
+import com.kk.teachme.checker.Checker;
 import com.kk.teachme.db.ProblemDepot;
 import com.kk.teachme.db.SolutionDepot;
 import com.kk.teachme.db.TagDepot;
@@ -146,12 +147,17 @@ public class ProblemController {
     @RequestMapping(value = "/check_answer", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String checkAnswer(@RequestParam int problem_id, @RequestParam String user_answer, HttpServletRequest request) throws JSONException {
-        if (solutionDepot.check(problem_id, user_answer)){
-            return JSONCreator.okJson().toString();
+        Checker.SolveStatus answerStatus = solutionDepot.check(problem_id, user_answer);
+        String methodAnswer = null;
+        switch (answerStatus)  {
+            case CORRECT:   methodAnswer =   JSONCreator.okJson().toString();
+                            break;
+            case INCORRECT: methodAnswer = JSONCreator.errorJSON("incorrect answer").toString();
+                            break;
+            case INVALID:   methodAnswer =  JSONCreator.errorJSON("bad answer type").toString();
+                            break;
         }
-        else {
-            return JSONCreator.errorJSON("wrong answer");
-        }
+        return methodAnswer;
     }
 
     private JSONObject toJson(Tag tag) throws JSONException {
