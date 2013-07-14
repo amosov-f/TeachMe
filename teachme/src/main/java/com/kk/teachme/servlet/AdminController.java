@@ -6,18 +6,16 @@ import com.kk.teachme.db.TagDepot;
 import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Mary
- * Date: 12.07.13
- * Time: 20:55
- * To change this template use File | Settings | File Templates.
- */
+@Controller
+@RequestMapping("/")
 public class AdminController {
 
     @Autowired
@@ -29,11 +27,17 @@ public class AdminController {
     @Autowired
     SolutionDepot solutionDepot;
 
-    public String addProblem(String name, String statement,  List<String> tagNames, String solution, int checker_id) {
+    @RequestMapping(value = "/add_problem")
+    public String addProblem(
+            @RequestParam String name,
+            @RequestParam String statement,
+            @RequestParam String solution,
+            @RequestParam int checker_id
+    ) {
         List<Tag> tags = new ArrayList<Tag>();
-        for (String tagName : tagNames) {
-            tags.add(tagDepot.getByName(tagName));
-        }
+        //for (String tagName : tagNames) {
+        //    tags.add(tagDepot.getByName(tagName));
+        //}
 
         Problem newProblem = new Problem(name, statement);
         newProblem.addTags(tags);
@@ -41,9 +45,10 @@ public class AdminController {
 
         solutionDepot.addSolution(problem_id, solution, checker_id);
 
-        return "problem";
+        return "ok";
     }
 
+    @RequestMapping(value = "/admin")
     public String admin(Model model) {
         //return JSP with admin page
 
@@ -53,8 +58,12 @@ public class AdminController {
         return "admin";
     }
 
+    @RequestMapping(value = "/problems")
     public String adminList(Model model, String tag) {
         //show all problems by tag (maybe null)
+
+        model = model.addAttribute(problemDepot.getAllProblems());
+
         return "problems";
     }
 }

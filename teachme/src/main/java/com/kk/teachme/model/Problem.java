@@ -46,4 +46,14 @@ public class Problem {
     public void addTags(List<Tag> list) {
         tags.addAll(list);
     }
+
+    @Override
+    public String toString() {
+        return "Problem{" +
+                "id=" + id +
+                ", statement='" + statement + '\'' +
+                ", name='" + name + '\'' +
+                ", tags=" + tags +
+                '}';
+    }
 }

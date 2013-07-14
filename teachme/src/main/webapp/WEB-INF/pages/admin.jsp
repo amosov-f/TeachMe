@@ -1,3 +1,4 @@
+<%@ page import="com.kk.teachme.servlet.AdminController" %>
 <%--
   Created by IntelliJ IDEA.
   User: Mary
@@ -11,6 +12,8 @@
     <title></title>
 </head>
 <body>
+
+
 <%
     //show text box (name)
     //show text box (statement)
@@ -18,8 +21,36 @@
     //text box for answer
     //add an ability to choose tags and add new
     //submit button
+%>
+
+<!-- <jsp:useBean id="adminController" class="com.kk.teachme.servlet.AdminController" /> -->
+
+<form method="post" action="/add_problem">
+
+    name of problem:
+    <input type = "text" name = "name" value="test"/>
+    <br>
+
+    problem statement:
+    <input type = "text" name = "statement" value="test"/>
+    <br>
+
+    problem solution:
+    <input type ="text" name = "solution" value="test"/>
+    <br>
+
+    checker_id:
+    <input type = "number" name = "checker_id" value="1"/>
+    <br>
+
+    <input type = "submit"/>
 
 
+</form>
+
+<% //adminController.addProblem(name, statement) />
+    //AdminController controller = new AdminController();
+    //controller.addProblem()
 
 %>
 

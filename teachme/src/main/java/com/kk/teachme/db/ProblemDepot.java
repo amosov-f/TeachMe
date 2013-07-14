@@ -4,6 +4,7 @@ import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Tag;
 import com.kk.teachme.model.User;
 import com.kk.teachme.model.UserProblem;
+import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -117,5 +118,13 @@ public class ProblemDepot extends AbstractDepot<Problem> {
 
     public List<UserProblem> getUserProblems(User user) {
         return new ArrayList<UserProblem>();
+    }
+
+    public List<Problem> getAllProblems() {
+        List<Problem> result = new ArrayList<Problem>();
+        for (Problem problem : jdbcTemplate.query("select * from problem", getRowMapper())) {
+             result.add(getById(problem.getId()));
+        }
+        return result;
     }
 }
