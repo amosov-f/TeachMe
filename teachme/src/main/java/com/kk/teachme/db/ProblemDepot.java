@@ -46,7 +46,8 @@ public class ProblemDepot extends AbstractDepot<Problem> {
             problem.setId(id);
 
             for (Tag tag: problem.getTags()) {
-                jdbcTemplate.update("insert into problem_tag (problem_id,tag_id) values(?,?)", id, tag.getId());
+                addTagToProblem(problem, tag);
+                //jdbcTemplate.update("insert into problem_tag (problem_id,tag_id) values(?,?)", id, tag.getId());
             }
 
             return id;
@@ -78,7 +79,14 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     }
 
     public List<Problem> getByTag(Tag tag) {
-        return jdbcTemplate.query("select * from problem inner join (select * from problem_tag where tag_id = ?) t on problem.id = t.problem_id", getRowMapper(), tag.getId());
+        if (tag == null) {
+            return null;
+        }
+        return jdbcTemplate.query(
+                "select * from problem inner join (select * from problem_tag where tag_id = ?) t on problem.id = t.problem_id",
+                getCompleteRowMapper(),
+                tag.getId()
+        );
     }
 
     public boolean addTagToProblem(Problem problem, Tag tag) {
@@ -111,6 +119,14 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         };
     }
 
+    protected ParameterizedRowMapper<Problem> getCompleteRowMapper() {
+        return new ParameterizedRowMapper<Problem>() {
+            public Problem mapRow(ResultSet resultSet, int i) throws SQLException {
+                return getById(resultSet.getInt("id"));
+            }
+        };
+    }
+
     @Override
     protected String getQueryForOne() {
         return "select * from problem where id = ?";
@@ -121,10 +137,6 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     }
 
     public List<Problem> getAllProblems() {
-        List<Problem> result = new ArrayList<Problem>();
-        for (Problem problem : jdbcTemplate.query("select * from problem", getRowMapper())) {
-             result.add(getById(problem.getId()));
-        }
-        return result;
+        return jdbcTemplate.query("select * from problem", getCompleteRowMapper());
     }
 }
