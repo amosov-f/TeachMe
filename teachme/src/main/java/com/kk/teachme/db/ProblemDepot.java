@@ -1,9 +1,6 @@
 package com.kk.teachme.db;
 
-import com.kk.teachme.model.Problem;
-import com.kk.teachme.model.Tag;
-import com.kk.teachme.model.User;
-import com.kk.teachme.model.UserProblem;
+import com.kk.teachme.model.*;
 import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -20,11 +17,18 @@ import java.util.List;
  */
 
 public class ProblemDepot extends AbstractDepot<Problem> {
+
     private TagDepot tagDepot;
+    private StatusDepot statusDepot;
 
     @Required
     public void setTagDepot(TagDepot tagDepot) {
         this.tagDepot = tagDepot;
+    }
+
+    @Required
+    public void setStatusDepot(StatusDepot statusDepot) {
+        this.statusDepot = statusDepot;
     }
 
     @Override
@@ -47,7 +51,6 @@ public class ProblemDepot extends AbstractDepot<Problem> {
 
             for (Tag tag: problem.getTags()) {
                 addTagToProblem(problem, tag);
-                //jdbcTemplate.update("insert into problem_tag (problem_id,tag_id) values(?,?)", id, tag.getId());
             }
 
             return id;
@@ -82,16 +85,21 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         if (tag == null) {
             return null;
         }
+
         return jdbcTemplate.query(
                 "select * from problem inner join (select * from problem_tag where tag_id = ?) t on problem.id = t.problem_id",
-                getCompleteRowMapper(),
+                getProblemIdRowMapper("id"),
                 tag.getId()
         );
     }
 
     public boolean addTagToProblem(Problem problem, Tag tag) {
         //todo add some code to second sql (on exists) and remove first call
-        if (!jdbcTemplate.queryForList("select * from problem_tag where problem_id = ? and tag_id = ?", problem.getId(), tag.getId()).isEmpty()) {
+        if (!jdbcTemplate.queryForList(
+                "select * from problem_tag where problem_id = ? and tag_id = ?",
+                problem.getId(),
+                tag.getId()
+        ).isEmpty()) {
             return false;
         }
 
@@ -119,10 +127,10 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         };
     }
 
-    protected ParameterizedRowMapper<Problem> getCompleteRowMapper() {
+    protected ParameterizedRowMapper<Problem> getProblemIdRowMapper(final String idTitle) {
         return new ParameterizedRowMapper<Problem>() {
             public Problem mapRow(ResultSet resultSet, int i) throws SQLException {
-                return getById(resultSet.getInt("id"));
+                return getById(resultSet.getInt(idTitle));
             }
         };
     }
@@ -137,6 +145,14 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     }
 
     public List<Problem> getAllProblems() {
-        return jdbcTemplate.query("select * from problem", getCompleteRowMapper());
+        return jdbcTemplate.query("select * from problem", getProblemIdRowMapper("id"));
+    }
+
+    public List<Problem> getSolvedProblems(User user) {
+        return jdbcTemplate.query("select problem_id from user_problem where user_id = ? and status_id = ?",
+                getProblemIdRowMapper("problem_id"),
+                user.getId(),
+                statusDepot.getStatusId(Status.SOLVED)
+        );
     }
 }
