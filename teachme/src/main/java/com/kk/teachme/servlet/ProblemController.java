@@ -96,7 +96,7 @@ public class ProblemController {
         JSONObject result = JSONCreator.okJson();
         JSONArray tags = new JSONArray();
         for (Tag tag : tagDepot.getAllTags()) {
-            tags.put(toJson(tag));
+            tags.put(JSONCreator.valueOf(tag));
         }
         result.put("tags", tags);
         return result.toString();
@@ -154,10 +154,5 @@ public class ProblemController {
         return methodAnswer;
     }
 
-    private JSONObject toJson(Tag tag) throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put("id", tag.getId());
-        json.put("name", tag.getName());
-        return json;
-    }
+
 }

@@ -56,15 +56,16 @@ public class UserController {
     @ResponseBody
     public String getUser(@PathVariable int user_id) throws JSONException {
         User user = userDepot.getById(user_id);
+
         if (user == null) {
             return JSONCreator.errorJSON("Incorrect id");
         }
 
-        JSONObject result = JSONCreator.okJson();
+        JSONObject result = new JSONObject();
         result.put("user", JSONCreator.valueOf(user));
 
         JSONArray array = new JSONArray();
-        for (Problem problem : userDepot.getSolvedProblems(user)) {
+        for (Problem problem : problemDepot.getSolvedProblems(user)) {
             array.put(JSONCreator.valueOf(problem));
         }
 
