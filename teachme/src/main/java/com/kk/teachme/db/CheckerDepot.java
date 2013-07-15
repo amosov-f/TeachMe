@@ -1,7 +1,6 @@
 package com.kk.teachme.db;
 
 import com.kk.teachme.checker.Checker;
-import javafx.util.Pair;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
@@ -13,8 +12,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.AbstractMap;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CheckerDepot implements ApplicationContextAware {
@@ -39,8 +38,8 @@ public class CheckerDepot implements ApplicationContextAware {
         return id2checker.get(id);
     }
 
-    public List<Pair<Integer, String>> getAllCheckerNames() {
-        return jdbcTemplate.query("select * from checker", getRowMapper());
+    public Map<Integer, Checker> getAllCheckers() {
+        return id2checker;
     }
 
     public void init() {
@@ -72,16 +71,6 @@ public class CheckerDepot implements ApplicationContextAware {
                 }
             }
         }).start();
-    }
-
-
-    ParameterizedRowMapper<Pair<Integer, String>> getRowMapper() {
-        return new ParameterizedRowMapper<Pair<Integer, String>>() {
-            public Pair<Integer, String> mapRow(ResultSet resultSet, int i) throws SQLException {
-                return new Pair<Integer, String>(resultSet.getInt("id"), resultSet.getString("bean_name"));
-            }
-        };
-
     }
 
 }
