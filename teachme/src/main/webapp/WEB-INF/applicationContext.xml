@@ -23,6 +23,7 @@
     <bean id="problemDepot" class="com.kk.teachme.db.ProblemDepot">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="tagDepot" ref="tagDepot"/>
+        <property name="statusDepot" ref="statusDepot"/>
     </bean>
 
     <bean id="checkerDepot" class="com.kk.teachme.db.CheckerDepot" init-method="init">
@@ -40,14 +41,13 @@
         <constructor-arg value="EqualsWithCase"/>
     </bean>
 
-    <bean id="statusDepot" class="com.kk.teachme.db.StatusDepot">
+    <bean id="statusDepot" class="com.kk.teachme.db.StatusDepot" init-method="init">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 
     <bean id="userDepot" class="com.kk.teachme.db.UserDepot">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="problemDepot" ref="problemDepot"/>
-        <property name="statusDepot" ref="statusDepot"/>
     </bean>
 
 </beans>
