@@ -7,6 +7,10 @@ public class User {
     private int id;
     private String login;
 
+    public User(String login) {
+        this(-1, login);
+    }
+
     public User(int id, String login) {
         this.id = id;
         this.login = login;

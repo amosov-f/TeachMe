@@ -1,16 +1,17 @@
 package com.kk.teachme.servlet;
 
-import com.kk.teachme.db.CheckerDepot;
-import com.kk.teachme.db.ProblemDepot;
-import com.kk.teachme.db.SolutionDepot;
-import com.kk.teachme.db.TagDepot;
+import com.kk.teachme.db.*;
 import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Tag;
+import com.kk.teachme.model.User;
+import com.kk.teachme.support.JSONCreator;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,9 @@ public class AdminController {
 
     @Autowired
     CheckerDepot checkerDepot;
+
+    @Autowired
+    UserDepot userDepot;
 
     @RequestMapping(value = "/add_problem")
     public String addProblem(
@@ -90,5 +94,29 @@ public class AdminController {
         model.addAttribute("problemList", problemDepot.getAllProblems());
         return "problems";
     }
+
+
+
+    @RequestMapping(value = "/login")
+    public String loginForm(Model model) {
+        return "login";
+    }
+
+    @RequestMapping(value = "/login_user")
+    public String loginUser(@RequestParam String userName)  {
+        userName = userName.trim();
+        boolean userExists = userDepot.checkIfExists(userName);
+        if (!userExists) return  "ErrorNotExists";
+        return "ok";
+    }
+    @RequestMapping(value = "/reg_user")
+    public String regUser(@RequestParam String userName)  {
+        userName = userName.trim();
+        boolean userExists = userDepot.checkIfExists(userName);
+        if (userExists) return  "ErrorExists";
+        userDepot.addObject(new User(userName));
+        return "ok";
+    }
+
 
 }

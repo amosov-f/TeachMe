@@ -78,5 +78,9 @@ public class UserDepot extends AbstractDepot<User> {
             }
         };
     }
-
+     public boolean checkIfExists(String userLogin){
+         // check if user with userLogin exists
+          return !jdbcTemplate.query("select * from user where login = ?",
+                 getRowMapper(), userLogin).isEmpty();
+     }
 }

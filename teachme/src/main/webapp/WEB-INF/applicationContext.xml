@@ -34,6 +34,7 @@
         <property name="checkerDepot" ref="checkerDepot"/>
     </bean>
 
+
     <bean id="intChecker" class="com.kk.teachme.checker.IntChecker"/>
     <bean id="stringChecker" class="com.kk.teachme.checker.StringChecker">
         <constructor-arg value="EqualsWithCase"/>
