@@ -1,7 +1,5 @@
 package com.kk.teachme.checker;
 
-import sun.misc.Regexp;
-
 public class StringChecker implements Checker {
     public enum CaseOption {
         EqualsIgnoreCase, EqualsWithCase
@@ -30,6 +28,11 @@ public class StringChecker implements Checker {
         }
 
         return SolveStatus.INCORRECT;
+    }
+
+    @Override
+    public String getName() {
+        return "stringChecker";
     }
 
     private CaseOption option;

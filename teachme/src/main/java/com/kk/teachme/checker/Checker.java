@@ -7,7 +7,11 @@ package com.kk.teachme.checker;
 public interface Checker {
 
     public enum SolveStatus {
-        INCORRECT, CORRECT, INVALID;
+        INCORRECT, CORRECT, INVALID
     }
+
     public SolveStatus check(String userAnswer, String correctAnswer);
+
+    public String getName();
+
 }

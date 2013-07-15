@@ -63,7 +63,7 @@ public class AdminController {
         //collect all tags
         //put it to Model
 
-        model.addAttribute("checkerNameList", checkerDepot.getAllCheckerNames());
+        model.addAttribute("checkerMap", checkerDepot.getAllCheckers());
         model.addAllAttributes(tagDepot.getAllTags());
 
         return "admin";

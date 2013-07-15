@@ -1,6 +1,8 @@
 <%@ page import="com.kk.teachme.servlet.AdminController" %>
 <%@ page import="javafx.util.Pair" %>
 <%@ page import="java.util.List" %>
+<%@ page import="com.kk.teachme.checker.Checker" %>
+<%@ page import="java.util.Map" %>
 <%--
   Created by IntelliJ IDEA.
   User: Mary
@@ -50,9 +52,10 @@
 
     Checker:
     <select name="checker_id" size="1">
-<%  for (Pair<Integer, String> checkerName : (List<Pair<Integer, String>>)request.getAttribute("checkerNameList")) { %>
-        <option value=<%=checkerName.getKey()%>>
-            <%=checkerName.getValue()%>
+<%  Map<Integer, Checker> checkers = (Map<Integer, Checker>)request.getAttribute("checkerMap"); %>
+<%  for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
+        <option value=<%=checker.getKey()%>>
+            <%=checker.getValue().getName()%>
         </option>
 <%  }   %>
     </select><br>
