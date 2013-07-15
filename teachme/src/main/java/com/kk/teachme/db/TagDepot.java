@@ -119,15 +119,7 @@ public class TagDepot extends AbstractDepot<Tag> {
     }
 
     public Tag getByName(String name) {
-         if (name == null) {
-             return null;
-         }
-
-        List<Tag> result = jdbcTemplate.query("select * from tag where name = ?", getRowMapper(), name);
-
-        if (result.isEmpty()) {
-            return null;
-        }
-        return result.get(0);
+        return name2tag.get(name);
     }
+
 }
