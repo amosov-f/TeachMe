@@ -95,28 +95,4 @@ public class AdminController {
         return "problems";
     }
 
-
-
-    @RequestMapping(value = "/login")
-    public String loginForm(Model model) {
-        return "login";
-    }
-
-    @RequestMapping(value = "/login_user")
-    public String loginUser(@RequestParam String userName)  {
-        userName = userName.trim();
-        boolean userExists = userDepot.checkIfExists(userName);
-        if (!userExists) return  "ErrorNotExists";
-        return "ok";
-    }
-    @RequestMapping(value = "/reg_user")
-    public String regUser(@RequestParam String userName)  {
-        userName = userName.trim();
-        boolean userExists = userDepot.checkIfExists(userName);
-        if (userExists) return  "ErrorExists";
-        userDepot.addObject(new User(userName));
-        return "ok";
-    }
-
-
 }

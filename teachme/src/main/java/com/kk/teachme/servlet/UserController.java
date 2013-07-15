@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,6 +29,27 @@ public class UserController {
 
     @Autowired
     StatusDepot statusDepot;
+
+    @RequestMapping(value = "/login")
+    public String loginForm(Model model) {
+        return "login";
+    }
+
+    @RequestMapping(value = "/login_user")
+    public String loginUser(@RequestParam String userName)  {
+        userName = userName.trim();
+        boolean userExists = userDepot.checkIfExists(userName);
+        if (!userExists) return  "ErrorNotExists";
+        return "ok";
+    }
+    @RequestMapping(value = "/reg_user")
+    public String regUser(@RequestParam String userName)  {
+        userName = userName.trim();
+        boolean userExists = userDepot.checkIfExists(userName);
+        if (userExists) return  "ErrorExists";
+        userDepot.addObject(new User(userName));
+        return "ok";
+    }
 
     @RequestMapping(value = "/user_{user_id:\\d+}", produces = "application/json; charset=utf-8")
     @ResponseBody

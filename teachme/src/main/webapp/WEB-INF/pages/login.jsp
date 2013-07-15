@@ -1,11 +1,11 @@
-<%@ page import="com.kk.teachme.servlet.AdminController" %>
+<%@ page import="com.kk.teachme.servlet.UserController" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <title></title>
 </head>
 <body>
-<!-- <jsp:useBean id="adminController" class="com.kk.teachme.servlet.AdminController" /> -->
+<!-- <jsp:useBean id="userController" class="com.kk.teachme.servlet.UserController" /> -->
 <form method="post" action="/login_user">
     Log in or sign up
     <br>
