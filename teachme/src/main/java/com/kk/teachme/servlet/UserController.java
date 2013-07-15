@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/")
@@ -36,7 +37,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/login_user")
-    public String loginUser(@RequestParam String userName)  {
+    public String loginUser(@RequestParam String userName, HttpServletRequest request)  {
         userName = userName.trim();
         boolean userExists = userDepot.checkIfExists(userName);
         if (!userExists) return  "ErrorNotExists";
