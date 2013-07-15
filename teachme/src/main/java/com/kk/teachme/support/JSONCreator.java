@@ -33,13 +33,14 @@ public class JSONCreator {
 
     public static JSONObject valueOf(Problem problem) throws JSONException {
         JSONObject json = new JSONObject();
-        json.put("id", problem.getId());
-        json.put("statement", problem.getStatement());
         JSONArray tags = new JSONArray();
         for (Tag t : problem.getTags()) {
             tags.put(t.getName());
         }
         json.put("tags", tags);
+        json.put("statement", problem.getStatement());
+        json.put("name", problem.getName());
+        json.put("id", problem.getId());
         return json;
     }
 
@@ -52,6 +53,13 @@ public class JSONCreator {
         //    tags.put(t.getName());
         //}
         //json.put("tags", tags);
+        return json;
+    }
+
+    public static JSONObject valueOf(Tag tag) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("id", tag.getId());
+        json.put("name", tag.getName());
         return json;
     }
 

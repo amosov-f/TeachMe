@@ -32,4 +32,12 @@ public class User {
         return login;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", login='" + login + '\'' +
+                '}';
+    }
+
 }
