@@ -21,11 +21,6 @@ public class StatusDepot {
 
     private Map<Integer, Status> id2status = new HashMap<Integer, Status>();
 
-    @Required
-    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     public void init() {
         new Thread(new Runnable() {
             @Override
@@ -58,17 +53,6 @@ public class StatusDepot {
         }).start();
     }
 
-    public boolean setStatus(User user, Problem problem, Status status) {
-        jdbcTemplate.update(
-                "update user_problem set user_id = ? and problem_id = ? and status_id = ?",
-                user.getId(),
-                problem.getId(),
-                getStatusId(status)
-        );
-
-        return false;
-    }
-
     public Status getStatus(User user, Problem problem) {
         List<Status> statuses = jdbcTemplate.query(
                 "select status_id from user_problem where user_id = ? and problem_id = ?",
@@ -93,6 +77,16 @@ public class StatusDepot {
         return -1;
     }
 
+    public boolean setStatus(User user, Problem problem, Status status) {
+        jdbcTemplate.update(
+                "update user_problem set user_id = ? and problem_id = ? and status_id = ?",
+                user.getId(),
+                problem.getId(),
+                getStatusId(status)
+        );
+        return false;
+    }
+
     protected ParameterizedRowMapper<Status> getRowMapper() {
         return new ParameterizedRowMapper<Status>() {
             @Override
@@ -100,6 +94,11 @@ public class StatusDepot {
                 return id2status.get(resultSet.getInt("status_id"));
             }
         };
+    }
+
+    @Required
+    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
 }

@@ -72,14 +72,14 @@ public class ProblemController {
 
     @RequestMapping(value = "/count_by_tag", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getProblemsCountByTagId(@RequestParam int tag_id) throws JSONException {
+    public String getProblemsByTagIdCount(@RequestParam int tag_id) throws JSONException {
         Tag tag = tagDepot.getCached(tag_id);
         if (tag == null) {
             return JSONCreator.errorJSON("Incorrect id").toString();
         }
 
         JSONObject result = new JSONObject();
-        result.put("count", problemDepot.getProblemsCountByTag(tag));
+        result.put("count", problemDepot.getProblemsByTagCount(tag));
         return JSONCreator.resultJSON(result).toString();
     }
 

@@ -21,16 +21,6 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     private TagDepot tagDepot;
     private StatusDepot statusDepot;
 
-    @Required
-    public void setTagDepot(TagDepot tagDepot) {
-        this.tagDepot = tagDepot;
-    }
-
-    @Required
-    public void setStatusDepot(StatusDepot statusDepot) {
-        this.statusDepot = statusDepot;
-    }
-
     @Override
     public int addObject(final Problem problem) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -111,7 +101,7 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         jdbcTemplate.update("update problem set statement = ? where id = ?", newStatement, problem.getId());
     }
 
-    public int getProblemsCountByTag(Tag tag) {
+    public int getProblemsByTagCount(Tag tag) {
         return jdbcTemplate.query(
                 "select * from problem_tag where tag_id = ?",
                 getProblemIdRowMapper("problem_id"),
@@ -145,18 +135,18 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     }
 
     public List<UserProblem> getUserProblems(User user) {
+        //todo
         return new ArrayList<UserProblem>();
     }
 
-    public List<Problem> getAllProblems() {
-        return jdbcTemplate.query("select * from problem", getProblemIdRowMapper("id"));
+    @Required
+    public void setTagDepot(TagDepot tagDepot) {
+        this.tagDepot = tagDepot;
     }
 
-    public List<Problem> getSolvedProblems(User user) {
-        return jdbcTemplate.query("select problem_id from user_problem where user_id = ? and status_id = ?",
-                getProblemIdRowMapper("problem_id"),
-                user.getId(),
-                statusDepot.getStatusId(Status.SOLVED)
-        );
+    @Required
+    public void setStatusDepot(StatusDepot statusDepot) {
+        this.statusDepot = statusDepot;
     }
+
 }

@@ -13,12 +13,6 @@ public class UserDepot extends AbstractDepot<User> {
 
     ProblemDepot problemDepot;
 
-    @Required
-    public void setProblemDepot(ProblemDepot problemDepot) {
-        this.problemDepot = problemDepot;
-    }
-
-
     @Override
     public int addObject(final User user) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -41,6 +35,11 @@ public class UserDepot extends AbstractDepot<User> {
         return -1;
     }
 
+    public boolean checkIfExists(String userLogin){
+         // check if user with userLogin exists
+         return !jdbcTemplate.query("select * from user where login = ?", getRowMapper(), userLogin).isEmpty();
+    }
+
     @Override
     protected ParameterizedRowMapper<User> getRowMapper() {
         return new ParameterizedRowMapper<User>() {
@@ -55,8 +54,8 @@ public class UserDepot extends AbstractDepot<User> {
         return "select * from user where id = ?";
     }
 
-    public boolean checkIfExists(String userLogin){
-         // check if user with userLogin exists
-         return !jdbcTemplate.query("select * from user where login = ?", getRowMapper(), userLogin).isEmpty();
+    @Required
+    public void setProblemDepot(ProblemDepot problemDepot) {
+        this.problemDepot = problemDepot;
     }
 }

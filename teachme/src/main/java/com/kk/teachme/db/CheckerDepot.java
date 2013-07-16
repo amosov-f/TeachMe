@@ -24,16 +24,6 @@ public class CheckerDepot implements ApplicationContextAware {
 
     private Map<Integer, Checker> id2checker = new HashMap<Integer, Checker>();
 
-    @Required
-    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @Override
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
     public Checker getChecker(int id) {
         return id2checker.get(id);
     }
@@ -71,6 +61,16 @@ public class CheckerDepot implements ApplicationContextAware {
                 }
             }
         }).start();
+    }
+
+    @Required
+    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
 }

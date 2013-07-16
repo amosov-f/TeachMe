@@ -17,6 +17,7 @@ import static java.lang.Math.min;
  */
 
 public class TagDepot extends AbstractDepot<Tag> {
+
     Map<Integer, Tag> id2tag = new HashMap<Integer, Tag>();
     Map<String, Tag> name2tag = new HashMap<String, Tag>();
 
@@ -90,34 +91,19 @@ public class TagDepot extends AbstractDepot<Tag> {
         throw new RuntimeException("Miss it");
     }
 
-    @Override
-    protected ParameterizedRowMapper<Tag> getRowMapper() {
-        return new ParameterizedRowMapper<Tag>() {
-            @Override
-            public Tag mapRow(ResultSet resultSet, int i) throws SQLException {
-                return new Tag(resultSet.getInt("id"), resultSet.getString("name"));
-            }
-        };
-    }
-
-    @Override
-    protected String getQueryForOne() {
-        return "select * from tag where id = ?";
-    }
-
     public List<Tag> getTagList(int numTags) {
         final ArrayList<Tag> tags = new ArrayList<Tag>(id2tag.values());
         return tags.subList(0, min(tags.size(), numTags));
-    }
-    
-    private List<Tag> getDataBaseTags() {
-        return new ArrayList<Tag>(jdbcTemplate.query("select * from tag", getRowMapper()));
     }
 
     public List<Tag> getAllTags() {
         List<Tag> result = new ArrayList<Tag>();
         result.addAll(id2tag.values());
         return result;
+    }
+
+    public Tag getByName(String name) {
+        return name2tag.get(name);
     }
 
     public void changeTagName(Tag tag, String newName) {
@@ -132,8 +118,23 @@ public class TagDepot extends AbstractDepot<Tag> {
         jdbcTemplate.update("update tag set name = ? where id = ?", tag.getName(), tag.getId());
     }
 
-    public Tag getByName(String name) {
-        return name2tag.get(name);
+    private List<Tag> getDataBaseTags() {
+        return new ArrayList<Tag>(jdbcTemplate.query("select * from tag", getRowMapper()));
+    }
+
+    @Override
+    protected ParameterizedRowMapper<Tag> getRowMapper() {
+        return new ParameterizedRowMapper<Tag>() {
+            @Override
+            public Tag mapRow(ResultSet resultSet, int i) throws SQLException {
+                return new Tag(resultSet.getInt("id"), resultSet.getString("name"));
+            }
+        };
+    }
+
+    @Override
+    protected String getQueryForOne() {
+        return "select * from tag where id = ?";
     }
 
 }
