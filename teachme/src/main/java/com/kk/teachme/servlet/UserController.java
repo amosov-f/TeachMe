@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/")
@@ -37,19 +39,33 @@ public class UserController {
     }
 
     @RequestMapping(value = "/login_user")
-    public String loginUser(@RequestParam String userName, HttpServletRequest request)  {
-        userName = userName.trim();
+    public String loginUser(@RequestParam String userName, HttpServletRequest request, Model model) {
         boolean userExists = userDepot.checkIfExists(userName);
-        if (!userExists) return  "ErrorNotExists";
-        return "ok";
+        String resultMessage = null;
+        if (!userExists) {
+            resultMessage = "Error! User not exists";
+        } else {
+            HttpSession session = request.getSession(true);
+            session.putValue("username", userName);
+            resultMessage = "ok";
+            model.addAttribute("result", resultMessage);
+        }
+        return "result";
     }
+
     @RequestMapping(value = "/reg_user")
-    public String regUser(@RequestParam String userName)  {
+    public String regUser(@RequestParam String userName, Model model) {
         userName = userName.trim();
         boolean userExists = userDepot.checkIfExists(userName);
-        if (userExists) return  "ErrorExists";
-        userDepot.addObject(new User(userName));
-        return "ok";
+        String resultMessage = null;
+        if (userExists) {
+            resultMessage = "Error! user already exists";
+        } else {
+            userDepot.addObject(new User(userName));
+            resultMessage = "ok";
+        }
+        model.addAttribute("result", resultMessage);
+        return "result";
     }
 
     @RequestMapping(value = "/user_{user_id:\\d+}", produces = "application/json; charset=utf-8")
