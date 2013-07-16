@@ -115,7 +115,15 @@ public class TagDepot extends AbstractDepot<Tag> {
     }
 
     public void changeTagName(Tag tag, String newName) {
-        jdbcTemplate.update("update tag set name = ? where id = ?", newName, tag.getId());
+        id2tag.remove(tag.getId());
+        name2tag.remove(tag.getName());
+
+        tag.setName(newName);
+
+        id2tag.put(tag.getId(), tag);
+        name2tag.put(tag.getName(), tag);
+
+        jdbcTemplate.update("update tag set name = ? where id = ?", tag.getName(), tag.getId());
     }
 
     public Tag getByName(String name) {
