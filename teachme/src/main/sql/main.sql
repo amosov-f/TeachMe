@@ -1,6 +1,8 @@
 CREATE DATABASE teachme
   DEFAULT CHARACTER SET utf8;
 
+USE teachme;
+
 CREATE TABLE tag (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   name text
