@@ -47,7 +47,7 @@ public class UserController {
             resultMessage = "Error! User not exists";
         } else {
             HttpSession session = request.getSession(true);
-            session.putValue("username", userName);
+            session.setAttribute("username", userName);
             resultMessage = "ok";
         }
         model.addAttribute("result", resultMessage);

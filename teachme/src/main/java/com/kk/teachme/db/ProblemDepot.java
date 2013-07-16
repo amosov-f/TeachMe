@@ -146,10 +146,7 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return "select * from problem where id = ?";
     }
 
-    public List<UserProblem> getUserProblems(User user) {
-        //todo
-        return new ArrayList<UserProblem>();
-    }
+
 
     @Required
     public void setTagDepot(TagDepot tagDepot) {

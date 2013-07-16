@@ -1,13 +1,38 @@
 package com.kk.teachme.model;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Mary
- * Date: 12.07.13
- * Time: 20:34
- * To change this template use File | Settings | File Templates.
- */
+
 public class UserProblem {
-    Problem problem;
-    Status status;
+    private Problem problem;
+    private int userId;
+    private Status status;
+
+    public UserProblem(Problem problem, int userId, Status status) {
+        this.problem = problem;
+        this.userId = userId;
+        this.status = status;
+    }
+
+    public Problem getProblem() {
+        return problem;
+    }
+
+    public int getUser_id() {
+        return userId;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setId(Problem problem) {
+        this.problem = problem;
+    }
+
+    public void setUser_id(int userId) {
+        this.userId = userId;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 }
