@@ -53,11 +53,11 @@ public class AdminController {
 
         Problem newProblem = new Problem(name, statement);
         newProblem.addTags(tags);
-        int problem_id = problemDepot.addObject(newProblem);
+        int problemId = problemDepot.addObject(newProblem);
 
-        solutionDepot.addSolution(problem_id, solution, checker_id);
+        solutionDepot.addSolution(problemId, solution, checker_id);
 
-        return "ok";
+        return "result";
     }
 
     @RequestMapping(value = "/admin")

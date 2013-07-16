@@ -70,6 +70,19 @@ public class ProblemController {
         return result.toString();
     }
 
+    @RequestMapping(value = "/count_by_tag", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String getProblemsCountByTagId(@RequestParam int tag_id) throws JSONException {
+        Tag tag = tagDepot.getCached(tag_id);
+        if (tag == null) {
+            return JSONCreator.errorJSON("Incorrect id").toString();
+        }
+
+        JSONObject result = new JSONObject();
+        result.put("count", problemDepot.getProblemsCountByTag(tag));
+        return JSONCreator.resultJSON(result).toString();
+    }
+
     @RequestMapping(value = "/add_tag_to_problem", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String addTagToProblem(@RequestParam int problem_id, @RequestParam int tag_id) throws JSONException {
@@ -124,18 +137,6 @@ public class ProblemController {
         }
         problemDepot.changeProblemStatement(problem, new_text);
         return JSONCreator.okJson().toString();
-    }
-
-    @RequestMapping(value = "/tasksWithTag", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String getTaskNumberByTag(@RequestParam int tag_id) throws JSONException {
-        Tag tag = tagDepot.getCached(tag_id);
-        if (tag == null) {
-            return JSONCreator.errorJSON("No tag").toString();
-        }
-        JSONObject result = JSONCreator.okJson();
-        result.put("count", problemDepot.getTaskNumberByTag(tag));
-        return result.toString();
     }
 
     @RequestMapping(value = "/check_answer", produces = "application/json; charset=utf-8")

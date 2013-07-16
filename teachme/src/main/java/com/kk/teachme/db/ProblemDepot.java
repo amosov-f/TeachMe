@@ -111,8 +111,12 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         jdbcTemplate.update("update problem set statement = ? where id = ?", newStatement, problem.getId());
     }
 
-    public int getTaskNumberByTag(Tag tag){
-        return jdbcTemplate.queryForInt("select * from problem_tag where tag_id = ?", tag.getId());
+    public int getProblemsCountByTag(Tag tag) {
+        return jdbcTemplate.query(
+                "select * from problem_tag where tag_id = ?",
+                getProblemIdRowMapper("problem_id"),
+                tag.getId()
+        ).size();
     }
 
     @Override
