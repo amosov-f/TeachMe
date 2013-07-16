@@ -68,14 +68,18 @@ public class AdminController {
         //put it to Model
 
         model.addAttribute("checkerMap", checkerDepot.getAllCheckers());
-        model.addAllAttributes(tagDepot.getAllTags());
+        model.addAttribute("tagList", tagDepot.getAllTags());
 
         return "admin";
     }
 
-    @RequestMapping(value = "/problems_by_tag")
-    public String adminList(Model model, @RequestParam String tag) {
-        //show all problems by tag
+    @RequestMapping(value = "/problems")
+    public String adminList(Model model, @RequestParam(required = false) String tag) {
+        //show all problems by tag  (may be null)
+        if (tag == null) {
+            model.addAttribute("problemList", problemDepot.getAllProblems());
+            return "problems";
+        }
 
         List<Problem> problems = problemDepot.getByTag(tagDepot.getByName(tag));
 
@@ -84,14 +88,6 @@ public class AdminController {
         }
 
         model.addAttribute("problemList", problems);
-        return "problems";
-    }
-
-    @RequestMapping(value = "/problems")
-    public String adminList(Model model) {
-        //show all problems
-
-        model.addAttribute("problemList", problemDepot.getAllProblems());
         return "problems";
     }
 
