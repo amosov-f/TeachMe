@@ -48,8 +48,8 @@ public class UserController {
             HttpSession session = request.getSession(true);
             session.putValue("username", userName);
             resultMessage = "ok";
-            model.addAttribute("result", resultMessage);
         }
+        model.addAttribute("result", resultMessage);
         return "result";
     }
 
