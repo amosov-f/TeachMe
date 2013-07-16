@@ -45,7 +45,7 @@ public class ProblemController {
     public String getProblems(@PathVariable int problem_id) throws JSONException {
         Problem problem = problemDepot.getById(problem_id);
         if (problem == null) {
-            return JSONCreator.errorJSON("Incorrect id");
+            return JSONCreator.errorJSON("Incorrect id").toString();
         }
         JSONObject json = JSONCreator.valueOf(problem);
         return JSONCreator.resultJSON(json).toString();
@@ -56,7 +56,7 @@ public class ProblemController {
     public String getProblemsByTagId(@RequestParam int tag_id) throws JSONException {
         Tag tag = tagDepot.getCached(tag_id);
         if (tag == null) {
-            return JSONCreator.errorJSON("Incorrect id");
+            return JSONCreator.errorJSON("Incorrect id").toString();
         }
 
         List<Problem> problems = problemDepot.getByTag(tag);
@@ -75,16 +75,16 @@ public class ProblemController {
     public String addTagToProblem(@RequestParam int problem_id, @RequestParam int tag_id) throws JSONException {
         Problem problem = problemDepot.getById(problem_id);
         if (problem == null) {
-            return JSONCreator.errorJSON("Incorrect problem id");
+            return JSONCreator.errorJSON("Incorrect problem id").toString();
         }
 
         Tag tag = tagDepot.getCached(tag_id);
         if (tag == null) {
-            return JSONCreator.errorJSON("Incorrect tag id");
+            return JSONCreator.errorJSON("Incorrect tag id").toString();
         }
 
         if (!problemDepot.addTagToProblem(problem, tag)) {
-            return JSONCreator.errorJSON("This tag already exists");
+            return JSONCreator.errorJSON("This tag already exists").toString();
         }
 
         return JSONCreator.okJson().toString();
@@ -107,7 +107,7 @@ public class ProblemController {
     public String changeTagName(@RequestParam int tag_id, String new_name) throws JSONException {
         Tag tag = tagDepot.getById(tag_id);
         if (tag == null) {
-            return JSONCreator.errorJSON("Incorrect tag id");
+            return JSONCreator.errorJSON("Incorrect tag id").toString();
         }
         tagDepot.changeTagName(tag, new_name);
         JSONObject result = new JSONObject();
@@ -120,7 +120,7 @@ public class ProblemController {
     public String changeProblemStatement(@RequestParam int problem_id, @RequestParam String new_text) throws JSONException {
         Problem problem = problemDepot.getById(problem_id);
         if (problem == null) {
-            return JSONCreator.errorJSON("Incorrect problem id");
+            return JSONCreator.errorJSON("Incorrect problem id").toString();
         }
         problemDepot.changeProblemStatement(problem, new_text);
         return JSONCreator.okJson().toString();
@@ -131,7 +131,7 @@ public class ProblemController {
     public String getTaskNumberByTag(@RequestParam int tag_id) throws JSONException {
         Tag tag = tagDepot.getCached(tag_id);
         if (tag == null) {
-            return JSONCreator.errorJSON("No tag");
+            return JSONCreator.errorJSON("No tag").toString();
         }
         JSONObject result = JSONCreator.okJson();
         result.put("count", problemDepot.getTaskNumberByTag(tag));

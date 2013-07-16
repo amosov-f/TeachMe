@@ -1,9 +1,0 @@
-<html>
-<head>
-</head>
-<body>
-<script>
-    alert("Ok!");
-</script>
-</body>
-</html>
