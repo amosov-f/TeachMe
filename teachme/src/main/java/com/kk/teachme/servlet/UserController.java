@@ -4,6 +4,7 @@ import com.kk.teachme.db.ProblemDepot;
 import com.kk.teachme.db.StatusDepot;
 import com.kk.teachme.db.UserDepot;
 import com.kk.teachme.model.Problem;
+import com.kk.teachme.model.Status;
 import com.kk.teachme.model.User;
 import com.kk.teachme.support.JSONCreator;
 import org.json.JSONArray;
@@ -87,8 +88,13 @@ public class UserController {
             return JSONCreator.errorJSON("Incorrect problem id");
         }
 
-        JSONObject result = JSONCreator.okJson();
-        result.put("status", statusDepot.getStatus(user, problem));
+        Status status = statusDepot.getStatus(user, problem);
+        if (status == null) {
+            status = Status.NEW;
+        }
+
+        JSONObject result = new JSONObject();
+        result.put("status", status);
 
         return JSONCreator.resultJSON(result).toString();
     }
