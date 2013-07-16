@@ -83,6 +83,18 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         );
     }
 
+    public List<Problem> getAllProblems() {
+        return jdbcTemplate.query("select * from problem", getProblemIdRowMapper("id"));
+    }
+
+    public List<Problem> getSolvedProblems(User user) {
+        return jdbcTemplate.query("select problem_id from user_problem where user_id = ? and status_id = ?",
+                getProblemIdRowMapper("problem_id"),
+                user.getId(),
+                statusDepot.getStatusId(Status.SOLVED)
+        );
+    }
+
     public boolean addTagToProblem(Problem problem, Tag tag) {
         //todo add some code to second sql (on exists) and remove first call
         if (!jdbcTemplate.queryForList(
