@@ -1,20 +1,17 @@
 package com.kk.teachme.servlet;
 
-import com.kk.teachme.checker.Checker;
+import com.kk.teachme.checker.SolveStatus;
 import com.kk.teachme.db.ProblemDepot;
 import com.kk.teachme.db.SolutionDepot;
 import com.kk.teachme.db.TagDepot;
-import com.kk.teachme.db.UserDepot;
 import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Tag;
-import com.kk.teachme.model.User;
 import com.kk.teachme.support.JSONCreator;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -142,7 +139,7 @@ public class ProblemController {
     @RequestMapping(value = "/check_answer", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String checkAnswer(@RequestParam int problem_id, @RequestParam String user_answer, HttpServletRequest request) throws JSONException {
-        Checker.SolveStatus answerStatus = solutionDepot.check(problem_id, user_answer);
+        SolveStatus answerStatus = solutionDepot.check(problem_id, user_answer);
         String methodAnswer = null;
         switch (answerStatus)  {
             case CORRECT:   methodAnswer =   JSONCreator.okJson().toString();

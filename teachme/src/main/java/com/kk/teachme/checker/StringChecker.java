@@ -1,9 +1,7 @@
 package com.kk.teachme.checker;
 
 public class StringChecker implements Checker {
-    public enum CaseOption {
-        EqualsIgnoreCase, EqualsWithCase
-    }
+    private CaseOption option;
 
     StringChecker(CaseOption option) {
         this.option = option;
@@ -35,5 +33,7 @@ public class StringChecker implements Checker {
         return "stringChecker";
     }
 
-    private CaseOption option;
+    public static enum CaseOption {
+        EqualsIgnoreCase, EqualsWithCase
+    }
 }

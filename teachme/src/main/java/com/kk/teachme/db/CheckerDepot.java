@@ -7,18 +7,15 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CheckerDepot implements ApplicationContextAware {
 
-    @Autowired
     ApplicationContext applicationContext;
     SimpleJdbcTemplate jdbcTemplate;
 

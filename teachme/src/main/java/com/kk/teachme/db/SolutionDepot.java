@@ -1,6 +1,6 @@
 package com.kk.teachme.db;
 
-import com.kk.teachme.checker.Checker;
+import com.kk.teachme.checker.SolveStatus;
 import com.kk.teachme.model.Solution;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -14,18 +14,18 @@ public class SolutionDepot {
     CheckerDepot checkerDepot;
     SimpleJdbcTemplate jdbcTemplate;
 
-    public Checker.SolveStatus check(int problemId, String userAnswer) {
+    public SolveStatus check(int problemId, String userAnswer) {
         Solution solution = getSolution(problemId);
         if (solution == null) throw new IllegalStateException();
         return solution.check(userAnswer);
     }
 
-    public void addSolution(int problem_id, String solution,  int checker_id) {
+    public void addSolution(int problemId, String solution, int checkerId) {
         jdbcTemplate.update(
                 "insert into solution (id, solution_text, checker_id) values (?, ?, ?)",
-                problem_id,
+                problemId,
                 solution,
-                checker_id
+                checkerId
         );
     }
 
