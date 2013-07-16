@@ -10,12 +10,12 @@ import org.json.JSONObject;
 
 public class JSONCreator {
 
-    public static String errorJSON(String error_text) throws JSONException {
+    public static JSONObject errorJSON(String errorText) throws JSONException {
         /* create json with error from error_text */
         JSONObject result = new JSONObject();
         result.put("result", "error");
-        result.put("error", error_text);
-        return result.toString();
+        result.put("error", errorText);
+        return result;
     }
 
     public static JSONObject resultJSON(JSONObject json) throws JSONException {

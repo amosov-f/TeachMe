@@ -74,7 +74,7 @@ public class UserController {
         User user = userDepot.getById(user_id);
 
         if (user == null) {
-            return JSONCreator.errorJSON("Incorrect id");
+            return JSONCreator.errorJSON("Incorrect id").toString();
         }
 
         JSONObject result = new JSONObject();
@@ -95,12 +95,12 @@ public class UserController {
     public String getStatus(@RequestParam int user_id, @RequestParam int problem_id) throws JSONException {
         User user = userDepot.getById(user_id);
         if (user == null) {
-            return JSONCreator.errorJSON("Incorrect user id");
+            return JSONCreator.errorJSON("Incorrect user id").toString();
         }
 
         Problem problem = problemDepot.getById(problem_id);
         if (problem == null) {
-            return JSONCreator.errorJSON("Incorrect problem id");
+            return JSONCreator.errorJSON("Incorrect problem id").toString();
         }
 
         JSONObject result = JSONCreator.okJson();
