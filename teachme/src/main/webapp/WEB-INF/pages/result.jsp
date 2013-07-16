@@ -3,9 +3,8 @@
 </head>
 <body>
 <script>
-    var showVar = '<c:out value="${result}"/>'
-     var show = '<c:out value="${user}"/>'
-    alert(showVar+ show);
+    var showResult = '<c:out value="${result}"/>'
+    alert(showResult);
 </script>
 </body>
 </html>
