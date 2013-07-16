@@ -115,10 +115,10 @@ public class TagDepot extends AbstractDepot<Tag> {
     }
 
     public List<Tag> getAllTags() {
-        return (List<Tag>)id2tag.values();
+        List<Tag> result = new ArrayList<Tag>();
+        result.addAll(id2tag.values());
+        return result;
     }
-
-
 
     public void changeTagName(Tag tag, String newName) {
         id2tag.remove(tag.getId());

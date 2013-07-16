@@ -37,6 +37,7 @@ public class AdminController {
 
     @RequestMapping(value = "/add_problem")
     public String addProblem(
+            Model model,
             @RequestParam String name,
             @RequestParam String statement,
             @RequestParam String solution,
@@ -57,6 +58,7 @@ public class AdminController {
 
         solutionDepot.addSolution(problemId, solution, checker_id);
 
+        model.addAttribute("result", "ok");
         return "result";
     }
 
