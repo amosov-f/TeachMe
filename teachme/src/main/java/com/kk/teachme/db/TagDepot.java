@@ -35,7 +35,7 @@ public class TagDepot extends AbstractDepot<Tag> {
             public void run() {
                 while (true) {
                     try {
-                        List<Tag> tags = getAllTags();
+                        List<Tag> tags = getDataBaseTags();
                         Map<Integer, Tag> id2tag = new HashMap<Integer, Tag>();
                         Map<String, Tag> name2tag = new HashMap<String, Tag>();
                         for (Tag tag : tags) {
@@ -110,9 +110,15 @@ public class TagDepot extends AbstractDepot<Tag> {
         return tags.subList(0, min(tags.size(), numTags));
     }
     
-    public List<Tag> getAllTags() {
+    private List<Tag> getDataBaseTags() {
         return new ArrayList<Tag>(jdbcTemplate.query("select * from tag", getRowMapper()));
     }
+
+    public List<Tag> getAllTags() {
+        return (List<Tag>)id2tag.values();
+    }
+
+
 
     public void changeTagName(Tag tag, String newName) {
         id2tag.remove(tag.getId());
