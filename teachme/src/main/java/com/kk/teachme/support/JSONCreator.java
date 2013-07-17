@@ -4,6 +4,7 @@ import com.kk.teachme.db.UserDepot;
 import com.kk.teachme.model.User;
 import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Tag;
+import com.kk.teachme.model.UserProblem;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -62,5 +63,12 @@ public class JSONCreator {
         json.put("name", tag.getName());
         return json;
     }
+    public static JSONObject valueOf(UserProblem userProblem) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("name", userProblem.getProblem().getName());
+        json.put("status", userProblem.getStatus().toString());
+        return json;
+    }
+
 
 }
