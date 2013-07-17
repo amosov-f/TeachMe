@@ -97,6 +97,8 @@ public class ProblemDepot extends AbstractDepot<Problem> {
 
     public boolean addTagToProblem(Problem problem, Tag tag) {
         //todo add some code to second sql (on exists) and remove first call
+        System.out.println(problem + " " + tag);
+
         if (!jdbcTemplate.queryForList(
                 "select * from problem_tag where problem_id = ? and tag_id = ?",
                 problem.getId(),
@@ -119,6 +121,23 @@ public class ProblemDepot extends AbstractDepot<Problem> {
                 getProblemIdRowMapper("problem_id"),
                 tag.getId()
         ).size();
+    }
+
+    public boolean contains(int id) {
+        return getById(id) == null ? false : true;
+    }
+
+    public boolean deleteById(int id) {
+        if (!contains(id)) {
+            return false;
+        }
+
+        jdbcTemplate.update("delete from user_problem where problem_id = ?", id);
+        jdbcTemplate.update("delete from problem_tag where problem_id = ?", id);
+        jdbcTemplate.update("delete from solution where id = ?", id);
+        jdbcTemplate.update("delete from problem where id = ?", id);
+
+        return true;
     }
 
     @Override

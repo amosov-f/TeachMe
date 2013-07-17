@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -40,6 +41,7 @@ public class AdminController {
             Model model,
             @RequestParam String name,
             @RequestParam String statement,
+            @RequestParam String tags,
             @RequestParam String solution,
             @RequestParam int checker_id
     ) {
@@ -47,13 +49,13 @@ public class AdminController {
         statement = statement.trim();
         solution = solution.trim();
 
-        List<Tag> tags = new ArrayList<Tag>();
-        //for (String tagName : tagNames) {
-        //    tags.add(tagDepot.getByName(tagName));
-        //}
+        List<Tag> tagList = new ArrayList<Tag>();
+        for (String tagName : tags.replace('_', ' ').split(",")) {
+            tagList.add(tagDepot.getByName(tagName));
+        }
 
         Problem newProblem = new Problem(name, statement);
-        newProblem.addTags(tags);
+        newProblem.addTags(tagList);
         int problemId = problemDepot.addObject(newProblem);
 
         solutionDepot.addSolution(problemId, solution, checker_id);
