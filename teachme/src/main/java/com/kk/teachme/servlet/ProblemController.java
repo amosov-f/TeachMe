@@ -93,9 +93,7 @@ public class ProblemController {
             return JSONCreator.errorJSON("Incorrect tag id").toString();
         }
 
-        if (!problemDepot.addTagToProblem(problem, tag)) {
-            return JSONCreator.errorJSON("This tag already exists").toString();
-        }
+        problemDepot.addTagToProblem(problem, tag);
 
         return JSONCreator.okJson().toString();
     }
