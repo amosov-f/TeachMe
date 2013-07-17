@@ -1,5 +1,4 @@
 <%@ page import="com.kk.teachme.servlet.AdminController" %>
-<%@ page import="javafx.util.Pair" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.kk.teachme.checker.Checker" %>
 <%@ page import="java.util.Map" %>
