@@ -136,9 +136,9 @@ public class ProblemController {
         return JSONCreator.okJson().toString();
     }
 
-    @RequestMapping(value = "/check_answer", produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/check_solution", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String checkAnswer(@RequestParam int problem_id, @RequestParam String user_answer, HttpServletRequest request) throws JSONException {
+    public String checkSolution(@RequestParam int problem_id, @RequestParam String user_answer, HttpServletRequest request) throws JSONException {
         SolveStatus answerStatus = solutionDepot.check(problem_id, user_answer);
         String methodAnswer = null;
         switch (answerStatus)  {
@@ -152,5 +152,15 @@ public class ProblemController {
         return methodAnswer;
     }
 
+    @RequestMapping(value = "/delete", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String deleteById(@RequestParam int problem_id) throws JSONException {
+
+        if (problemDepot.deleteById(problem_id)) {
+            return JSONCreator.okJson().toString();
+        }
+
+        return JSONCreator.errorJSON("Incorrect problem id").toString();
+    }
 
 }
