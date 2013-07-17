@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserProblemDepot {
+    StatusDepot statusDepot;
+    ProblemDepot problemDepot;
     SimpleJdbcTemplate jdbcTemplate;
 
     public int addObject(final UserProblem userProblem) {
@@ -38,7 +40,8 @@ public class UserProblemDepot {
     protected ParameterizedRowMapper<UserProblem> getRowMapper() {
         return new ParameterizedRowMapper<UserProblem>() {
             public UserProblem mapRow(ResultSet resultSet, int i) throws SQLException {
-                Problem problem = (Problem) resultSet.getObject("problem");
+                Problem problem = problemDepot.getById(resultSet.getInt("problem_id"));
+                //todo change status
                 Status status = (Status)  resultSet.getObject("status");
                 return new UserProblem(problem,
                         resultSet.getInt("user_id"),
@@ -52,4 +55,13 @@ public class UserProblemDepot {
     public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+    @Required
+    public void setStatusDepot(StatusDepot statusDepot) {
+        this.statusDepot = statusDepot;
+    }
+    @Required
+    public void setProblemDepot(ProblemDepot problemDepot) {
+        this.problemDepot = problemDepot;
+    }
+
 }
