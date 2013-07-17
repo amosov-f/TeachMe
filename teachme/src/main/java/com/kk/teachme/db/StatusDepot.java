@@ -68,6 +68,10 @@ public class StatusDepot {
         return statuses.get(0);
     }
 
+    public Status getById(int id) {
+        return id2status.get(id);
+    }
+
     public int getStatusId(Status status) {
         for (Map.Entry<Integer, Status> entry : id2status.entrySet()) {
             if (entry.getValue().equals(status)) {
