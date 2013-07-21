@@ -4,6 +4,7 @@ import com.kk.teachme.checker.SolveStatus;
 import com.kk.teachme.db.ProblemDepot;
 import com.kk.teachme.db.SolutionDepot;
 import com.kk.teachme.db.TagDepot;
+import com.kk.teachme.db.UserProblemDepot;
 import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Tag;
 import com.kk.teachme.support.JSONCreator;
@@ -35,6 +36,9 @@ public class ProblemController {
 
     @Autowired
     SolutionDepot solutionDepot;
+
+    @Autowired
+    UserProblemDepot userProblemDepot;
 
 
     @RequestMapping(value = "/problem_{problem_id:\\d+}", produces = "application/json; charset=utf-8")
@@ -159,6 +163,19 @@ public class ProblemController {
         }
 
         return JSONCreator.errorJSON("Incorrect problem id").toString();
+    }
+
+    //methods from UserProblemDepot
+
+    @RequestMapping(value = "/all_uproblems", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String getAllUserProblems(@RequestParam int userId) throws JSONException {
+        JSONObject result = JSONCreator.okJson();
+        JSONArray problems = new JSONArray();
+        for (Problem problem : userProblemDepot.getAllUserProblems(userId)) {
+            problems.put(JSONCreator.valueOf(problem));
+        }
+        return result.toString();
     }
 
 }

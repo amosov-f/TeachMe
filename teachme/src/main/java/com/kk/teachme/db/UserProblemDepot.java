@@ -37,16 +37,16 @@ public class UserProblemDepot {
     }
 
 
-    public List<Problem> getAllUserProblems(int userId) {
-        return jdbcTemplate.query("select problem_id, name, statement from user_problem " +
+    public List<UserProblem> getAllUserProblems(int userId) {
+        return jdbcTemplate.query("select status_id, name, statement from user_problem " +
                 " inner join problem on user_problem.problem_id = problem.id" +
                 " where user_id = ? ",
                 getRowMapper(),
                 userId);
     }
 
-    public List<Problem> getUnsolvedProblems(int userId) {
-        return jdbcTemplate.query("select problem_id, name, statement from user_problem " +
+    public List<UserProblem> getUnsolvedProblems(int userId) {
+        return jdbcTemplate.query("select status_id, name, statement from user_problem " +
                 "inner join problem on user_problem.problem_id = problem.id" +
                 " where user_id = ? and status_id != ? ",
                 getRowMapper(),
@@ -54,8 +54,8 @@ public class UserProblemDepot {
                 statusDepot.getStatusId(Status.SOLVED));
     }
 
-    public List<Problem> getSolvedProblems(int userId) {
-        return jdbcTemplate.query("select problem_id, name, statement from user_problem " +
+    public List<UserProblem> getSolvedProblems(int userId) {
+        return jdbcTemplate.query("select user_problem.status_id, name, statement from user_problem " +
                 "inner join problem on user_problem.problem_id = problem.id " +
                 "where user_id = ? and status_id = ? ",
                 getRowMapper(),
@@ -64,9 +64,9 @@ public class UserProblemDepot {
         );
     }
 
-    public List<Problem> getProblemsByTag(int userId, Tag tag) {
+    public List<UserProblem> getProblemsByTag(int userId, Tag tag) {
 
-        return jdbcTemplate.query("select user_problem.problem_id, problem.name, problem.statement from user_problem " +
+        return jdbcTemplate.query("select user_problem.status_id, problem.name, problem.statement from user_problem " +
                 "inner join problem on problem.id=user_problem.problem_id " +
                 "inner join problem_tag on problem.id=problem_tag.problem_id" +
                 "where user_id=? and tag_id=?",
@@ -77,13 +77,13 @@ public class UserProblemDepot {
 
 
 
-    protected ParameterizedRowMapper<Problem> getRowMapper() {
-        return new ParameterizedRowMapper<Problem>() {
-            public Problem mapRow(ResultSet resultSet, int i) throws SQLException {
-                return new Problem(resultSet.getInt("problem_id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("statement")
-                );
+    protected ParameterizedRowMapper<UserProblem> getRowMapper() {
+        return new ParameterizedRowMapper<UserProblem>() {
+            public UserProblem mapRow(ResultSet resultSet, int i) throws SQLException {
+                Problem problem = new Problem(resultSet.getString("name"),
+                        resultSet.getString("statement"));
+                Status status = statusDepot.getById(resultSet.getInt("status_id"));
+                return new UserProblem(problem, status);
             }
         };
     }
