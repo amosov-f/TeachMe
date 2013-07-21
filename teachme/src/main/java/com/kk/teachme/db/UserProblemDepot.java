@@ -64,7 +64,7 @@ public class UserProblemDepot {
         );
     }
 
-    public List<UserProblem> getProblemsByTag(int userId, Tag tag) {
+    public List<UserProblem> getProblemsByTag(int userId, int  tagId) {
 
         return jdbcTemplate.query("select user_problem.status_id, problem.name, problem.statement from user_problem " +
                 "inner join problem on problem.id=user_problem.problem_id " +
@@ -72,7 +72,7 @@ public class UserProblemDepot {
                 "where user_id=? and tag_id=?",
                 getRowMapper(),
                 userId,
-                tag.getId());
+                tagId);
     }
 
 
