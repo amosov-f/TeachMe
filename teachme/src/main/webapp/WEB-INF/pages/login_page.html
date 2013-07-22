@@ -20,44 +20,52 @@
 	<div align = "center"> 
 	<form class="form-inline">	
 		<table >		
-		<tr>	
-		<td colspan = 2>	
-			<input type="text"  placeholder="Login">	
-		</td>
-		</tr>
-		<tr>
-		<td colspan = 2>
-			<input type="password" placeholder="Password">
-		</td>	
-		</tr>
-		<tr>	
-		<td colspan = 2>
-			<label >
-		 	<input  type="checkbox">
-			Remember me
-			</label>			
-		</td>
-		</tr>		
+		<div class="control-group">
+		<!--label class="control-label" for="inputLogin">Email</label-->
+			<div class="controls">
+			<input type="text" id="inputLogin" placeholder="Login">
+			</div>
+		</div>
+		<div class="control-group">
+		<!--label class="control-label" for="inputPassword">Password</label-->
+			<div class="controls">
+			<input type="password" id="inputPassword" placeholder="Password">
+			</div>
+		</div>			
 		
-		<tr>
-		<td colspan = 2>		
+		<div class="control-group">
+		<div class="controls">
+		<label class="checkbox">
+		<input type="checkbox"> Remember me
+		</label>		
+		</div>
+		</div>	
+		
+		<div>	
 		<ul class="inline">
                 <li><button class="btn btn-link">Register</button></li>
                 <li><button class="btn btn-link">Forgot password?</button></li>                
 		</ul>
-		</td>                
-		</tr>
+		</div>
  		<tr>
  		
-		<td  align = "right">	
+		<div>	
 			<button class="btn btn-success" type="button"> Log in </button>	
-		</td>		                      
-		<td align = "center" valign = "bottom">   
-	                              
-			<a href="/enter/Gmail" ><img src = "../../resources/icons/google.jpg" width = "7%" valign = "center"></a>                               
-			<a href="enter/VK"><img src = "../../resources/icons/vk.jpg" width = "7%" valign = "center"></a>
-		</td>
-		</tr>
+		</div>
+		<div valign = "bottom">
+            <!--tr>
+                <td align = "right" valign = "center">
+
+                    <a href="/enter/Gmail" ><img src = "../../resources/icons/google.jpg" width = "10%" valign = "center"></a>
+                    <a href="enter/VK"><img src = "../../resources/icons/vk.jpg" width = "10%" valign = "center"></a>
+                </td>
+            </tr-->
+		<ul class="inline">
+                <li width = "100%"> <a href="/enter/Gmail" >  <img src = "../../resources/icons/google.jpg"  width = 20 ></a>
+                <li width = "100%"> <a href="enter/VK"> <img src = "../../resources/icons/vk.jpg" width = 20 ></a></li>
+		</ul>
+			
+		</div>
 		</table>
 	</form>
 	</div>     
