@@ -9,6 +9,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class JSONCreator {
 
     public static JSONObject errorJSON(String errorText) throws JSONException {
@@ -63,6 +65,17 @@ public class JSONCreator {
         json.put("name", tag.getName());
         return json;
     }
+
+    public static JSONObject valueOfList(List<UserProblem> list) throws JSONException {
+        JSONObject result = okJson();
+        JSONArray problems = new JSONArray();
+        for (UserProblem userProblem : list) {
+            problems.put(JSONCreator.valueOf(userProblem));
+        }
+        result.put("problems", problems);
+        return result;
+    }
+
     public static JSONObject valueOf(UserProblem userProblem) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("name", userProblem.getProblem().getName());

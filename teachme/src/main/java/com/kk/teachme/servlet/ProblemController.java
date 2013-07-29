@@ -4,8 +4,10 @@ import com.kk.teachme.checker.SolveStatus;
 import com.kk.teachme.db.ProblemDepot;
 import com.kk.teachme.db.SolutionDepot;
 import com.kk.teachme.db.TagDepot;
+import com.kk.teachme.db.UserProblemDepot;
 import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Tag;
+import com.kk.teachme.model.UserProblem;
 import com.kk.teachme.support.JSONCreator;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,6 +37,9 @@ public class ProblemController {
 
     @Autowired
     SolutionDepot solutionDepot;
+
+    @Autowired
+    UserProblemDepot userProblemDepot;
 
 
     @RequestMapping(value = "/problem_{problem_id:\\d+}", produces = "application/json; charset=utf-8")
@@ -139,13 +144,16 @@ public class ProblemController {
     public String checkSolution(@RequestParam int problem_id, @RequestParam String user_answer, HttpServletRequest request) throws JSONException {
         SolveStatus answerStatus = solutionDepot.check(problem_id, user_answer);
         String methodAnswer = null;
-        switch (answerStatus)  {
-            case CORRECT:   methodAnswer =   JSONCreator.okJson().toString();
-                            break;
-            case INCORRECT: methodAnswer = JSONCreator.errorJSON("incorrect answer").toString();
-                            break;
-            case INVALID:   methodAnswer =  JSONCreator.errorJSON("bad answer type").toString();
-                            break;
+        switch (answerStatus) {
+            case CORRECT:
+                methodAnswer = JSONCreator.okJson().toString();
+                break;
+            case INCORRECT:
+                methodAnswer = JSONCreator.errorJSON("incorrect answer").toString();
+                break;
+            case INVALID:
+                methodAnswer = JSONCreator.errorJSON("bad answer type").toString();
+                break;
         }
         return methodAnswer;
     }
@@ -159,6 +167,36 @@ public class ProblemController {
         }
 
         return JSONCreator.errorJSON("Incorrect problem id").toString();
+    }
+
+    //methods from UserProblemDepot
+
+    @RequestMapping(value = "/all_uproblems", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String getAllUserProblems(@RequestParam int userId) throws JSONException {
+        List<UserProblem> answerList = userProblemDepot.getAllUserProblems(userId);
+        return JSONCreator.valueOfList(answerList).toString();
+    }
+
+    @RequestMapping(value = "/solved_uproblems", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String getSolvedUserProblems(@RequestParam int userId) throws JSONException {
+        List<UserProblem> answerList = userProblemDepot.getSolvedProblems(userId);
+        return JSONCreator.valueOfList(answerList).toString();
+    }
+
+    @RequestMapping(value = "/unsolved_uproblems", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String getUnsolvedUserProblems(@RequestParam int userId) throws JSONException {
+        List<UserProblem> answerList = userProblemDepot.getUnsolvedProblems(userId);
+        return JSONCreator.valueOfList(answerList).toString();
+    }
+
+    @RequestMapping(value = "/uproblems_tag", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String getUserProblemsByTag(@RequestParam int userId, @RequestParam int tagId) throws JSONException {
+        List<UserProblem> answerList = userProblemDepot.getProblemsByTag(userId, tagId);
+        return JSONCreator.valueOfList(answerList).toString();
     }
 
 }
