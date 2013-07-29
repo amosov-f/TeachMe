@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +29,12 @@ public class ProblemDepot extends AbstractDepot<Problem> {
                 new PreparedStatementCreator() {
                     public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
                         PreparedStatement preparedStatement =
-                                conn.prepareStatement("insert into problem (name,statement) values(?,?)"
+                                conn.prepareStatement("insert into problem (name,statement,figures) values(?,?,?)"
                                         , Statement.RETURN_GENERATED_KEYS);
                         preparedStatement.setString(1, problem.getName());
                         preparedStatement.setString(2, problem.getStatement());
+                        preparedStatement.setString(3, problem.getFiguresString());
+
                         return preparedStatement;
                     }
                 }, keyHolder);
@@ -39,7 +42,7 @@ public class ProblemDepot extends AbstractDepot<Problem> {
             int id = keyHolder.getKey().intValue();
             problem.setId(id);
 
-            for (Tag tag: problem.getTags()) {
+            for (Tag tag : problem.getTags()) {
                 addTagToProblem(problem, tag);
             }
 
@@ -95,10 +98,12 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return jdbcTemplate.query("select * from problem", getProblemIdRowMapper("id"));
     }
 
-
-
     public void addTagToProblem(Problem problem, Tag tag) {
         jdbcTemplate.update("insert ignore into problem_tag values (?, ?)", problem.getId(), tag.getId());
+    }
+
+    public void addFigureToProblem(Problem problem, String figure) {
+        jdbcTemplate.update("insert ignore into problem_figure values (?, ?)", problem.getId(), figure);
     }
 
     public void changeProblemStatement(Problem problem, String newStatement) {
@@ -136,7 +141,8 @@ public class ProblemDepot extends AbstractDepot<Problem> {
             public Problem mapRow(ResultSet resultSet, int i) throws SQLException {
                 return new Problem(resultSet.getInt("id"),
                         resultSet.getString("name"),
-                        resultSet.getString("statement")
+                        resultSet.getString("statement"),
+                        Problem.parseFiguresString(resultSet.getString("figures"))
                 );
             }
         };
@@ -154,8 +160,6 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     protected String getQueryForOne() {
         return "select * from problem where id = ?";
     }
-
-
 
     @Required
     public void setTagDepot(TagDepot tagDepot) {

@@ -5,6 +5,8 @@
 <%@ page import="com.kk.teachme.model.Tag" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
 <html>
 <head>
     <title></title>
@@ -21,6 +23,7 @@
 %>
 
 <script>
+
     function concatTags() {
         var tags = document.getElementsByName('tags');
 
@@ -30,39 +33,52 @@
                 sum += tags[i].value;
             }
             if (i < tags.length) {
-                sum += ','
+                sum += ',';
             }
         }
 
         return sum;
     }
 
-    window.onload = function() {
-        document.getElementById("submit").onclick = function() {
-            $("tags").val(concatTags())
-        }
+    var figureId;
+
+    function submitProblem() {
+        $('tags').val(concatTags());
+        $('figures').val(figureId);
     }
+
+    function uploadFigure() {
+        $('#result').html('');
+        $('#figure').ajaxForm({
+            success: function(data) {
+                figureId = data.result.getResponseHeader('fileId');
+                $('#result').html(data);
+            },
+            dataType: 'text'
+        }).submit();
+    }
+
 </script>
 
-<form method="post" action="/add_problem">
+<form id="problem" method="post" action="/add_problem">
 
     Придумайте задачу<br>
 
     <br>
 
     Название:
-    <input type = "text" name = "name"/><br>
+    <input type="text" name="name"/><br>
 
     <br>
 
     Условие:<br>
-    <textarea name = "statement"></textarea><br>
+    <textarea name="statement"></textarea><br>
 
     <br>
 
     Теги:<br>
 <%  for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {    %>
-        <input type="checkbox" name="tags" value=<%=tag.getName().replace(' ', '_')%>><%=tag.getName()%><br>
+        <input type="checkbox" name="tags" value="<%=tag.getName().replace(' ', '_')%>"><%=tag.getName()%><br>
 <%  }   %>
 
     <br>
@@ -84,8 +100,16 @@
 
     <br>
 
-    <input type="submit" name="submit"/>
+    <input type="submit" value="отправить" onclick="submitProblem()"/>
 
+</form>
+
+
+<form id="figure" method="post" action="/files/upload" enctype="multipart/form-data">
+    Рисунок:
+    <input name="file" id="file" type="file" /><br/>
+    <button value="submit" onclick="uploadFigure()" >прикрепить</button>
+    <div id="result"></div>
 </form>
 
 </body>

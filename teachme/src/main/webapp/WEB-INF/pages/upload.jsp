@@ -1,11 +1,10 @@
-<%--
-  Created by user on 7/21/13.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <html>
 <head>
     <title></title>
 </head>
+
 <body>
 <form name="form1" method="post" enctype="multipart/form-data" action="/upload/save">
     <div>

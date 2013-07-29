@@ -16,6 +16,7 @@
 
 <%  for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {    %>
         <%=problem%>
+
         <br>
 <%  }   %>
 

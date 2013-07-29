@@ -3,12 +3,20 @@ package com.kk.teachme.servlet;
 import com.kk.teachme.db.*;
 import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Tag;
+import com.kk.teachme.support.JSONCreator;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,32 +41,34 @@ public class AdminController {
 
     @RequestMapping(value = "/add_problem")
     public String addProblem(
-            Model model,
             @RequestParam String name,
             @RequestParam String statement,
             @RequestParam(required = false) String tags,
+            @RequestParam(required = false) String figures,
             @RequestParam String solution,
-            @RequestParam int checker_id
-    ) {
+            @RequestParam int checker_id,
+            Model model
+    ) throws IOException {
         name = name.trim();
         statement = statement.trim();
         solution = solution.trim();
 
+        System.out.println(tags);
+
         List<Tag> tagList = new ArrayList<Tag>();
         if (tags != null) {
             for (String tagName : tags.replace('_', ' ').split(",")) {
+                System.out.println(tagName);
                 tagList.add(tagDepot.getByName(tagName));
             }
         }
 
-        Problem newProblem = new Problem(name, statement);
-        newProblem.addTags(tagList);
+        Problem newProblem = new Problem(name, statement, Problem.parseFiguresString(figures), tagList);
         int problemId = problemDepot.addObject(newProblem);
 
         solutionDepot.addSolution(problemId, solution, checker_id);
 
-        model.addAttribute("result", "ok");
-        return "result";
+        return adminList(model, null);
     }
 
     @RequestMapping(value = "/admin")

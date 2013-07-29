@@ -17,7 +17,8 @@ CREATE TABLE solution (
 CREATE TABLE problem (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   name text,
-  statement text
+  statement text,
+  figures text
 );
 
 CREATE TABLE problem_tag (
@@ -45,6 +46,7 @@ CREATE TABLE problem_status (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   status text
 );
+
 
 INSERT INTO problem_status (status) values("read");
 INSERT INTO problem_status (status) values("solved");

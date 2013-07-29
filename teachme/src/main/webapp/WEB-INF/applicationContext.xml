@@ -50,9 +50,14 @@
         <property name="problemDepot" ref="problemDepot"/>
     </bean>
 
-    <bean id="multipartResolver"
-          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <property name="maxUploadSize" value="10000"/>
+
+    <bean id="fileDepot" class="com.kk.teachme.db.FileDepot">
+        <property name="filesDirectory" value="files/" />
+    </bean>
+
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1000000"/>
     </bean>
 
 </beans>
