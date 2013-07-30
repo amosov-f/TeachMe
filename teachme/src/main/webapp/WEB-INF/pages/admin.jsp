@@ -5,12 +5,17 @@
 <%@ page import="com.kk.teachme.model.Tag" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
 
 <html>
+
 <head>
-    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script type="text/javascript" src="/resources/jquery/jquery-2.0.2.js" />
+    <script type="text/javascript" src="/resources/jquery/jquery.form.js" />
+    <title>Придумайте задачу</title>
 </head>
+
 <body>
 
 <%
@@ -22,7 +27,7 @@
     //submit button
 %>
 
-<script>
+<script type="text/javascript">
 
     function concatTags() {
         var tags = document.getElementsByName('tags');
@@ -49,21 +54,28 @@
 
     function uploadFigure() {
         $('#result').html('');
-        $('#figure').ajaxForm({
+
+        var options = {
+            target: '#result',
+            dataType: 'text',
             success: function(data) {
-                figureId = data.result.getResponseHeader('fileId');
-                $('#result').html(data);
-            },
-            dataType: 'text'
-        }).submit();
+                //alert('!!!!');
+                $('#result').html("<img src='http://localhost:8080/files/" + data + "' />");
+            }
+        };
+
+        $('#figure').ajaxSubmit($(options));
+
     }
+
+
 
 </script>
 
+
+
+
 <form id="problem" method="post" action="/add_problem">
-
-    Придумайте задачу<br>
-
     <br>
 
     Название:
@@ -110,7 +122,10 @@
     <input name="file" id="file" type="file" /><br/>
     <button value="submit" onclick="uploadFigure()" >прикрепить</button>
     <div id="result"></div>
+
 </form>
+
+
 
 </body>
 </html>

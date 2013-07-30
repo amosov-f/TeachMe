@@ -35,14 +35,13 @@ public class FileController {
     }
 
     @RequestMapping(value = "/upload")
-    @ResponseBody
-    public String upload(@RequestParam(required = false) MultipartFile file) {
+    public @ResponseBody String upload(@RequestParam(required = false) MultipartFile file) {
         if (file == null) {
             return null;
         }
         try {
-            return "<img src='http://localhost:8080/files/" + fileDepot.addNewFile(file.getBytes()) + "' />";
-
+            //return "<img src='http://localhost:8080/files/" + fileDepot.addNewFile(file.getBytes()) + "' />";
+            return fileDepot.addNewFile(file.getBytes());
         } catch (Exception e) {
             e.printStackTrace();
             return null;
