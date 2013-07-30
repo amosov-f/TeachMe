@@ -77,7 +77,7 @@ public class Problem {
     }
 
     public static List<String> parseFiguresString(String figures) {
-        if (figures == null) {
+        if (figures == null || figures.isEmpty()) {
             return new ArrayList<String>();
         }
         return Arrays.asList(figures.split("\\+"));

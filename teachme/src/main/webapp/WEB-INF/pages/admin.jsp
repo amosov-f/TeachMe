@@ -1,4 +1,3 @@
-<%@ page import="com.kk.teachme.servlet.AdminController" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.kk.teachme.checker.Checker" %>
 <%@ page import="java.util.Map" %>
@@ -6,14 +5,13 @@
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-
 <html>
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <script type="text/javascript" src="/resources/jquery/jquery-2.0.2.js" />
-    <script type="text/javascript" src="/resources/jquery/jquery.form.js" />
-    <title>Придумайте задачу</title>
+    <script type="text/javascript" src="/resources/jquery/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="/resources/jquery/jquery.form.js"></script>
+    <title></title>
 </head>
 
 <body>
@@ -48,35 +46,32 @@
     var figureId;
 
     function submitProblem() {
+        $('#figures').val(figureId);
         $('tags').val(concatTags());
-        $('figures').val(figureId);
     }
 
     function uploadFigure() {
+
         $('#result').html('');
 
         var options = {
-            target: '#result',
-            dataType: 'text',
             success: function(data) {
-                //alert('!!!!');
-                $('#result').html("<img src='http://localhost:8080/files/" + data + "' />");
+                figureId = data;
+                $('#result').html(
+                        "<img src='http://localhost:8080/files/" + data + "' style='width: 30%; height: 30%' />"
+                );
             }
         };
 
-        $('#figure').ajaxSubmit($(options));
+        $('#figure').ajaxSubmit(options);
 
+        return false;
     }
-
-
 
 </script>
 
-
-
-
 <form id="problem" method="post" action="/add_problem">
-    <br>
+    <h1>Придумайте задачу</h1>
 
     Название:
     <input type="text" name="name"/><br>
@@ -87,6 +82,8 @@
     <textarea name="statement"></textarea><br>
 
     <br>
+
+    <input type="hidden" id="figures" name="figures" />
 
     Теги:<br>
 <%  for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {    %>
@@ -116,16 +113,12 @@
 
 </form>
 
-
 <form id="figure" method="post" action="/files/upload" enctype="multipart/form-data">
     Рисунок:
     <input name="file" id="file" type="file" /><br/>
-    <button value="submit" onclick="uploadFigure()" >прикрепить</button>
+    <button value="submit" onclick="return uploadFigure();" >прикрепить</button>
     <div id="result"></div>
-
 </form>
-
-
 
 </body>
 </html>

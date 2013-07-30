@@ -15,8 +15,10 @@
 <body>
 
 <%  for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {    %>
-        <%=problem%>
-
+        <%=problem%><br>
+<%      for (String figure : problem.getFigures()) {       %>
+            <%="<img src='http://localhost:8080/files/" + figure + "' style='width: 30%; height: 30%' />"%><br>
+<%      }   %>
         <br>
 <%  }   %>
 

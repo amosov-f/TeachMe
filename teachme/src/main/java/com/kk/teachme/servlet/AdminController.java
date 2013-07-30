@@ -43,8 +43,8 @@ public class AdminController {
     public String addProblem(
             @RequestParam String name,
             @RequestParam String statement,
-            @RequestParam(required = false) String tags,
             @RequestParam(required = false) String figures,
+            @RequestParam(required = false) String tags,
             @RequestParam String solution,
             @RequestParam int checker_id,
             Model model
@@ -53,12 +53,9 @@ public class AdminController {
         statement = statement.trim();
         solution = solution.trim();
 
-        System.out.println(tags);
-
         List<Tag> tagList = new ArrayList<Tag>();
         if (tags != null) {
             for (String tagName : tags.replace('_', ' ').split(",")) {
-                System.out.println(tagName);
                 tagList.add(tagDepot.getByName(tagName));
             }
         }
