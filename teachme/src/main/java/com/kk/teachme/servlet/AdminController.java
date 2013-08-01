@@ -54,7 +54,7 @@ public class AdminController {
         solution = solution.trim();
 
         List<Tag> tagList = new ArrayList<Tag>();
-        if (tags != null) {
+        if (tags != null && !tags.isEmpty()) {
             for (String tagName : tags.replace('_', ' ').split(",")) {
                 tagList.add(tagDepot.getByName(tagName));
             }
@@ -97,6 +97,11 @@ public class AdminController {
 
         model.addAttribute("problemList", problems);
         return "problems";
+    }
+
+    @RequestMapping(value = "/test")
+    public String test() {
+        return "test";
     }
 
 }
