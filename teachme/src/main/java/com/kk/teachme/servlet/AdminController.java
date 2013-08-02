@@ -47,11 +47,18 @@ public class AdminController {
             @RequestParam(required = false) String tags,
             @RequestParam String solution,
             @RequestParam int checker_id,
+            @RequestParam(required = false) String newTags,
             Model model
     ) throws IOException {
         name = name.trim();
         statement = statement.trim();
         solution = solution.trim();
+
+        if (newTags != null && !newTags.isEmpty()) {
+            for (String tagName : newTags.replace('_', ' ').split(",")) {
+                tagDepot.createIfNotExist(tagName);
+            }
+        }
 
         List<Tag> tagList = new ArrayList<Tag>();
         if (tags != null && !tags.isEmpty()) {

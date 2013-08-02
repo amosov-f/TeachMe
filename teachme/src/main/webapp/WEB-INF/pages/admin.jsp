@@ -41,6 +41,12 @@
             width: 51%;
         }
 
+        .scrollable {
+            width: 100%;
+            height: 160px;
+            overflow-y: auto;
+        }
+
     </style>
 
     <title></title>
@@ -53,24 +59,48 @@
     //show text box (statement)
     //list of checkers
     //text box for answer
-    //add an ability to choose tags and add new
+    //add an ability to choose suggestedTags and add new
     //submit button
 %>
 
 <script type="text/javascript">
 
     var figureId;
-    var tags = new Array();
-    var numberOnPage;
 
-    function collectTags() {
-        return $('#resultTags').val().replace(/, /g, ',').replace(/ /g, '_');
+    var allTags = new Array();
+    var suggestedTags = new Array();
+    var chosenTags = new Array();
+    var newTags = new Array();
+
+    function contains(obj, el) {
+        return obj.indexOf(el) != -1;
+    }
+
+    $(document).ready(function() {
+        $('#search').bind('change paste keyup keydown', searchTags);
+
+<%      for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {    %>
+            allTags.push("<%=tag.getName()%>");
+<%      }   %>
+
+        searchTags();
+    });
+
+    function concat(strArray) {
+        var result = '';
+        for (var i = 0; i < strArray.length; ++i) {
+            if (i > 0) {
+                result += ',';
+            }
+            result += strArray[i].replace(/ /g, '_');
+        }
+        return result;
     }
 
     function submitProblem() {
         $('#figures').val(figureId);
-
-        $('#tags').val(collectTags());
+        $('#tags').val(concat(chosenTags));
+        $('#newTags').val(concat(newTags));
         $('#problem').submit();
         return false;
     }
@@ -82,7 +112,7 @@
             success: function(data) {
                 figureId = data;
                 $('#result').html(
-                        "<img src='http://localhost:8080/files/" + data + "' style='width: 30%; height: 30%' />"
+                        "<img src='http://localhost:8080/files/" + data + "' style='width: 38%' />"
                 );
             }
         };
@@ -94,68 +124,76 @@
 
 
     function searchTags() {
-        var quest = $('#search').val().trim();
+        clearSuggestedTagsView();
+        var substr = $('#search').val().trim();
 
-        clearTagList();
-
-<%      for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {    %>
-            var tag = "<%=tag.getName()%>";
-
-            if ((quest == '' || tag.indexOf(quest) != -1) && $('#resultTags').val().indexOf(tag) == -1) {
-                tags.push(tag);
+        for (var i = 0; i < allTags.length; ++i) {
+            var tag = allTags[i];
+            if ((substr == '' || contains(tag, substr)) && !contains(chosenTags, tag)) {
+                suggestedTags.push(tag);
             }
-<%      }   %>
+        }
 
-        updateTagList();
+        suggestedTags.sort();
 
-        //$('#searchResult').val(result.substr(0, result.length - 1));
+        updateSuggestedTagsView();
+        updateChosenTagsView();
     }
 
-    function clearTagList() {
-        for (var i = 0; i < tags.length; ++i) {
-            $('#tags' + i).remove();
+    function clearSuggestedTagsView() {
+        for (var i = 0; i < suggestedTags.length; ++i) {
+            $('#suggestedTags' + i).remove();
         }
-        tags = new Array();
+        suggestedTags = new Array();
     }
 
-    function updateTagList() {
-        for (var i = 0; i < tags.length; ++i) {
-            $('<button />', {id: 'tags'+ i, value: tags[i], text: tags[i], class: "btn btn-default"}).appendTo($('#tagList'));
-            $('#tags' + i).click({param: '#tags'+ i}, pushTagList);
-
+    function updateSuggestedTagsView() {
+        for (var i = 0; i < suggestedTags.length; ++i) {
+            $('<button />', {
+                id: 'suggestedTags'+ i,
+                value: suggestedTags[i],
+                text: suggestedTags[i],
+                class: "btn btn-default"}
+            ).appendTo($('#suggestedTagsView'));
+            $('#suggestedTags' + i).click({param: '#suggestedTags'+ i}, addToChosenTags);
         }
-
     }
 
-
-    function pushTagList(event) {
-        var id = event.data.param;
-        var tag = $(id).val();
-        //alert(tag);
-        if ($('#resultTags').val() == '') {
-            $('#resultTags').val(tag);
+    function updateChosenTagsView() {
+        var str = '';
+        for (var i = 0; i < chosenTags.length; ++i) {
+            if (i > 0) {
+                str += ', ';
+            }
+            str += chosenTags[i];
         }
-        else {
-            $('#resultTags').val($('#resultTags').val() + ', ' + tag);
-        }
-        $('#resultTags').text($('#resultTags').val());
-        $(id).remove();
+        $('#chosenTagsView').val(str);
+        $('#chosenTagsView').text(str);
     }
 
-    function popTagList() {
-        var lastDiv = $('#resultTags').val().lastIndexOf(',');
-        if (lastDiv == -1) {
-            $('#resultTags').val('');
-        }
-        else {
-            $('#resultTags').val($('#resultTags').val().substr(0, lastDiv));
-        }
-        $('#resultTags').text($('#resultTags').val());
+    function addToChosenTags(event) {
+        var tag = $(event.data.param).val();
+        chosenTags.push(tag);
+        searchTags();
     }
 
+    function popFromChosenTags() {
+        chosenTags.pop();
+        searchTags();
+    }
 
+    function addNewTag() {
+        var tag = $('#search').val().trim();
+        if (tag == '') {
+            return;
+        }
+        if (!contains(allTags, tag)) {
+            allTags.push(tag);
+            newTags.push(tag);
+        }
 
-    //$('#search').bind('textchange', searchTags());
+        searchTags();
+    }
 
 </script>
 
@@ -188,13 +226,15 @@
 
             <legend>Чекер</legend>
             <select  name="checker_id" size="1">
-        <%  Map<Integer, Checker> checkers = (Map<Integer, Checker>)request.getAttribute("checkerMap"); %>
-        <%  for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
+<%          Map<Integer, Checker> checkers = (Map<Integer, Checker>)request.getAttribute("checkerMap"); %>
+<%          for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
                 <option value=<%=checker.getKey()%>>
                     <%=checker.getValue().getName()%>
                 </option>
-        <%  }   %>
+<%          }   %>
             </select>
+
+            <input type="hidden" id="newTags" name="newTags" />
 
         </form>
     </div>
@@ -208,14 +248,15 @@
 
             <legend>Теги</legend>
             <input id="search" type="text" class="search-query" placeholder="Search" />
-            <button class="btn btn-default" type="button" onclick="searchTags()">Искать</button>
-            <button class="btn btn-default" type="button" onclick="popTagList()">Удалить последний тег</button>
+
+            <button class="btn btn-default" type="button" onclick="addNewTag()">Сделать новый тег</button>
+            <button class="btn btn-default" type="button" onclick="popFromChosenTags()">Удалить последний тег</button>
 
             <br><br>
 
-            <div class="well well-small" id="resultTags" value=""></div>
+            <div id="chosenTagsView" class="well well-small" ></div>
 
-            <div class="btn-group-vertical" id="tagList" ></div>
+            <div id="suggestedTagsView" class="scrollable btn-group-horisontal" ></div>
         </form>
     </div>
 
