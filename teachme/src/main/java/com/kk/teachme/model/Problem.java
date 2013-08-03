@@ -8,7 +8,6 @@ import java.util.List;
  * @author akonst
  */
 public class Problem {
-
     private int id;
     private String name;
     private String statement;
@@ -77,7 +76,7 @@ public class Problem {
     }
 
     public static List<String> parseFiguresString(String figures) {
-        if (figures == null || figures.isEmpty()) {
+        if (figures == null) {
             return new ArrayList<String>();
         }
         return Arrays.asList(figures.split("\\+"));
@@ -91,11 +90,9 @@ public class Problem {
     public String toString() {
         return "Problem{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
                 ", statement='" + statement + '\'' +
-                ", figures=" + figures +
+                ", name='" + name + '\'' +
                 ", tags=" + tags +
                 '}';
     }
-
 }

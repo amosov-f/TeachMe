@@ -14,6 +14,7 @@
 
     <script type="text/javascript" src="/resources/jquery/jquery-1.9.1.js"></script>
     <script type="text/javascript" src="/resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="/resources/jquery/jquery.autocomplete.js"></script>
 
     <script type="text/javascript" src="/resources/bootstrap/js/bootstrap.min.js"></script>
 
@@ -41,10 +42,18 @@
             width: 51%;
         }
 
-        .scrollable {
-            width: 100%;
-            height: 160px;
-            overflow-y: auto;
+        .autocomplete-suggestions {
+            border: 1px solid #999;
+            overflow-y: scroll;
+            -webkit-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+            -moz-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+            box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+            padding: 2px 5px;
+            white-space: nowrap;
+        }
+
+        .autocomplete-selected {
+            background: #F0F0F0;
         }
 
     </style>
@@ -67,24 +76,71 @@
 
     var figureId;
 
-    var allTags = new Array();
-    var suggestedTags = new Array();
+    var existTags = new Array();
     var chosenTags = new Array();
     var newTags = new Array();
+
+    var splitter = /[,;]\s*/;
+
+    $(document).ready(function() {
+<%      for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {    %>
+            existTags.push("<%=tag.getName()%>");
+<%      }   %>
+        existTags.sort();
+
+        $('#tagsEdit').bind('click change paste keyup keydown textchange', updateTags);
+        $('#tagsEdit').autocomplete({
+            delimiter: splitter,
+            maxHeight: 150
+        });
+        updateTags();
+    });
+
+    function submitProblem() {
+        $('#figures').val(figureId);
+        $('#tags').val(concat(chosenTags));
+        $('#newTags').val(concat(newTags));
+        $('#problem').submit();
+        return false;
+    }
+
+    function uploadFigure() {
+        $('#figureView').html('');
+
+        var options = {
+            success: function(data) {
+                figureId = data;
+                $('#figureView').html(
+                        "<img src='http://localhost:8080/files/" + data + "' style='width: 38%' />"
+                );
+            }
+        };
+
+        $('#figure').ajaxSubmit(options);
+
+        return false;
+    }
+
+    function updateTags() {
+        chosenTags = trim($('#tagsEdit').val()).split(splitter);
+        newTags = сomplement(chosenTags, existTags);
+        $('#newTagsView').text(viewConcat(newTags));
+        $('#tagsEdit').autocomplete().setOptions({lookup: сomplement(existTags, chosenTags)});
+    }
 
     function contains(obj, el) {
         return obj.indexOf(el) != -1;
     }
 
-    $(document).ready(function() {
-        $('#search').bind('change paste keyup keydown', searchTags);
-
-<%      for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {    %>
-            allTags.push("<%=tag.getName()%>");
-<%      }   %>
-
-        searchTags();
-    });
+    function сomplement(a, b) {
+        var result = [];
+        for (var i = 0; i < a.length; ++i) {
+            if (!contains(b, a[i])) {
+                result.push(a[i]);
+            }
+        }
+        return result;
+    }
 
     function concat(strArray) {
         var result = '';
@@ -97,102 +153,28 @@
         return result;
     }
 
-    function submitProblem() {
-        $('#figures').val(figureId);
-        $('#tags').val(concat(chosenTags));
-        $('#newTags').val(concat(newTags));
-        $('#problem').submit();
-        return false;
-    }
-
-    function uploadFigure() {
-        $('#result').html('');
-
-        var options = {
-            success: function(data) {
-                figureId = data;
-                $('#result').html(
-                        "<img src='http://localhost:8080/files/" + data + "' style='width: 38%' />"
-                );
-            }
-        };
-
-        $('#figure').ajaxSubmit(options);
-
-        return false;
-    }
-
-
-    function searchTags() {
-        clearSuggestedTagsView();
-        var substr = $('#search').val().trim();
-
-        for (var i = 0; i < allTags.length; ++i) {
-            var tag = allTags[i];
-            if ((substr == '' || contains(tag, substr)) && !contains(chosenTags, tag)) {
-                suggestedTags.push(tag);
-            }
-        }
-
-        suggestedTags.sort();
-
-        updateSuggestedTagsView();
-        updateChosenTagsView();
-    }
-
-    function clearSuggestedTagsView() {
-        for (var i = 0; i < suggestedTags.length; ++i) {
-            $('#suggestedTags' + i).remove();
-        }
-        suggestedTags = new Array();
-    }
-
-    function updateSuggestedTagsView() {
-        for (var i = 0; i < suggestedTags.length; ++i) {
-            $('<button />', {
-                id: 'suggestedTags'+ i,
-                value: suggestedTags[i],
-                text: suggestedTags[i],
-                class: "btn btn-default"}
-            ).appendTo($('#suggestedTagsView'));
-            $('#suggestedTags' + i).click({param: '#suggestedTags'+ i}, addToChosenTags);
-        }
-    }
-
-    function updateChosenTagsView() {
-        var str = '';
-        for (var i = 0; i < chosenTags.length; ++i) {
+    function viewConcat(strArray) {
+        var result = '';
+        for (var i = 0; i < strArray.length; ++i) {
             if (i > 0) {
-                str += ', ';
+                result += ', ';
             }
-            str += chosenTags[i];
+            result += strArray[i];
         }
-        $('#chosenTagsView').val(str);
-        $('#chosenTagsView').text(str);
+        return result;
     }
 
-    function addToChosenTags(event) {
-        var tag = $(event.data.param).val();
-        chosenTags.push(tag);
-        searchTags();
-    }
-
-    function popFromChosenTags() {
-        chosenTags.pop();
-        searchTags();
-    }
-
-    function addNewTag() {
-        var tag = $('#search').val().trim();
-        if (tag == '') {
-            return;
+    function trim(str) {
+        var l = -1;
+        for (var i = 0; i < str.length; ++i) {
+            if (str[i] != ' ' &&  str[i] != ',' && str[i] != ';') {
+                if (l == -1) {
+                    l = i;
+                }
+                r = i;
+            }
         }
-        if (!contains(allTags, tag)) {
-            allTags.push(tag);
-            newTags.push(tag);
-        }
-
-        searchTags();
+        return str.substr(l, r + 1);
     }
 
 </script>
@@ -209,18 +191,17 @@
 
 
             <legend>Название</legend>
-            <input type="text" name="name"/>
+            <input type="text" name="name" style="width: 98%" />
 
             <legend>Условие</legend>
-            <textarea name="statement" style="width: 98%"></textarea>
+            <textarea name="statement" style="width: 98%; height: 200px" ></textarea>
 
             <input type="hidden" id="figures" name="figures" />
-
             <input type="hidden" id="tags" name="tags" />
 
 
             <legend>Ответ</legend>
-            <textarea name = "solution"></textarea>
+            <textarea name = "solution" style="width: 98%"></textarea>
 
 
 
@@ -244,20 +225,15 @@
             <legend>Рисунок</legend>
             <input name="file" id="file" type="file" />
             <button  class="btn btn-default" value="submit" onclick="return uploadFigure();" >прикрепить</button>
-            <div id="result"></div>
-
-            <legend>Теги</legend>
-            <input id="search" type="text" class="search-query" placeholder="Search" />
-
-            <button class="btn btn-default" type="button" onclick="addNewTag()">Сделать новый тег</button>
-            <button class="btn btn-default" type="button" onclick="popFromChosenTags()">Удалить последний тег</button>
-
-            <br><br>
-
-            <div id="chosenTagsView" class="well well-small" ></div>
-
-            <div id="suggestedTagsView" class="scrollable btn-group-horisontal" ></div>
+            <div id="figureView"></div>
         </form>
+
+        <legend>Теги</legend>
+
+        <label>Новые теги</label>
+        <div id="newTagsView" class="well well-small" ></div>
+        <input id="tagsEdit" type="text" placeholder="введите теги через запятую..." class="autocomplete-suggestions autocomplete-selected" style="width: 98%" />
+
     </div>
 
 </div>
