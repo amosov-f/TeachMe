@@ -17,6 +17,7 @@
     <script type="text/javascript" src="/resources/jquery/jquery.autocomplete.js"></script>
 
     <script type="text/javascript" src="/resources/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/resources/bootstrap/js/bootstrap.file-input.js"></script>
 
     <link href="/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="screen">
     <link href="/resources/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
@@ -88,10 +89,15 @@
 <%      }   %>
         existTags.sort();
 
+        $('#file').bootstrapFileInput();
+
         $('#tagsEdit').bind('click change paste keyup keydown textchange', updateTags);
         $('#tagsEdit').autocomplete({
             delimiter: splitter,
-            maxHeight: 150
+            maxHeight: 150,
+            onSelect: function() {
+                $('#tagsEdit').val($('#tagsEdit').val() + ', ');
+            }
         });
         updateTags();
     });
@@ -223,8 +229,7 @@
     <div class="right-part">
         <form class="form-inline" id="figure" method="post" action="/files/upload" enctype="multipart/form-data">
             <legend>Рисунок</legend>
-            <input name="file" id="file" type="file" />
-            <button  class="btn btn-default" value="submit" onclick="return uploadFigure();" >прикрепить</button>
+             <input name="file" id="file" type="file" title="Найти рисунок" onchange="return uploadFigure();" />
             <div id="figureView"></div>
         </form>
 
