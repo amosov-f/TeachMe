@@ -68,7 +68,7 @@ public class Problem {
         for (int i = 0; i < figures.size(); ++i) {
             result += figures.get(i);
             if (i != figures.size() - 1) {
-                result += "+";
+                result += ",";
             }
         }
 
@@ -76,10 +76,10 @@ public class Problem {
     }
 
     public static List<String> parseFiguresString(String figures) {
-        if (figures == null) {
+        if (figures == null || figures.isEmpty()) {
             return new ArrayList<String>();
         }
-        return Arrays.asList(figures.split("\\+"));
+        return Arrays.asList(figures.split(","));
     }
 
     public void addFigures(List<String> figures) {
@@ -90,8 +90,9 @@ public class Problem {
     public String toString() {
         return "Problem{" +
                 "id=" + id +
-                ", statement='" + statement + '\'' +
                 ", name='" + name + '\'' +
+                ", statement='" + statement + '\'' +
+                ", figures=" + figures +
                 ", tags=" + tags +
                 '}';
     }

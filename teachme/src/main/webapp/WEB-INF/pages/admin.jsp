@@ -57,6 +57,10 @@
             background: #F0F0F0;
         }
 
+        body, html {
+            height: 100%;
+        }
+
     </style>
 
     <title></title>
@@ -90,11 +94,15 @@
         existTags.sort();
 
         $('#file').bootstrapFileInput();
+        $('#figureReference').click(function() {
+            this.select();
+        });
+
 
         $('#tagsEdit').bind('click change paste keyup keydown textchange', updateTags);
         $('#tagsEdit').autocomplete({
             delimiter: splitter,
-            maxHeight: 150,
+            maxHeight: 130,
             onSelect: function() {
                 $('#tagsEdit').val($('#tagsEdit').val() + ', ');
             }
@@ -111,20 +119,20 @@
     }
 
     function uploadFigure() {
-        $('#figureView').html('');
-
+        if ($('#file')[0].files[0].size > 1000000) {
+            alert('Файл слишком большой');
+            return false;
+        }
         var options = {
             success: function(data) {
                 figureId = data;
-                $('#figureView').html(
-                        "<img src='http://localhost:8080/files/" + data + "' style='width: 38%' />"
-                );
+                $('#figureView').html("<img src='http://localhost:8080/files/" + data + "' style='height: 30%;'/>");
+                $('#figureReference').val("<img src='http://localhost:8080/files/" + data + "'/>");
             }
         };
-
         $('#figure').ajaxSubmit(options);
 
-        return false;
+        return true;
     }
 
     function updateTags() {
@@ -189,18 +197,16 @@
     <h2>Придумайте задачу</h2>
 </div>
 
-<div class="content-wrapper">
+<div style="height: 80%;">
 
-    <div class="left-part">
-
-        <form class="form-inline" id="problem" method="post" action="/add_problem">
+        <form class="left-part form-inline" id="problem" method="post" action="/add_problem">
 
 
             <legend>Название</legend>
             <input type="text" name="name" style="width: 98%" />
 
             <legend>Условие</legend>
-            <textarea name="statement" style="width: 98%; height: 200px" ></textarea>
+            <textarea name="statement" style="width: 98%; height: 30%;" ></textarea>
 
             <input type="hidden" id="figures" name="figures" />
             <input type="hidden" id="tags" name="tags" />
@@ -208,8 +214,6 @@
 
             <legend>Ответ</legend>
             <textarea name = "solution" style="width: 98%"></textarea>
-
-
 
             <legend>Чекер</legend>
             <select  name="checker_id" size="1">
@@ -224,20 +228,44 @@
             <input type="hidden" id="newTags" name="newTags" />
 
         </form>
-    </div>
+
 
     <div class="right-part">
-        <form class="form-inline" id="figure" method="post" action="/files/upload" enctype="multipart/form-data">
+
+        <form class="form-inline" id="figure" method="post" action="/files/upload" enctype="multipart/form-data" style="height: 15%">
             <legend>Рисунок</legend>
-             <input name="file" id="file" type="file" title="Найти рисунок" onchange="return uploadFigure();" />
-            <div id="figureView"></div>
+            <input
+                    name="file"
+                    id="file"
+                    type="file"
+                    title="Найти рисунок"
+                    accept="image/*"
+                    onchange="return uploadFigure();"
+            />
+
+            <input
+                    id="figureReference"
+                    readonly="true"
+                    placeholder="ссылка на картинку"
+                    style="float: right; width: 50%;"
+            />
+
         </form>
 
-        <legend>Теги</legend>
+        <div class="media" id="figureView" style="max-height: 35%;"></div>
 
-        <label>Новые теги</label>
-        <div id="newTagsView" class="well well-small" ></div>
-        <input id="tagsEdit" type="text" placeholder="введите теги через запятую..." class="autocomplete-suggestions autocomplete-selected" style="width: 98%" />
+        <div style="height: 50%;">
+            <legend>Теги</legend>
+            <label>Новые теги</label>
+            <div id="newTagsView" class="well well-small" ></div>
+            <input
+                    id="tagsEdit"
+                    type="text"
+                    placeholder="введите теги через запятую..."
+                    class="autocomplete-suggestions autocomplete-selected"
+                    style="width: 98%"
+            />
+        </div>
 
     </div>
 
