@@ -86,7 +86,7 @@
     var chosenTags = new Array();
     var newTags = new Array();
 
-    var splitter = /[,;]\s*/;
+    var splitter = /,\s*/;
 
     $(document).ready(function() {
 <%      for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {    %>
@@ -158,7 +158,10 @@
         $('#figureReference').val(null);
         $('#file').val(null);
         if (figureId != null && figureId != '') {
-            $('#figureView').html("<img src='http://localhost:8080/files/" + figureId + "' style='height: 30%;'/>");
+            $('#figureView').append("<img src='http://localhost:8080/files/" + figureId + "' style='height: 30%;'/>");
+            $('#figureView').append(
+                    "<button class='btn btn-mini' type='button' onclick='clearFigure()'>удалить рисунок</button>"
+            );
             $('#figureReference').val("<img src='http://localhost:8080/files/" + figureId + "'/>");
         }
     }
@@ -214,7 +217,7 @@
     function trim(str) {
         var l = -1;
         for (var i = 0; i < str.length; ++i) {
-            if (str[i] != ' ' &&  str[i] != ',' && str[i] != ';') {
+            if (str[i] != ' ' &&  str[i] != ',') {
                 if (l == -1) {
                     l = i;
                 }
@@ -273,7 +276,6 @@
                     type="file"
                     title="Найти рисунок"
                     accept="image/*"
-                    onclick="clearFigure()"
                     onchange="return uploadFigure();"
 
             />
