@@ -42,6 +42,22 @@ public class Problem {
         return tags;
     }
 
+    public String getTagsString(boolean production) {
+        String result = "";
+
+        for (int i = 0; i < tags.size(); ++i) {
+            result += tags.get(i).getName();
+            if (i != tags.size() - 1) {
+                result += ",";
+                if (production) {
+                    result += " ";
+                }
+            }
+        }
+
+        return result;
+    }
+
     public String getStatement() {
         return statement;
     }

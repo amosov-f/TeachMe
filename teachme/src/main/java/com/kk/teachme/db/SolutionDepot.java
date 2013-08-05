@@ -16,7 +16,9 @@ public class SolutionDepot {
 
     public SolveStatus check(int problemId, String userAnswer) {
         Solution solution = getSolution(problemId);
-        if (solution == null) throw new IllegalStateException();
+        if (solution == null) {
+            throw new IllegalStateException();
+        }
         return solution.check(userAnswer);
     }
 
@@ -29,15 +31,50 @@ public class SolutionDepot {
         );
     }
 
+    public void setSolution(int problemId, String solution, int checkerId) {
+        jdbcTemplate.update(
+                "update solution set solution_text = ?, checker_id = ? where id = ?",
+                solution,
+                checkerId,
+                problemId
+        );
+    }
+
     public Solution getSolution(int problemId) {
-        List<Solution> solutions = jdbcTemplate.query("select * from solution where id = ?", new ParameterizedRowMapper<Solution>() {
-            @Override
-            public Solution mapRow(ResultSet resultSet, int i) throws SQLException {
-                return new Solution(resultSet.getString("solution_text"), checkerDepot.getChecker(resultSet.getInt("checker_id")));
-            }
-        }, problemId);
-        if (solutions.size() != 1) throw new IllegalStateException();
+        List<Solution> solutions = jdbcTemplate.query(
+                "select * from solution where id = ?",
+                new ParameterizedRowMapper<Solution>() {
+                    @Override
+                    public Solution mapRow(ResultSet resultSet, int i) throws SQLException {
+                        return new Solution(
+                                resultSet.getString("solution_text"),
+                                checkerDepot.getChecker(resultSet.getInt("checker_id"))
+                        );
+                    }
+                },
+                problemId
+        );
+        if (solutions.size() != 1) {
+            throw new IllegalStateException();
+        }
         return solutions.get(0);
+    }
+
+    public int getCheckerId(int problemId) {
+        List<Integer> checkerIds = jdbcTemplate.query(
+                "select * from solution where id = ?",
+                new ParameterizedRowMapper<Integer>() {
+                    @Override
+                    public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
+                        return resultSet.getInt("checker_id");
+                    }
+                },
+                problemId
+        );
+        if (checkerIds.size() != 1) {
+            throw new IllegalStateException();
+        }
+        return checkerIds.get(0);
     }
 
     @Required

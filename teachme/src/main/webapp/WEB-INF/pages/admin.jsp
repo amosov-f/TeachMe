@@ -3,6 +3,7 @@
 <%@ page import="com.kk.teachme.checker.Checker" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="com.kk.teachme.model.Tag" %>
+<%@ page import="com.kk.teachme.model.Problem" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
@@ -93,11 +94,29 @@
 <%      }   %>
         existTags.sort();
 
+<%      if (request.getAttribute("problem") != null) {
+            Problem problem = (Problem)request.getAttribute("problem"); %>
+
+            $('#problemId').val(<%=problem.getId()%>);
+            $('#name').val('<%=problem.getName()%>');
+            $('#statement').val('<%=problem.getStatement()%>');
+
+<%          if (!problem.getFigures().isEmpty()) {  %>
+                figureId = "<%=problem.getFigures().get(0)%>";
+                updateFigure();
+<%          }   %>
+
+            $('#tags').val("<%=problem.getTagsString(false)%>");
+            $('#tagsEdit').val('<%=problem.getTagsString(true)%>');
+
+            $('#solution').val("<%=(String)request.getAttribute("solution")%>");
+            $('#checkerId').val("<%=(Integer)request.getAttribute("checkerId")%>");
+<%      }   %>
+
         $('#file').bootstrapFileInput();
         $('#figureReference').click(function() {
             this.select();
         });
-
 
         $('#tagsEdit').bind('click change paste keyup keydown textchange', updateTags);
         $('#tagsEdit').autocomplete({
@@ -111,7 +130,6 @@
     });
 
     function submitProblem() {
-        $('#figures').val(figureId);
         $('#tags').val(concat(chosenTags));
         $('#newTags').val(concat(newTags));
         $('#problem').submit();
@@ -126,13 +144,28 @@
         var options = {
             success: function(data) {
                 figureId = data;
-                $('#figureView').html("<img src='http://localhost:8080/files/" + data + "' style='height: 30%;'/>");
-                $('#figureReference').val("<img src='http://localhost:8080/files/" + data + "'/>");
+                updateFigure();
             }
         };
         $('#figure').ajaxSubmit(options);
 
         return true;
+    }
+
+    function updateFigure() {
+        $('#figures').val(figureId);
+        $('#figureView').html(null);
+        $('#figureReference').val(null);
+        $('#file').val(null);
+        if (figureId != null && figureId != '') {
+            $('#figureView').html("<img src='http://localhost:8080/files/" + figureId + "' style='height: 30%;'/>");
+            $('#figureReference').val("<img src='http://localhost:8080/files/" + figureId + "'/>");
+        }
+    }
+
+    function clearFigure() {
+        figureId = null;
+        updateFigure();
     }
 
     function updateTags() {
@@ -194,7 +227,7 @@
 </script>
 
 <div align="center">
-    <h2>Придумайте задачу</h2>
+    <h2>Задача</h2>
 </div>
 
 <div style="height: 80%;">
@@ -202,26 +235,26 @@
         <form class="left-part form-inline" id="problem" method="post" action="/add_problem">
 
 
+            <input type="hidden" id="problemId" name="problem_id"/>
+
             <legend>Название</legend>
-            <input type="text" name="name" style="width: 98%" />
+            <input type="text" id="name" name="name" style="width: 98%"/>
 
             <legend>Условие</legend>
-            <textarea name="statement" style="width: 98%; height: 30%;" ></textarea>
+            <textarea id="statement" name="statement" style="width: 98%; height: 30%;"></textarea>
 
-            <input type="hidden" id="figures" name="figures" />
-            <input type="hidden" id="tags" name="tags" />
+            <input type="hidden" id="figures" name="figures"/>
+            <input type="hidden" id="tags" name="tags"/>
 
 
             <legend>Ответ</legend>
-            <textarea name = "solution" style="width: 98%"></textarea>
+            <textarea id="solution" name="solution" style="width: 98%"></textarea>
 
             <legend>Чекер</legend>
-            <select  name="checker_id" size="1">
+            <select id="checkerId" name="checker_id" size="1">
 <%          Map<Integer, Checker> checkers = (Map<Integer, Checker>)request.getAttribute("checkerMap"); %>
 <%          for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
-                <option value=<%=checker.getKey()%>>
-                    <%=checker.getValue().getName()%>
-                </option>
+                <option value="<%=checker.getKey()%>"><%=checker.getValue().getName()%></option>
 <%          }   %>
             </select>
 
@@ -240,7 +273,9 @@
                     type="file"
                     title="Найти рисунок"
                     accept="image/*"
+                    onclick="clearFigure()"
                     onchange="return uploadFigure();"
+
             />
 
             <input
@@ -252,7 +287,7 @@
 
         </form>
 
-        <div class="media" id="figureView" style="max-height: 35%;"></div>
+        <div class="media" id="figureView" style="max-height: 35%;" onchange=""></div>
 
         <div style="height: 50%;">
             <legend>Теги</legend>

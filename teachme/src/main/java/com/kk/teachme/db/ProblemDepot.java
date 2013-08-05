@@ -98,6 +98,25 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return jdbcTemplate.query("select * from problem", getProblemIdRowMapper("id"));
     }
 
+    public void setById(int id, Problem problem) {
+        //if (getById(id) == null) ... suppose, that problem with @id exists
+
+        jdbcTemplate.update("delete from problem_tag where problem_id = ?", id);
+
+        jdbcTemplate.update(
+                "update problem set name = ?, statement = ?, figures = ? where id = ?",
+                problem.getName(),
+                problem.getStatement(),
+                problem.getFiguresString(),
+                id
+        );
+
+        problem.setId(id);
+        for (Tag tag : problem.getTags()) {
+            addTagToProblem(problem, tag);
+        }
+    }
+
     public void addTagToProblem(Problem problem, Tag tag) {
         jdbcTemplate.update("insert ignore into problem_tag values (?, ?)", problem.getId(), tag.getId());
     }
@@ -139,7 +158,8 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     protected ParameterizedRowMapper<Problem> getRowMapper() {
         return new ParameterizedRowMapper<Problem>() {
             public Problem mapRow(ResultSet resultSet, int i) throws SQLException {
-                return new Problem(resultSet.getInt("id"),
+                return new Problem(
+                        resultSet.getInt("id"),
                         resultSet.getString("name"),
                         resultSet.getString("statement"),
                         Problem.parseFiguresString(resultSet.getString("figures"))

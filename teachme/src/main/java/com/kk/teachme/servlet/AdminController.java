@@ -41,6 +41,7 @@ public class AdminController {
 
     @RequestMapping(value = "/add_problem")
     public String addProblem(
+            @RequestParam(required = false) Integer problem_id,
             @RequestParam String name,
             @RequestParam String statement,
             @RequestParam(required = false) String figures,
@@ -67,20 +68,31 @@ public class AdminController {
             }
         }
 
-        Problem newProblem = new Problem(name, statement, Problem.parseFiguresString(figures), tagList);
-        int problemId = problemDepot.addObject(newProblem);
+        Problem problem = new Problem(name, statement, Problem.parseFiguresString(figures), tagList);
 
-        solutionDepot.addSolution(problemId, solution, checker_id);
+        if (problem_id == null) {
+            problem_id = problemDepot.addObject(problem);
+            solutionDepot.addSolution(problem_id, solution, checker_id);
+        } else {
+            problemDepot.setById(problem_id, problem);
+            solutionDepot.setSolution(problem_id, solution, checker_id);
+        }
 
         return adminList(model, null);
     }
 
     @RequestMapping(value = "/admin")
-    public String admin(Model model) {
+    public String admin(@RequestParam(required = false) Integer problem_id, Model model) {
         //return JSP with admin page
         //collect all checker
         //collect all tags
         //put it to Model
+
+        if (problem_id != null) {
+            model.addAttribute("problem", problemDepot.getById(problem_id));
+            model.addAttribute("solution", solutionDepot.getSolution(problem_id).getSolutionText());
+            model.addAttribute("checkerId", solutionDepot.getCheckerId(problem_id));
+        }
 
         model.addAttribute("checkerMap", checkerDepot.getAllCheckers());
         model.addAttribute("tagList", tagDepot.getAllTags());

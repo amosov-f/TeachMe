@@ -16,4 +16,20 @@ public class Solution {
     public SolveStatus check(String answer) {
         return checker.check(answer, solutionText);
     }
+
+    public String getSolutionText() {
+        return solutionText;
+    }
+
+    public Checker getChecker() {
+        return checker;
+    }
+
+    public void setSolutionText(String solutionText) {
+        this.solutionText = solutionText;
+    }
+
+    public void setChecker(Checker checker) {
+        this.checker = checker;
+    }
 }
