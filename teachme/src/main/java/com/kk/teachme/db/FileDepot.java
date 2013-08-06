@@ -26,7 +26,6 @@ public class FileDepot {
 
             String id = getHash(file);
             File path = new File(filesDirectory + id);
-            path.mkdir();
 
             FileOutputStream output = new FileOutputStream(path);
             IOUtils.write(file, output);

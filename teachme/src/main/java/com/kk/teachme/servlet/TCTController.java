@@ -6,6 +6,7 @@ import com.kk.teachme.db.SolutionDepot;
 import com.kk.teachme.db.TagDepot;
 import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Tag;
+import com.kk.teachme.support.JSONCreator;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,11 +42,11 @@ public class TCTController {
     @Autowired
     SolutionDepot solutionDepot;
 
-    @RequestMapping(value = "/add_tct")
+    @RequestMapping(value = "/add_tct", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String fill(
             @RequestParam(required = false) Integer cards
-    ) {
+    ) throws Exception {
 
         tagDepot.createIfNotExist("пдд");
 
@@ -58,7 +59,7 @@ public class TCTController {
             get(cardURLString);
         }
 
-        return "OK";
+        return JSONCreator.okJson().toString();
 
     }
 
@@ -104,7 +105,7 @@ public class TCTController {
                             if (newOption.equals("null")) {
                                 break;
                             }
-                            statement += URLDecoder.decode("\n" + (j+1) + ") " + newOption, "UTF-8");
+                            statement += "\n" + (j+1) + ") " + newOption;
 
                         } catch (JSONException e) {
                             break;
