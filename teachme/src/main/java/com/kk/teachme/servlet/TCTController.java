@@ -20,6 +20,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -103,7 +104,7 @@ public class TCTController {
                             if (newOption.equals("null")) {
                                 break;
                             }
-                            statement += "\n" + (j+1) + ") " + newOption;
+                            statement += URLDecoder.decode("\n" + (j+1) + ") " + newOption, "UTF-8");
 
                         } catch (JSONException e) {
                             break;
@@ -131,6 +132,10 @@ public class TCTController {
                         //System.out.println("Image URL is invalid");
                     } catch (IOException e) {
                         //System.out.println("Couldn't handle the stream");
+                    }
+
+                    if (figures.size() == 0) {
+                        figures.add("");
                     }
 
                     ArrayList<Tag> TCT = new ArrayList<Tag>();
