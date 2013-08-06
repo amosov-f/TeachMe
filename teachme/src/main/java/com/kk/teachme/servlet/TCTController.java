@@ -133,6 +133,10 @@ public class TCTController {
                         //System.out.println("Couldn't handle the stream");
                     }
 
+                    if (figures.size() == 0) {
+                        figures.add("");
+                    }
+
                     ArrayList<Tag> TCT = new ArrayList<Tag>();
                     TCT.add(tagDepot.getByName("пдд"));
 
