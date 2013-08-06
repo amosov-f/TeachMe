@@ -154,6 +154,14 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return true;
     }
 
+
+    public void deleteAllProblems() {
+        jdbcTemplate.update("delete from user_problem where problem_id >= 1");
+        jdbcTemplate.update("delete from problem_tag where problem_id >= 1");
+        jdbcTemplate.update("delete from solution where id >= 1");
+        jdbcTemplate.update("delete from problem where id >= 1");
+    }
+
     @Override
     protected ParameterizedRowMapper<Problem> getRowMapper() {
         return new ParameterizedRowMapper<Problem>() {

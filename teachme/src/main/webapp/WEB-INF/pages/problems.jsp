@@ -62,12 +62,12 @@
 <%              Solution solution = id2solution.get(problem.getId()); %>
 
                 $('#problems').append(createProblem({
-                    name: escape('<%=problem.getName()%>'),
-                    statement: escape('<%=problem.getStatement()%>'),
-                    figures: escape('<%=problem.getFiguresString()%>'),
-                    tags: escape('<%=problem.getTagsString(false)%>'),
-                    solution: escape('<%=solution.getSolutionText()%>'),
-                    checker: escape('<%=solution.getChecker().getName()%>')
+                    name: ('<%=problem.getName().replace('\n', ' ')%>'),
+                    statement: ('<%=problem.getStatement().replace('\n', ' ')%>'),
+                    figures: ('<%=problem.getFiguresString().replace('\n', ' ')%>'),
+                    tags: ('<%=problem.getTagsString(false).replace('\n', ' ')%>'),
+                    solution: ('<%=solution.getSolutionText().replace('\n', ' ')%>'),
+                    checker: ('<%=solution.getChecker().getName().replace('\n', ' ')%>')
                 }));
             }
 <%      }   %>
