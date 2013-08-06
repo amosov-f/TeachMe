@@ -43,7 +43,7 @@
             deferRequestBy: 300,
             lookup: existTags
         });
-
+        console.log('!!!');
         updateProblems();
     });
 
@@ -62,12 +62,12 @@
 <%              Solution solution = id2solution.get(problem.getId()); %>
 
                 $('#problems').append(createProblem({
-                    name: '<%=problem.getName()%>',
-                    statement: '<%=problem.getStatement()%>',
-                    figures: '<%=problem.getFiguresString()%>',
-                    tags: '<%=problem.getTagsString(false)%>',
-                    solution: '<%=solution.getSolutionText()%>',
-                    checker: '<%=solution.getChecker().getName()%>'
+                    name: escape('<%=problem.getName()%>'),
+                    statement: escape('<%=problem.getStatement()%>'),
+                    figures: escape('<%=problem.getFiguresString()%>'),
+                    tags: escape('<%=problem.getTagsString(false)%>'),
+                    solution: escape('<%=solution.getSolutionText()%>'),
+                    checker: escape('<%=solution.getChecker().getName()%>')
                 }));
             }
 <%      }   %>
