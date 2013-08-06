@@ -1,122 +1,255 @@
 /*
- Bootstrap - File Input
- ======================
-
- This is meant to convert all file input tags into a set of elements that displays consistently in all browsers.
-
- Converts all
- <input type="file">
- into Bootstrap buttons
- <a class="btn">Browse</a>
-
+ * bootstrap-filestyle
+ * http://dev.tudosobreweb.com.br/bootstrap-filestyle/
+ *
+ * Copyright (c) 2013 Markus Vinicius da Silva Lima
+ * Version 1.0.3
+ * Licensed under the MIT license.
  */
-$(function() {
+(function ($) {
+    "use strict";
 
-    $.fn.bootstrapFileInput = function() {
-
-        this.each(function(i,elem){
-
-            var $elem = $(elem);
-
-            // Maybe some fields don't need to be standardized.
-            if (typeof $elem.attr('data-bfi-disabled') != 'undefined') {
-                return;
-            }
-
-            // Set the word to be displayed on the button
-            var buttonWord = 'Browse';
-
-            if (typeof $elem.attr('title') != 'undefined') {
-                buttonWord = $elem.attr('title');
-            }
-
-            // Start by getting the HTML of the input element.
-            // Thanks for the tip http://stackoverflow.com/a/1299069
-            var input = $('<div>').append( $elem.eq(0).clone() ).html();
-            var className = '';
-
-            if (!!$elem.attr('class')) {
-                className = ' ' + $elem.attr('class');
-            }
-
-            // Now we're going to replace that input field with a Bootstrap button.
-            // The input will actually still be there, it will just be float above and transparent (done with the CSS).
-            $elem.replaceWith('<a class="file-input-wrapper btn' + className + '">'+buttonWord+input+'</a>');
-        })
-
-            // After we have found all of the file inputs let's apply a listener for tracking the mouse movement.
-            // This is important because the in order to give the illusion that this is a button in FF we actually need to move the button from the file input under the cursor. Ugh.
-            .promise().done( function(){
-
-                // As the cursor moves over our new Bootstrap button we need to adjust the position of the invisible file input Browse button to be under the cursor.
-                // This gives us the pointer cursor that FF denies us
-                $('.file-input-wrapper').mousemove(function(cursor) {
-
-                    var input, wrapper,
-                        wrapperX, wrapperY,
-                        inputWidth, inputHeight,
-                        cursorX, cursorY;
-
-                    // This wrapper element (the button surround this file input)
-                    wrapper = $(this);
-                    // The invisible file input element
-                    input = wrapper.find("input");
-                    // The left-most position of the wrapper
-                    wrapperX = wrapper.offset().left;
-                    // The top-most position of the wrapper
-                    wrapperY = wrapper.offset().top;
-                    // The with of the browsers input field
-                    inputWidth= input.width();
-                    // The height of the browsers input field
-                    inputHeight= input.height();
-                    //The position of the cursor in the wrapper
-                    cursorX = cursor.pageX;
-                    cursorY = cursor.pageY;
-
-                    //The positions we are to move the invisible file input
-                    // The 20 at the end is an arbitrary number of pixels that we can shift the input such that cursor is not pointing at the end of the Browse button but somewhere nearer the middle
-                    moveInputX = cursorX - wrapperX - inputWidth + 20;
-                    // Slides the invisible input Browse button to be positioned middle under the cursor
-                    moveInputY = cursorY- wrapperY - (inputHeight/2);
-
-                    // Apply the positioning styles to actually move the invisible file input
-                    input.css({
-                        left:moveInputX,
-                        top:moveInputY
-                    });
-                });
-
-                $('.file-input-wrapper input[type=file]').change(function(){
-
-                    var fileName;
-                    fileName = $(this).val();
-
-                    // Remove any previous file names
-                    $(this).parent().next('.file-input-name').remove();
-                    if (!!$(this).prop('files') && $(this).prop('files').length > 1) {
-                        fileName = $(this)[0].files.length+' files';
-                        //$(this).parent().after('<span class="file-input-name">'+$(this)[0].files.length+' files</span>');
-                    }
-                    else {
-                        // var fakepath = 'C:\\fakepath\\';
-                        // fileName = $(this).val().replace('C:\\fakepath\\','');
-                        fileName = fileName.substring(fileName.lastIndexOf('\\')+1,fileName.length);
-                    }
-
-                    $(this).parent().after('<span class="file-input-name">'+fileName+'</span>');
-                });
-
-            });
-
+    var Filestyle = function (element, options) {
+        this.options = options;
+        this.$elementFilestyle = [];
+        this.$element = $(element);
     };
 
-// Add the styles before the first stylesheet
-// This ensures they can be easily overridden with developer styles
-    var cssHtml = '<style>'+
-        '.file-input-wrapper { overflow: hidden; position: relative; cursor: pointer; z-index: 1; }'+
-        '.file-input-wrapper input[type=file], .file-input-wrapper input[type=file]:focus, .file-input-wrapper input[type=file]:hover { position: absolute; top: 0; left: 0; cursor: pointer; opacity: 0; filter: alpha(opacity=0); z-index: 99; outline: 0; }'+
-        '.file-input-name { margin-left: 8px; }'+
-        '</style>';
-    $('link[rel=stylesheet]').eq(0).before(cssHtml);
+    Filestyle.prototype = {
+        clear: function () {
+            this.$element.val('');
+            this.$elementFilestyle.find(':text').val('');
+        },
 
-});
+        destroy: function () {
+            this.$element
+                .removeAttr('style')
+                .removeData('filestyle')
+                .val('');
+            this.$elementFilestyle.remove();
+        },
+
+        icon: function (value) {
+            if (value === true) {
+                if (!this.options.icon) {
+                    this.options.icon = true;
+                    this.$elementFilestyle.find('label').prepend(this.htmlIcon());
+                }
+            } else if (value === false) {
+                if (this.options.icon) {
+                    this.options.icon = false;
+                    this.$elementFilestyle.find('i').remove();
+                }
+            } else {
+                return this.options.icon;
+            }
+        },
+
+        input: function (value) {
+            if (value === true) {
+                if (!this.options.input) {
+                    this.options.input = true;
+                    this.$elementFilestyle.prepend(this.htmlInput());
+
+                    var content = '',
+                        files = [];
+                    if (this.$element[0].files === undefined) {
+                        files[0] = {'name': this.$element[0].value};
+                    } else {
+                        files = this.$element[0].files;
+                    }
+
+                    for (var i = 0; i < files.length; i++) {
+                        content += files[i].name.split("\\").pop() + ', ';
+                    }
+                    if (content !== '') {
+                        this.$elementFilestyle.find(':text').val(content.replace(/\, $/g, ''));
+                    }
+                }
+            } else if (value === false) {
+                if (this.options.input) {
+                    this.options.input = false;
+                    this.$elementFilestyle.find(':text').remove();
+                }
+            } else {
+                return this.options.input;
+            }
+        },
+
+        buttonText: function (value) {
+            if (value !== undefined) {
+                this.options.buttonText = value;
+                this.$elementFilestyle.find('label span').html(this.options.buttonText);
+            } else {
+                return this.options.buttonText;
+            }
+        },
+
+        classButton: function (value) {
+            if (value !== undefined) {
+                this.options.classButton = value;
+                this.$elementFilestyle.find('label').attr({'class': this.options.classButton});
+                if (this.options.classButton.search(/btn-inverse|btn-primary|btn-danger|btn-warning|btn-success/i) !== -1) {
+                    this.$elementFilestyle.find('label i').addClass('icon-white');
+                } else {
+                    this.$elementFilestyle.find('label i').removeClass('icon-white');
+                }
+            } else {
+                return this.options.classButton;
+            }
+        },
+
+        classIcon: function (value) {
+            if (value !== undefined) {
+                this.options.classIcon = value;
+                if (this.options.classButton.search(/btn-inverse|btn-primary|btn-danger|btn-warning|btn-success/i) !== -1) {
+                    this.$elementFilestyle.find('label').find('i').attr({'class': 'icon-white '+this.options.classIcon});
+                } else {
+                    this.$elementFilestyle.find('label').find('i').attr({'class': this.options.classIcon});
+                }
+            } else {
+                return this.options.classIcon;
+            }
+        },
+
+        classInput: function (value) {
+            if (value !== undefined) {
+                this.options.classInput = value;
+                this.$elementFilestyle.find(':text').addClass(this.options.classInput);
+            } else {
+                return this.options.classInput;
+            }
+        },
+
+        htmlIcon: function () {
+            if (this.options.icon) {
+                var colorIcon = '';
+                if (this.options.classButton.search(/btn-inverse|btn-primary|btn-danger|btn-warning|btn-success/i) !== -1) {
+                    colorIcon = ' icon-white ';
+                }
+
+                return '<i class="'+colorIcon+this.options.classIcon+'"></i> ';
+            } else {
+                return '';
+            }
+        },
+
+        htmlInput: function () {
+            if (this.options.input) {
+                return '<input type="text" class="'+this.options.classInput+'" disabled> ';
+            } else {
+                return '';
+            }
+        },
+
+        constructor: function () {
+            var _self = this,
+                html = '',
+                id = this.$element.attr('id'),
+                files = [];
+
+            if (id === '' || !id) {
+                id = 'filestyle-'+$('.bootstrap-filestyle').length;
+                this.$element.attr({'id': id});
+            }
+
+            html = this.htmlInput()+
+                '<label for="'+id+'" class="'+this.options.classButton+'">'+
+                this.htmlIcon()+
+                '<span>'+this.options.buttonText+'</span>'+
+                '</label>';
+
+            this.$elementFilestyle = $('<div class="bootstrap-filestyle" style="display: inline;">'+html+'</div>');
+
+            // hidding input file and add filestyle
+            this.$element
+                .css({'position':'fixed','left':'-500px'})
+                .after(this.$elementFilestyle);
+
+            // Getting input file value
+            this.$element.change(function () {
+                var content = '';
+                if (this.files === undefined) {
+                    files[0] = {'name': this.value};
+                } else {
+                    files = this.files;
+                }
+
+                for (var i = 0; i < files.length; i++) {
+                    content += files[i].name.split("\\").pop() + ', ';
+                }
+
+                if (content !== '') {
+                    _self.$elementFilestyle.find(':text').val(content.replace(/\, $/g, ''));
+                }
+            });
+
+            // Check if browser is Firefox
+            if (window.navigator.userAgent.search(/firefox/i) > -1) {
+                // Simulating choose file for firefox
+                this.$elementFilestyle.find('label').click(function () {
+                    _self.$element.click();
+                    return false;
+                });
+            }
+        }
+    };
+
+    var old = $.fn.filestyle;
+
+    $.fn.filestyle = function (option, value) {
+        var get = '',
+            element = this.each(function () {
+                if ($(this).attr('type') === 'file') {
+                    var $this = $(this),
+                        data = $this.data('filestyle'),
+                        options = $.extend({}, $.fn.filestyle.defaults, option, typeof option === 'object' && option);
+
+                    if (!data) {
+                        $this.data('filestyle', (data = new Filestyle(this, options)));
+                        data.constructor();
+                    }
+
+                    if (typeof option === 'string') {
+                        get = data[option](value);
+                    }
+                }
+            });
+
+        if (typeof get !== undefined) {
+            return get;
+        } else {
+            return element;
+        }
+    };
+
+    $.fn.filestyle.defaults = {
+        'buttonText': 'Choose file',
+        'input': true,
+        'icon': true,
+        'classButton': 'btn',
+        'classInput': 'input-large',
+        'classIcon': 'icon-folder-open'
+    };
+
+    $.fn.filestyle.noConflict = function () {
+        $.fn.filestyle = old;
+        return this;
+    };
+
+    // Data attributes register
+    $('.filestyle').each(function () {
+        var $this = $(this),
+            options = {
+                'buttonText': $this.attr('data-buttonText'),
+                'input': $this.attr('data-input') === 'false' ? false : true,
+                'icon': $this.attr('data-icon') === 'false' ? false : true,
+                'classButton': $this.attr('data-classButton'),
+                'classInput': $this.attr('data-classInput'),
+                'classIcon': $this.attr('data-classIcon')
+            };
+
+        $this.filestyle(options);
+    });
+
+})(window.jQuery);

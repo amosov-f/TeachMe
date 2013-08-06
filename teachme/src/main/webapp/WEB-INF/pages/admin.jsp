@@ -13,49 +13,31 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script type="text/javascript" src="/resources/jquery/jquery-1.9.1.js"></script>
-    <script type="text/javascript" src="/resources/jquery/jquery.form.js"></script>
-    <script type="text/javascript" src="/resources/jquery/jquery.autocomplete.js"></script>
+    <script type="text/javascript" src="/resources/jquery/js/jquery-2.0.2.js"></script>
+    <script type="text/javascript" src="/resources/jquery/js/jquery.form.js"></script>
+    <script type="text/javascript" src="/resources/jquery/js/jquery.autocomplete.js"></script>
 
-    <script type="text/javascript" src="/resources/bootstrap/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="/resources/bootstrap/js/bootstrap.js"></script>
     <script type="text/javascript" src="/resources/bootstrap/js/bootstrap.file-input.js"></script>
 
-    <link href="/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="screen">
-    <link href="/resources/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+
+    <link href="/resources/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="/resources/jquery/css/jquery.autocomplete.css" rel="stylesheet" type="text/css"/>
 
     <style>
         .left-part {
             float: left;
-            width: 44%;
+            width: 48%;
             height: 100%;
             padding-left: 3%;
-            padding-right: 3%;
         }
 
         .right-part {
             float: right;
-            width: 44%;
+            width: 48%;
             height: 100%;
-            padding-left: 3%;
             padding-right: 3%;
-        }
-
-        .btn-submit {
-            width: 51%;
-        }
-
-        .autocomplete-suggestions {
-            border: 1px solid #999;
-            overflow-y: scroll;
-            -webkit-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
-            -moz-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
-            box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
-            padding: 2px 5px;
-            white-space: nowrap;
-        }
-
-        .autocomplete-selected {
-            background: #F0F0F0;
         }
 
         body, html {
@@ -113,10 +95,10 @@
             $('#checkerId').val("<%=(Integer)request.getAttribute("checkerId")%>");
 <%      }   %>
 
-        $('#file').bootstrapFileInput();
-        $('#figureReference').click(function() {
+        $('#file').filestyle({input: false, classButton: 'btn btn-default',  buttonText: 'Загрузить'});
+        /*$('#figureReference').click(function() {
             this.select();
-        });
+        }); */
 
         $('#tagsEdit').bind('click change paste keyup keydown textchange', updateTags);
         $('#tagsEdit').autocomplete({
@@ -155,14 +137,14 @@
     function updateFigure() {
         $('#figures').val(figureId);
         $('#figureView').html(null);
-        $('#figureReference').val(null);
+        //$('#figureReference').val(null);
         $('#file').val(null);
         if (figureId != null && figureId != '') {
             $('#figureView').append("<img src='http://localhost:8080/files/" + figureId + "' style='height: 30%;'/>");
             $('#figureView').append(
-                    "<button class='btn btn-mini' type='button' onclick='clearFigure()'>удалить рисунок</button>"
+                    '<button class="btn btn-mini" type="button" onclick="clearFigure()">&times</button>'
             );
-            $('#figureReference').val("<img src='http://localhost:8080/files/" + figureId + "'/>");
+            //$('#figureReference').val("<img src='http://localhost:8080/files/" + figureId + "'/>");
         }
     }
 
@@ -172,9 +154,9 @@
     }
 
     function updateTags() {
-        chosenTags = trim($('#tagsEdit').val()).split(splitter);
+        chosenTags = jQuery.unique(trim($('#tagsEdit').val()).split(splitter));
         newTags = сomplement(chosenTags, existTags);
-        $('#newTagsView').text(viewConcat(newTags));
+        $('#newTagsView').val(viewConcat(newTags));
         $('#tagsEdit').autocomplete().setOptions({lookup: сomplement(existTags, chosenTags)});
     }
 
@@ -235,72 +217,69 @@
 
 <div style="height: 80%;">
 
-        <form class="left-part form-inline" id="problem" method="post" action="/add_problem">
+    <form class="form-inline left-part" id="problem" method="post" action="/add_problem">
+        <input type="hidden" id="problemId" name="problem_id"/>
+
+        <legend>Название</legend>
+        <input type="text" id="name" class="form-control" name="name"/>
+
+        <legend>Условие</legend>
+        <textarea id="statement" class="form-control" name="statement" style="height: 30%;"></textarea>
+
+        <input type="hidden" id="figures" name="figures"/>
+        <input type="hidden" id="tags" name="tags"/>
 
 
-            <input type="hidden" id="problemId" name="problem_id"/>
+        <legend>Ответ</legend>
+        <textarea id="solution" name="solution" class="form-control" ></textarea>
 
-            <legend>Название</legend>
-            <input type="text" id="name" name="name" style="width: 98%"/>
-
-            <legend>Условие</legend>
-            <textarea id="statement" name="statement" style="width: 98%; height: 30%;"></textarea>
-
-            <input type="hidden" id="figures" name="figures"/>
-            <input type="hidden" id="tags" name="tags"/>
-
-
-            <legend>Ответ</legend>
-            <textarea id="solution" name="solution" style="width: 98%"></textarea>
-
-            <legend>Чекер</legend>
-            <select id="checkerId" name="checker_id" size="1">
+        <legend>Тип ответа</legend>
+        <select id="checkerId" name="checker_id" class="form-control" size="1" style="width: 30%;">
 <%          Map<Integer, Checker> checkers = (Map<Integer, Checker>)request.getAttribute("checkerMap"); %>
 <%          for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
                 <option value="<%=checker.getKey()%>"><%=checker.getValue().getName()%></option>
 <%          }   %>
-            </select>
+        </select>
 
-            <input type="hidden" id="newTags" name="newTags" />
+        <input type="hidden" id="newTags" name="newTags" />
 
-        </form>
+    </form>
 
 
     <div class="right-part">
 
-        <form class="form-inline" id="figure" method="post" action="/files/upload" enctype="multipart/form-data" style="height: 15%">
+        <form class="form-group" id="figure" method="post" action="/files/upload" enctype="multipart/form-data" style="width:100%; height: 15%;">
             <legend>Рисунок</legend>
             <input
                     name="file"
                     id="file"
                     type="file"
-                    title="Найти рисунок"
                     accept="image/*"
                     onchange="return uploadFigure();"
-
             />
-
-            <input
+            <!--<input
                     id="figureReference"
+                    type="text"
+                    class="form-control"
                     readonly="true"
-                    placeholder="ссылка на картинку"
+                    placeholder="ссылка на рисунок"
                     style="float: right; width: 50%;"
-            />
+            /> -->
 
         </form>
 
-        <div class="media" id="figureView" style="max-height: 35%;" onchange=""></div>
+        <div class="media" id="figureView" style="max-height: 35%;"></div>
 
         <div style="height: 50%;">
             <legend>Теги</legend>
-            <label>Новые теги</label>
-            <div id="newTagsView" class="well well-small" ></div>
+            <input id="newTagsView" class="form-control" readonly="true" style="width: 100%" placeholder="новые теги" />
+            <br>
             <input
                     id="tagsEdit"
-                    type="text"
+                    type="search"
+                    class="form-control"
                     placeholder="введите теги через запятую..."
-                    class="autocomplete-suggestions autocomplete-selected"
-                    style="width: 98%"
+                    style="width: 100%"
             />
         </div>
 
@@ -308,8 +287,8 @@
 
 </div>
 
-<div align="center">
-    <button class="btn-submit btn btn-large" type="button" onclick="return submitProblem();">Отправить</button>
+<div align="center" style="height: 7%;">
+    <button class="btn btn-default" type="button" onclick="return submitProblem();" style="width: 30%; height: 90%">Отправить</button>
 </div>
 
 </body>

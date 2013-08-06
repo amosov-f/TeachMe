@@ -44,7 +44,7 @@ public class ProblemController {
 
     @RequestMapping(value = "/problem_{problem_id:\\d+}", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getProblems(@PathVariable int problem_id) throws JSONException {
+    public String getProblem(@PathVariable int problem_id) throws JSONException {
         Problem problem = problemDepot.getById(problem_id);
         if (problem == null) {
             return JSONCreator.errorJSON("Incorrect id").toString();

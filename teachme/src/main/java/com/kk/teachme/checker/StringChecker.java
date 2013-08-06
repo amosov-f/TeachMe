@@ -30,7 +30,7 @@ public class StringChecker implements Checker {
 
     @Override
     public String getName() {
-        return "stringChecker";
+        return "Строка";
     }
 
     public static enum CaseOption {

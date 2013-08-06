@@ -2,6 +2,7 @@ package com.kk.teachme.servlet;
 
 import com.kk.teachme.db.*;
 import com.kk.teachme.model.Problem;
+import com.kk.teachme.model.Solution;
 import com.kk.teachme.model.Tag;
 import com.kk.teachme.support.JSONCreator;
 import org.json.JSONException;
@@ -17,8 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/")
@@ -56,6 +60,7 @@ public class AdminController {
         solution = solution.trim();
 
         if (newTags != null && !newTags.isEmpty()) {
+            ;
             for (String tagName : newTags.replace('_', ' ').split(",")) {
                 tagDepot.createIfNotExist(tagName);
             }
@@ -103,18 +108,28 @@ public class AdminController {
     @RequestMapping(value = "/problems")
     public String adminList(Model model, @RequestParam(required = false) String tag) {
         //show all problems by tag  (may be null)
-        if (tag == null) {
-            model.addAttribute("problemList", problemDepot.getAllProblems());
-            return "problems";
-        }
 
-        List<Problem> problems = problemDepot.getByTag(tagDepot.getByName(tag));
+        List<Problem> problems;
+
+        if (tag == null) {
+            problems = problemDepot.getAllProblems();
+        } else {
+            problems = problemDepot.getByTag(tagDepot.getByName(tag));
+        }
 
         if (problems == null) {
             problems = new ArrayList<Problem>();
         }
 
+        Map<Integer, Solution> id2solution = new HashMap<Integer, Solution>();
+        for (Problem problem : problemDepot.getAllProblems()) {
+            id2solution.put(problem.getId(), solutionDepot.getSolution(problem.getId()));
+        }
+
         model.addAttribute("problemList", problems);
+        model.addAttribute("solutionMap", id2solution);
+        model.addAttribute("tagList", tagDepot.getAllTags());
+
         return "problems";
     }
 
