@@ -89,7 +89,7 @@
             for (var i = 0; i < figures.length; ++i) {
 
                 figuresDiv.append(
-                        '<img src="http://localhost:8080/files/' + figures[i] + '" style="width: 30%; height: 30%;"/>'
+                        '<img src="http://localhost:8080/files/' + figures[i] + '"/>'
                 );
             }
         }
