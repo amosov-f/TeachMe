@@ -16,7 +16,7 @@ public class IntChecker implements Checker {
 
     @Override
     public String getName() {
-        return "intChecker";
+        return "Число";
     }
 
 }
