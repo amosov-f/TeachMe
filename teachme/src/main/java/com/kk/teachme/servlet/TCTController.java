@@ -20,7 +20,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -104,7 +103,7 @@ public class TCTController {
                             if (newOption.equals("null")) {
                                 break;
                             }
-                            statement += URLDecoder.decode("\n" + (j+1) + ") " + newOption, "UTF-8");
+                            statement += "\n" + (j + 1) + ") " + newOption;
 
                         } catch (JSONException e) {
                             break;
