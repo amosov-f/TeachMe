@@ -72,34 +72,31 @@
     var splitter = /,\s*/;
 
     $(document).ready(function() {
-        <%      for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {    %>
-        existTags.push("<%=tag.getName()%>");
-        <%      }   %>
+<%      for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {    %>
+            existTags.push("<%=tag.getName()%>");
+<%      }   %>
         existTags.sort();
 
-        <%      if (request.getAttribute("problem") != null) {
-                    Problem problem = (Problem)request.getAttribute("problem"); %>
+<%      if (request.getAttribute("problem") != null) {
+            Problem problem = (Problem)request.getAttribute("problem"); %>
 
-        $('#problemId').val(<%=problem.getId()%>);
-        $('#name').val('<%=problem.getName()%>');
-        $('#statement').val(decode('<%=URLEncoder.encode(problem.getStatement(), "UTF-8")%>'));
+            $('#problemId').val(<%=problem.getId()%>);
+            $('#name').val('<%=problem.getName()%>');
+            $('#statement').val(decode('<%=URLEncoder.encode(problem.getStatement(), "UTF-8")%>'));
 
-        <%          if (!problem.getFigures().isEmpty()) {  %>
-        figureId = "<%=problem.getFigures().get(0)%>";
-        updateFigure();
-        <%          }   %>
+<%          if (!problem.getFigures().isEmpty()) {  %>
+                figureId = "<%=problem.getFigures().get(0)%>";
+                updateFigure();
+<%          }   %>
 
-        $('#tags').val("<%=problem.getTagsString(false)%>");
-        $('#tagsEdit').val('<%=problem.getTagsString(true)%>');
+            $('#tags').val("<%=problem.getTagsString(false)%>");
+            $('#tagsEdit').val('<%=problem.getTagsString(true)%>');
 
-        $('#solution').val("<%=(String)request.getAttribute("solution")%>");
-        $('#checkerId').val("<%=(Integer)request.getAttribute("checkerId")%>");
-        <%      }   %>
+            $('#solution').val("<%=(String)request.getAttribute("solution")%>");
+            $('#checkerId').val("<%=(Integer)request.getAttribute("checkerId")%>");
+<%      }   %>
 
         $('#file').filestyle({input: false, classButton: 'btn btn-default',  buttonText: 'Загрузить'});
-        /*$('#figureReference').click(function() {
-         this.select();
-         }); */
 
         $('#tagsEdit').bind('click change paste keyup keydown textchange', updateTags);
         $('#tagsEdit').autocomplete({
@@ -138,14 +135,12 @@
     function updateFigure() {
         $('#figures').val(figureId);
         $('#figureView').html(null);
-        //$('#figureReference').val(null);
         $('#file').val(null);
         if (figureId != null && figureId != '') {
             $('#figureView').append("<img src='http://localhost:8080/files/" + figureId + "' style='height: 30%;'/>");
             $('#figureView').append(
                     '<button class="btn btn-mini" type="button" onclick="clearFigure()">&times</button>'
             );
-            //$('#figureReference').val("<img src='http://localhost:8080/files/" + figureId + "'/>");
         }
     }
 
@@ -240,10 +235,10 @@
 
         <legend>Тип ответа</legend>
         <select id="checkerId" name="checker_id" class="form-control" size="1" style="width: 30%;">
-            <%          Map<Integer, Checker> checkers = (Map<Integer, Checker>)request.getAttribute("checkerMap"); %>
-            <%          for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
-            <option value="<%=checker.getKey()%>"><%=checker.getValue().getName()%></option>
-            <%          }   %>
+<%          Map<Integer, Checker> checkers = (Map<Integer, Checker>)request.getAttribute("checkerMap"); %>
+<%          for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
+                <option value="<%=checker.getKey()%>"><%=checker.getValue().getName()%></option>
+<%          }   %>
         </select>
 
         <input type="hidden" id="newTags" name="newTags" />

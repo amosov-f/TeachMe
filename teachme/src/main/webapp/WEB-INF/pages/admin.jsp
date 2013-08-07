@@ -32,16 +32,17 @@
 <body>
 
 <script>
-    <%  Map<Integer, Solution> id2solution;  %>
+
+<%  Map<Integer, Solution> id2solution;  %>
 
     $(document).ready(function() {
 
-        <%      id2solution = (Map<Integer, Solution>)request.getAttribute("solutionMap");   %>
+<%      id2solution = (Map<Integer, Solution>)request.getAttribute("solutionMap");   %>
 
         var existTags = new Array();
-        <%      for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {    %>
-        existTags.push('<%=tag.getName()%>');
-        <%      }   %>
+<%      for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {    %>
+            existTags.push('<%=tag.getName()%>');
+<%      }   %>
         existTags.sort();
 
         $('#tag').bind('change keyup', updateProblems);
@@ -58,30 +59,33 @@
         $('#problems').empty();
 
         var isEmpty = true;
-        <%      for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {    %>
-        var ok = false;
-        <%          for (Tag tag : problem.getTags()) { %>
-        if ($('#tag').val() == '' || $('#tag').val() == '<%=tag.getName()%>') {
-            ok = true;
+<%      for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {    %>
+            var ok = false;
+            if ($('#tag').val() == '') {
+                ok = true;
+            }
+<%          for (Tag tag : problem.getTags()) { %>
+                if ($('#tag').val() == '<%=tag.getName()%>') {
+                    ok = true;
+                }
+<%          }   %>
+            if (ok) {
 
-        }
-        <%          }   %>
-        if (ok) {
-            <%              Solution solution = id2solution.get(problem.getId());   %>
+<%              Solution solution = id2solution.get(problem.getId());   %>
 
-            $('#problems').append(createProblemPanel({
-                id: <%=problem.getId()%>,
-                name: decode('<%=URLEncoder.encode(problem.getName(), "UTF-8")%>'),
-                statement:  decode('<%=URLEncoder.encode(problem.getStatement(), "UTF-8")%>'),
-                figures:  '<%=problem.getFiguresString()%>',
-                tags:  '<%=problem.getTagsString(false)%>',
-                solution:  decode('<%=URLEncoder.encode(solution.getSolutionText())%>'),
-                checker:  '<%=solution.getChecker().getName()%>'
-            }));
+                $('#problems').append(createProblemPanel({
+                    id: <%=problem.getId()%>,
+                    name: decode('<%=URLEncoder.encode(problem.getName(), "UTF-8")%>'),
+                    statement:  decode('<%=URLEncoder.encode(problem.getStatement(), "UTF-8")%>'),
+                    figures:  '<%=problem.getFiguresString()%>',
+                    tags:  '<%=problem.getTagsString(false)%>',
+                    solution:  decode('<%=URLEncoder.encode(solution.getSolutionText())%>'),
+                    checker:  '<%=solution.getChecker().getName()%>'
+                }));
 
-            isEmpty = false;
-        }
-        <%      }   %>
+                isEmpty = false;
+            }
+<%      }   %>
 
         if (isEmpty) {
             $('#problems').append('<div align="center">Задачи не найдены</div>');
@@ -123,9 +127,9 @@
             for (var i = 0; i < tags.length; ++i) {
                 problemPanel.append('<span class="label label-info">' + tags[i] + '</span>' + '&nbsp');
             }
+            problemPanel.append('<br><br>');
         }
 
-        problemPanel.append('<br><br>');
         problemPanel.append(problem.checker);
         problemPanel.append('&nbsp' + '<span class="label label-success">' + problem.solution + '</span>');
 
