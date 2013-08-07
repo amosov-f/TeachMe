@@ -3,6 +3,12 @@ CREATE DATABASE teachme
 
 USE teachme;
 
+CREATE TABLE config (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  variable text,
+  value int
+);
+
 CREATE TABLE tag (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   name text

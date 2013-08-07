@@ -1,15 +1,13 @@
 package com.kk.teachme.service;
 
-import com.kk.teachme.db.FileDepot;
-import com.kk.teachme.db.ProblemDepot;
-import com.kk.teachme.db.SolutionDepot;
-import com.kk.teachme.db.TagDepot;
+import com.kk.teachme.db.*;
 import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Tag;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Required;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -21,6 +19,8 @@ import java.util.Scanner;
 
 public class TCTLoader {
 
+    ConfigDepot configDepot;
+
     TagDepot tagDepot;
 
     FileDepot fileDepot;
@@ -30,21 +30,32 @@ public class TCTLoader {
     SolutionDepot solutionDepot;
 
     public void fill() {
-        fill(1);
+        fill(5);
     }
 
     public void fill(int cards) {
-
-        tagDepot.createIfNotExist("пдд");
 
         if (cards > 40 || cards < 1) {
             cards = 1;
         }
 
-        for (int i = 0; i < cards; i++) {
+        int tct;
+        try {
+            tct = configDepot.getValue("tct");
+        } catch(IndexOutOfBoundsException e) {
+            System.out.println("Fuck!");
+            configDepot.addVariable("tct", 0);
+            tct = 0;
+        }
+
+        tagDepot.createIfNotExist("пдд");
+
+        for (int i = tct; i < cards; i++) {
             String cardURLString = "http://www.pddrussia.com/static/ab/bilet/b" + (i+1) + ".json";
             get(cardURLString);
         }
+
+        configDepot.setValue("tct", cards > tct ? cards : tct);
 
     }
 
@@ -145,6 +156,11 @@ public class TCTLoader {
             //System.out.println("Couldn't form a JSON array");
         }
 
+    }
+
+    @Required
+    public void setConfigDepot(ConfigDepot configDepot) {
+        this.configDepot = configDepot;
     }
 
     @Required

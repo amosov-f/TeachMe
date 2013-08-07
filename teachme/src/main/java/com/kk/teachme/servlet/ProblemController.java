@@ -1,10 +1,7 @@
 package com.kk.teachme.servlet;
 
 import com.kk.teachme.checker.SolveStatus;
-import com.kk.teachme.db.ProblemDepot;
-import com.kk.teachme.db.SolutionDepot;
-import com.kk.teachme.db.TagDepot;
-import com.kk.teachme.db.UserProblemDepot;
+import com.kk.teachme.db.*;
 import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Tag;
 import com.kk.teachme.model.UserProblem;
@@ -29,6 +26,9 @@ import java.util.List;
 @Controller
 @RequestMapping("/")
 public class ProblemController {
+    @Autowired
+    ConfigDepot configDepot;
+
     @Autowired
     ProblemDepot problemDepot;
 
@@ -173,6 +173,7 @@ public class ProblemController {
     @ResponseBody
     public String deleteAllProblems() throws JSONException {
         problemDepot.deleteAllProblems();
+        configDepot.setValue("tct", 0);
         return JSONCreator.okJson().toString();
     }
 
