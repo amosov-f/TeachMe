@@ -20,13 +20,6 @@
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 
-    <bean id="tctLoader" class="com.kk.teachme.service.TCTLoader">
-        <property name="tagDepot" ref="tagDepot"/>
-        <property name="problemDepot" ref="problemDepot"/>
-        <property name="solutionDepot" ref="solutionDepot"/>
-        <property name="fileDepot" ref="fileDepot"/>
-    </bean>
-
     <bean id="problemDepot" class="com.kk.teachme.db.ProblemDepot">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="tagDepot" ref="tagDepot"/>
@@ -68,6 +61,13 @@
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="1000000"/>
+    </bean>
+
+    <bean id="tctLoader" class="com.kk.teachme.service.TCTLoader" init-method="fill">
+        <property name="tagDepot" ref="tagDepot"/>
+        <property name="problemDepot" ref="problemDepot"/>
+        <property name="solutionDepot" ref="solutionDepot"/>
+        <property name="fileDepot" ref="fileDepot"/>
     </bean>
 
 </beans>
