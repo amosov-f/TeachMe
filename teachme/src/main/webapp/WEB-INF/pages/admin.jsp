@@ -4,6 +4,7 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="com.kk.teachme.model.Tag" %>
 <%@ page import="com.kk.teachme.model.Problem" %>
+<%@ page import="java.net.URLEncoder" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
@@ -81,7 +82,7 @@
 
             $('#problemId').val(<%=problem.getId()%>);
             $('#name').val('<%=problem.getName()%>');
-            $('#statement').val('<%=problem.getStatement()%>');
+            $('#statement').val(decode('<%=URLEncoder.encode(problem.getStatement(), "UTF-8")%>'));
 
 <%          if (!problem.getFigures().isEmpty()) {  %>
                 figureId = "<%=problem.getFigures().get(0)%>";
@@ -180,9 +181,9 @@
             if (i > 0) {
                 result += ',';
             }
-            result += strArray[i].replace(/ /g, '_');
+            result += strArray[i];
         }
-        return result;
+        return encodeURIComponent(result);
     }
 
     function viewConcat(strArray) {
@@ -207,6 +208,10 @@
             }
         }
         return str.substr(l, r + 1);
+    }
+
+    function decode(str) {
+        return decodeURIComponent(str).replace(/\+/g, ' ');
     }
 
 </script>

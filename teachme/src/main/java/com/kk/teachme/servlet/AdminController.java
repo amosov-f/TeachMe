@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,15 +61,14 @@ public class AdminController {
         solution = solution.trim();
 
         if (newTags != null && !newTags.isEmpty()) {
-            ;
-            for (String tagName : newTags.replace('_', ' ').split(",")) {
+            for (String tagName : URLDecoder.decode(newTags, "UTF-8").split(",")) {
                 tagDepot.createIfNotExist(tagName);
             }
         }
 
         List<Tag> tagList = new ArrayList<Tag>();
         if (tags != null && !tags.isEmpty()) {
-            for (String tagName : tags.replace('_', ' ').split(",")) {
+            for (String tagName : URLDecoder.decode(tags, "UTF-8").split(",")) {
                 tagList.add(tagDepot.getByName(tagName));
             }
         }
@@ -121,8 +121,10 @@ public class AdminController {
             problems = new ArrayList<Problem>();
         }
 
+        Map<Integer, Problem> id2problem = new HashMap<Integer, Problem>();
         Map<Integer, Solution> id2solution = new HashMap<Integer, Solution>();
         for (Problem problem : problemDepot.getAllProblems()) {
+
             id2solution.put(problem.getId(), solutionDepot.getSolution(problem.getId()));
         }
 
