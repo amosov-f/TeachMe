@@ -130,8 +130,8 @@
             problemPanel.append('<br><br>');
         }
 
-        problemPanel.append(problem.checker);
-        problemPanel.append('&nbsp' + '<span class="label label-success">' + problem.solution + '</span>');
+        problemPanel.append('Тип ответа: ' + '<span class="label">' + problem.checker + '</span><br>');
+        problemPanel.append('Ответ: ' + '<span class="label label-success">' + problem.solution + '</span>');
 
         return problemPanel;
     }
