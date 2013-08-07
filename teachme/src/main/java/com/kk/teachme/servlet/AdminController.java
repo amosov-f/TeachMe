@@ -83,45 +83,34 @@ public class AdminController {
             solutionDepot.setSolution(problem_id, solution, checker_id);
         }
 
-        return adminList(model, null);
+        return admin(model);
+    }
+
+    @RequestMapping(value = "/new_problem")
+    public String newProblem(Model model) {
+        model.addAttribute("checkerMap", checkerDepot.getAllCheckers());
+        model.addAttribute("tagList", tagDepot.getAllTags());
+        return "edit";
+    }
+
+    @RequestMapping(value = "/edit_problem")
+    public String editProblem(@RequestParam int problem_id, Model model) {
+        model.addAttribute("problem", problemDepot.getById(problem_id));
+        model.addAttribute("solution", solutionDepot.getSolution(problem_id).getSolutionText());
+        model.addAttribute("checkerId", solutionDepot.getCheckerId(problem_id));
+        model.addAttribute("checkerMap", checkerDepot.getAllCheckers());
+        model.addAttribute("tagList", tagDepot.getAllTags());
+        return "edit";
     }
 
     @RequestMapping(value = "/admin")
-    public String admin(@RequestParam(required = false) Integer problem_id, Model model) {
-        //return JSP with admin page
-        //collect all checker
-        //collect all tags
-        //put it to Model
-
-        if (problem_id != null) {
-            model.addAttribute("problem", problemDepot.getById(problem_id));
-            model.addAttribute("solution", solutionDepot.getSolution(problem_id).getSolutionText());
-            model.addAttribute("checkerId", solutionDepot.getCheckerId(problem_id));
-        }
-
-        model.addAttribute("checkerMap", checkerDepot.getAllCheckers());
-        model.addAttribute("tagList", tagDepot.getAllTags());
-
-        return "admin";
-    }
-
-    @RequestMapping(value = "/problems")
-    public String adminList(Model model, @RequestParam(required = false) String tag) {
-        //show all problems by tag  (may be null)
-
+    public String admin(Model model) {
         List<Problem> problems;
-
-        if (tag == null) {
-            problems = problemDepot.getAllProblems();
-        } else {
-            problems = problemDepot.getByTag(tagDepot.getByName(tag));
-        }
-
+        problems = problemDepot.getAllProblems();
         if (problems == null) {
             problems = new ArrayList<Problem>();
         }
 
-        Map<Integer, Problem> id2problem = new HashMap<Integer, Problem>();
         Map<Integer, Solution> id2solution = new HashMap<Integer, Solution>();
         for (Problem problem : problemDepot.getAllProblems()) {
 
@@ -132,7 +121,7 @@ public class AdminController {
         model.addAttribute("solutionMap", id2solution);
         model.addAttribute("tagList", tagDepot.getAllTags());
 
-        return "problems";
+        return "admin";
     }
 
     @RequestMapping(value = "/test")
