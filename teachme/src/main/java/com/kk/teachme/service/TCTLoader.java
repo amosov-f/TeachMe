@@ -43,7 +43,6 @@ public class TCTLoader {
         try {
             tct = configDepot.getValue("tct");
         } catch(IndexOutOfBoundsException e) {
-            System.out.println("Fuck!");
             configDepot.addVariable("tct", 0);
             tct = 0;
         }
