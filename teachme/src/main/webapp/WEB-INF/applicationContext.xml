@@ -20,6 +20,13 @@
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 
+    <bean id="tctLoader" class="com.kk.teachme.service.TCTLoader">
+        <property name="tagDepot" ref="tagDepot"/>
+        <property name="problemDepot" ref="problemDepot"/>
+        <property name="solutionDepot" ref="solutionDepot"/>
+        <property name="fileDepot" ref="fileDepot"/>
+    </bean>
+
     <bean id="problemDepot" class="com.kk.teachme.db.ProblemDepot">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="tagDepot" ref="tagDepot"/>
