@@ -82,6 +82,7 @@
 
             $('#problemId').val(<%=problem.getId()%>);
             $('#name').val('<%=problem.getName()%>');
+
             $('#statement').val(decode('<%=URLEncoder.encode(problem.getStatement(), "UTF-8")%>'));
 
 <%          if (!problem.getFigures().isEmpty()) {  %>
@@ -96,6 +97,7 @@
             $('#checkerId').val("<%=(Integer)request.getAttribute("checkerId")%>");
 <%      }   %>
 
+
         $('#file').filestyle({input: false, classButton: 'btn btn-default',  buttonText: 'Загрузить'});
 
         $('#tagsEdit').bind('click change paste keyup keydown textchange', updateTags);
@@ -106,6 +108,12 @@
                 $('#tagsEdit').val($('#tagsEdit').val() + ', ');
             }
         });
+
+        pressEnterEvent('#name', '#statement');
+        pressEnterEvent('#statement', '#solution');
+        pressEnterEvent('#solution', '#tagsEdit');
+        pressEnterEvent('#tagsEdit', '#name');
+
         updateTags();
     });
 
@@ -207,6 +215,15 @@
 
     function decode(str) {
         return decodeURIComponent(str).replace(/\+/g, ' ');
+    }
+
+    function pressEnterEvent(from, to) {
+        $(from).keypress(function(e) {
+            if (e.which == 13) {
+                $(to).focus();
+                e.preventDefault();
+            }
+        });
     }
 
 </script>
