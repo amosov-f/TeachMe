@@ -28,7 +28,7 @@ public class ConfigDepot {
         );
     }
 
-    public int getValue(String variable) {
+    public Integer getValue(String variable) {
 
         final List<Integer> values = jdbcTemplate.query("select value from config where variable = ?",
             new ParameterizedRowMapper<Integer>() {
@@ -38,6 +38,9 @@ public class ConfigDepot {
             }
         }, variable);
 
+        if (values.size() == 0) {
+            return null;
+        }
         return values.get(0);
 
     }

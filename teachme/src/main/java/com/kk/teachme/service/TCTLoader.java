@@ -30,7 +30,7 @@ public class TCTLoader {
     SolutionDepot solutionDepot;
 
     public void fill() {
-        fill(5);
+        fill(7);
     }
 
     public void fill(int cards) {
@@ -39,120 +39,100 @@ public class TCTLoader {
             cards = 1;
         }
 
-        int tct;
-        try {
-            tct = configDepot.getValue("tct");
-        } catch(IndexOutOfBoundsException e) {
+        Integer tct = configDepot.getValue("tct");
+        if (tct == null) {
             configDepot.addVariable("tct", 0);
             tct = 0;
         }
 
         tagDepot.createIfNotExist("пдд");
 
-        for (int i = tct; i < cards; i++) {
+        int i;
+        for (i = tct; i < cards; i++) {
             String cardURLString = "http://www.pddrussia.com/static/ab/bilet/b" + (i+1) + ".json";
-            get(cardURLString);
+            try {
+                get(cardURLString);
+            } catch (Exception e) {
+                break;
+            }
         }
 
-        configDepot.setValue("tct", cards > tct ? cards : tct);
+        configDepot.setValue("tct", i > tct ? i : tct);
 
     }
 
-    private void get(String cardURLString) {
+    private void get(String cardURLString)
+            throws MalformedURLException, IOException, JSONException {
 
         try {
 
-            //Forming a JSONArray of questions from a given card URL.
             URL cardURL = new URL(cardURLString);
             Scanner cardScanner = new Scanner(cardURL.openStream(),"UTF-8");
             JSONArray card = new JSONArray(cardScanner.useDelimiter("\\A").next());
 
-            //Card ID is stored in each question, but it is the same for all
-            //questions in the card, so you only have to pull it out once.
             int cardId;
-            try {
-                cardId = card.getJSONObject(0).getInt("biletNumber");
-            } catch (JSONException e) {
-                return;
-            }
+            cardId = card.getJSONObject(0).getInt("biletNumber");
 
-            //Now each question will form a ProblemSolution instance.
-            for (int i = 0; ; i++) {
+            for (int i = 0; i < 20; i++) {
 
-                try {
+                JSONObject question = card.getJSONObject(i);
 
-                    JSONObject question = card.getJSONObject(i);
+                int questionId = question.getInt("questNumber");
+                String name = "Экзамен ПДД. Билет " + cardId + ", вопрос " + questionId;
 
-                    //Forming a 'name' for a Problem constructor.
-                    int questionId = question.getInt("questNumber");
-                    String name = "Экзамен ПДД. Билет " + cardId + ", вопрос " + questionId;
+                String statement = question.getString("quest");
 
-                    //Forming a 'statement' for a Problem constructor.
-                    String statement = question.getString("quest");
+                JSONArray options = question.getJSONArray("v");
+                for (int j = 0; j < 5; j++) {
 
-                    //Adding answer options to the 'statement' in a loop.
-                    JSONArray options = question.getJSONArray("v");
-                    for (int j = 0; ; j++) {
-
-                        try {
-
-                            String newOption = options.getString(j);
-                            if (newOption.equals("null")) {
-                                break;
-                            }
-                            statement += "\n" + (j+1) + ") " + newOption;
-
-                        } catch (JSONException e) {
+                    try {
+                        String newOption = options.getString(j);
+                        if (newOption.equals("null")) {
                             break;
                         }
-
-                    }
-
-                    //Forming a 'solutionText' for a Solution constructor.
-                    String solutionText = ((Integer)question.getInt("otvet")).toString();
-
-                    //Forming an 'imageURL' for an OverProblem constructor.
-                    List<String> figures = new ArrayList<String>();
-                    try {
-                        URL imageURL = new URL(question.getString("realUrl"));
-                        BufferedImage image = ImageIO.read(imageURL);
-                        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-                        ImageIO.write(image, "jpg", byteStream);
-                        byteStream.flush();
-                        byte[] byteArray = byteStream.toByteArray();
-                        byteStream.close();
-                        figures.add(fileDepot.addNewFile(byteArray));
+                        statement += "\n" + (j+1) + ") " + newOption;
                     } catch (JSONException e) {
-                        //System.out.println("Couldn't get an image address");
-                    } catch (MalformedURLException e) {
-                        //System.out.println("Image URL is invalid");
-                    } catch (IOException e) {
-                        //System.out.println("Couldn't handle the stream");
+                        break;
                     }
 
-                    if (figures.size() == 0) {
-                        figures.add("");
-                    }
-
-                    ArrayList<Tag> TCT = new ArrayList<Tag>();
-                    TCT.add(tagDepot.getByName("пдд"));
-
-                    solutionDepot.addSolution
-                            (problemDepot.addObject
-                                    (new Problem(name, statement, figures, TCT)), solutionText, 1);
-
-                } catch (JSONException e) {
-                    break;
                 }
+
+                String solutionText = ((Integer)question.getInt("otvet")).toString();
+
+                List<String> figures = new ArrayList<String>();
+
+                try {
+                    URL imageURL = new URL(question.getString("realUrl"));
+                    BufferedImage image = ImageIO.read(imageURL);
+                    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+                    ImageIO.write(image, "jpg", byteStream);
+                    byteStream.flush();
+                    byte[] byteArray = byteStream.toByteArray();
+                    byteStream.close();
+                    figures.add(fileDepot.addNewFile(byteArray));
+                } catch (Exception e) {
+                    figures.add("");
+                }
+
+                ArrayList<Tag> TCT = new ArrayList<Tag>();
+                TCT.add(tagDepot.getByName("пдд"));
+
+                solutionDepot.addSolution
+                    (problemDepot.addObject
+                        (new Problem(name, statement, figures, TCT)), solutionText, 1);
+
 
             }
 
         } catch (MalformedURLException e) {
-            //System.out.println("URL is invalid");
+            System.out.println("URLException in TCTLoader.get(" + cardURLString + ");");
+            throw e;
         } catch (IOException e) {
-            //System.out.println("Couldn't open the stream");
+            System.out.println("IOException in TCTLoader.get(" + cardURLString + ");");
+            throw e;
         } catch (JSONException e) {
-            //System.out.println("Couldn't form a JSON array");
+            System.out.println("JSONException in TCTLoader.get(" + cardURLString + ");");
+            throw e;
         }
 
     }
