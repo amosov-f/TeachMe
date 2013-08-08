@@ -21,14 +21,31 @@
     <link rel="stylesheet" type="text/css" href="/resources/jquery/css/jquery.autocomplete.css"/>
 
     <style>
+
+        .left-part {
+            float: left;
+            width: 29%;
+        }
+
+        .right-part {
+            float: right;
+            width: 69%;
+        }
+
         .problem:hover {
             border-color: #66afe9;
             outline: 0;
             -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
             box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+            cursor: pointer;
+        }
+
+        body {
+            padding-top: 65px;
         }
     </style>
 </head>
+
 <body>
 
 <script>
@@ -48,9 +65,26 @@
         $('#tag').bind('change keyup', updateProblems);
         $('#tag').autocomplete({
             maxHeight: 150,
-            deferRequestBy: 300,
             lookup: existTags
         });
+
+<%      if (request.getAttribute("problemId") != null) {
+            for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {
+                if (problem.getId() == (Integer)request.getAttribute("problemId")) {
+                    Solution solution = id2solution.get(problem.getId());   %>
+                    var problem = {
+                        id: <%=problem.getId()%>,
+                        name: decode('<%=URLEncoder.encode(problem.getName(), "UTF-8")%>'),
+                        statement:  decode('<%=URLEncoder.encode(problem.getStatement(), "UTF-8")%>'),
+                        figures:  '<%=problem.getFiguresString()%>',
+                        tags:  '<%=problem.getTagsString(false)%>',
+                        solution:  decode('<%=URLEncoder.encode(solution.getSolutionText())%>'),
+                        checker:  '<%=solution.getChecker().getName()%>'
+                    };
+                    showProblem(problem);
+<%              }
+            }
+        }   %>
 
         updateProblems();
     });
@@ -73,7 +107,7 @@
 
 <%              Solution solution = id2solution.get(problem.getId());   %>
 
-                $('#problems').append(createProblemPanel({
+                var problem = {
                     id: <%=problem.getId()%>,
                     name: decode('<%=URLEncoder.encode(problem.getName(), "UTF-8")%>'),
                     statement:  decode('<%=URLEncoder.encode(problem.getStatement(), "UTF-8")%>'),
@@ -81,7 +115,9 @@
                     tags:  '<%=problem.getTagsString(false)%>',
                     solution:  decode('<%=URLEncoder.encode(solution.getSolutionText())%>'),
                     checker:  '<%=solution.getChecker().getName()%>'
-                }));
+                };
+
+                $('#problems').append(createProblemItem(problem));
 
                 isEmpty = false;
             }
@@ -97,6 +133,29 @@
         document.location.href = 'http://localhost:8080/edit_problem?problem_id=' + event.data.param;
     }
 
+    function createProblemItem(problem) {
+        var problemItem = $('<a class="list-group-item" style="cursor: pointer;"></a>');
+        problemItem.click({param: problem}, showProblem);
+
+        problemItem.append('<p class="list-group-item-text">' + problem.name + '</p>');
+
+        if (problem.tags != null && problem.tags != '') {
+            var tags = problem.tags.split(/,/);
+            for (var i = 0; i < tags.length; ++i) {
+                problemItem.append('&nbsp' + '<span class="label label-info">' + tags[i] + '</span>');
+            }
+        }
+
+        return problemItem;
+    }
+
+    function showProblem(problem) {
+        if (problem.data != null) {
+            problem = problem.data.param;
+        }
+        $('#problemView').empty();
+        $('#problemView').append(createProblemPanel(problem));
+    }
 
     function createProblemPanel(problem) {
         var problemPanel = $('<div class="problem panel panel-info"></div>');
@@ -114,7 +173,7 @@
             for (var i = 0; i < figures.length; ++i) {
 
                 figuresDiv.append(
-                        '<img src="http://localhost:8080/files/' + figures[i] + '"/>'
+                        '<img src="http://localhost:8080/files/' + figures[i] + '" style="height: 30%; max-width: 90%;"/>'
                 );
             }
         }
@@ -143,18 +202,30 @@
 </script>
 
 
-<div align="center">
-    <h2>Список всех задач</h2>
-    <input id="tag" type="search" placeholder="по тегу" style="width: 15%;"/>
-    <button class="btn btn-primary" onclick="document.location.href = 'http://localhost:8080/new_problem'">
-        Создать новую задачу
-    </button>
-    <br><br>
-
+<div class="navbar navbar-fixed-top" >
+    <div class="container">
+        <a href="http://localhost:8080/admin" class="navbar-brand">Админка</a>
+        <div class="nav-collapse collapse navbar-responsive-collapse">
+            <div class="navbar-form pull-left">
+                <input id="tag" type="text" class="form-control col-lg-8" placeholder="поиск по тегу">
+            </div>
+            <div class="navbar-form pull-right">
+                <button class="btn btn-primary" onclick="document.location.href = 'http://localhost:8080/new_problem'">
+                    Новая задача
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
-
-<div id="problems" class="container"></div>
+<div class="container">
+    <div class="left-part">
+        <div id="problems" class="list-group"></div>
+    </div>
+    <div class="right-part">
+        <div id="problemView" class="affix" style="width: 60%;"></div>
+    </div>
+</div>
 
 </body>
 </html>

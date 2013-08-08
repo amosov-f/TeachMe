@@ -45,6 +45,15 @@
             height: 100%;
         }
 
+        .btn-delete, .btn-delete:hover, .btn-delete:active {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: transparent;
+            color: #FF0000;
+            font-size: 200%;
+        }
+
     </style>
 
     <title></title>
@@ -110,7 +119,6 @@
         });
 
         connectByEnter('#name', '#statement');
-        connectByEnter('#statement', '#solution');
         connectByEnter('#solution', '#tagsEdit');
         connectByEnter('#tagsEdit', '#name');
 
@@ -146,9 +154,9 @@
         $('#file').val(null);
         if (figureId != null && figureId != '') {
             $('#figureView').append(
-                    '<img src="http://localhost:8080/files/' + figureId + '" style="height: 30%; max-width: 90%;"/>');
+                    '<img src="http://localhost:8080/files/' + figureId + '" style="max-height: 30%; max-width: 90%;"/>');
             $('#figureView').append(
-                    '<button class="btn btn-mini" type="button" onclick="clearFigure()">&times</button>'
+                    '<button class="btn btn-mini btn-delete" type="button" onclick="clearFigure()">&times</button>'
             );
         }
     }
@@ -286,7 +294,7 @@
 
         </form>
 
-        <div class="media" id="figureView" style="max-height: 35%;"></div>
+        <div class="media" id="figureView" style="max-height: 35%; position: relative;"></div>
 
         <div style="height: 50%;">
             <legend>Теги</legend>
@@ -306,7 +314,9 @@
 </div>
 
 <div align="center" style="height: 7%;">
-    <button class="btn btn-default" type="button" onclick="return submitProblem();" style="width: 30%; height: 90%">Отправить</button>
+    <button class="btn btn-default" type="button" onclick="return submitProblem();" style="width: 30%; height: 90%">
+        Сохранить
+    </button>
 </div>
 
 </body>

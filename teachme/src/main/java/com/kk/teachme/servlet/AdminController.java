@@ -60,6 +60,13 @@ public class AdminController {
         statement = statement.trim();
         solution = solution.trim();
 
+        if (statement.isEmpty()) {
+            if (problem_id != null) {
+                problemDepot.deleteById(problem_id);
+            }
+            return admin(-1, model);
+        }
+
         if (newTags != null && !newTags.isEmpty()) {
             for (String tagName : URLDecoder.decode(newTags, "UTF-8").split(",")) {
                 tagDepot.createIfNotExist(tagName);
@@ -83,7 +90,7 @@ public class AdminController {
             solutionDepot.setSolution(problem_id, solution, checker_id);
         }
 
-        return admin(model);
+        return admin(problem_id, model);
     }
 
     @RequestMapping(value = "/new_problem")
@@ -104,7 +111,7 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/admin")
-    public String admin(Model model) {
+    public String admin(@RequestParam(required = false) Integer problem_id, Model model) {
         List<Problem> problems;
         problems = problemDepot.getAllProblems();
         if (problems == null) {
@@ -113,8 +120,11 @@ public class AdminController {
 
         Map<Integer, Solution> id2solution = new HashMap<Integer, Solution>();
         for (Problem problem : problemDepot.getAllProblems()) {
-
             id2solution.put(problem.getId(), solutionDepot.getSolution(problem.getId()));
+        }
+
+        if (problem_id != null && problem_id != -1) {
+            model.addAttribute("problemId", problem_id);
         }
 
         model.addAttribute("problemList", problems);
