@@ -109,10 +109,10 @@
             }
         });
 
-        pressEnterEvent('#name', '#statement');
-        pressEnterEvent('#statement', '#solution');
-        pressEnterEvent('#solution', '#tagsEdit');
-        pressEnterEvent('#tagsEdit', '#name');
+        connectByEnter('#name', '#statement');
+        connectByEnter('#statement', '#solution');
+        connectByEnter('#solution', '#tagsEdit');
+        connectByEnter('#tagsEdit', '#name');
 
         updateTags();
     });
@@ -217,7 +217,7 @@
         return decodeURIComponent(str).replace(/\+/g, ' ');
     }
 
-    function pressEnterEvent(from, to) {
+    function connectByEnter(from, to) {
         $(from).keypress(function(e) {
             if (e.which == 13) {
                 $(to).focus();
