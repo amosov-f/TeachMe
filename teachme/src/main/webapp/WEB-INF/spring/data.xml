@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!--DB-->
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost/teachme?useUnicode=true&amp;characterEncoding=UTF-8"/>
@@ -58,7 +59,7 @@
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="statusDepot" ref="statusDepot"/>
     </bean>
-    
+
     <bean id="fileDepot" class="com.kk.teachme.db.FileDepot">
         <property name="filesDirectory" value="files/" />
     </bean>
@@ -74,5 +75,4 @@
         <property name="solutionDepot" ref="solutionDepot"/>
         <property name="fileDepot" ref="fileDepot"/>
     </bean>
-
 </beans>
