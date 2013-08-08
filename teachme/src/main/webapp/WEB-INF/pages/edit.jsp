@@ -145,7 +145,8 @@
         $('#figureView').html(null);
         $('#file').val(null);
         if (figureId != null && figureId != '') {
-            $('#figureView').append("<img src='http://localhost:8080/files/" + figureId + "' style='height: 30%;'/>");
+            $('#figureView').append(
+                    '<img src="http://localhost:8080/files/' + figureId + '" style="height: 30%; max-width: 90%;"/>');
             $('#figureView').append(
                     '<button class="btn btn-mini" type="button" onclick="clearFigure()">&times</button>'
             );
