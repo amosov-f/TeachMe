@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:social="http://www.springframework.org/schema/social"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:vkontakte="http://www.springframework.org/schema/social/vkontakte"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans
+		    http://www.springframework.org/schema/beans/spring-beans.xsd
+		    http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd
+		    http://www.springframework.org/schema/social
+		    http://www.springframework.org/schema/social/spring-social.xsd
+		    http://www.springframework.org/schema/social/vkontakte
+            http://www.springframework.org/schema/social/spring-social-vkontakte.xsd">
+
+    <!-- Note: move app ID and app secret to 'application.properties' and load it with the following
+         tag (don't forget to add xmlns:context to the <beans /> tag above.
+
+             <context:property-placeholder location="classpath:com/kk/teachme/config/application.properties" />
+
+         HARDCODE!
+    -->
+    <vkontakte:config app-id="3810701" app-secret="4FcroEDLVwMkKYpoRBBV" />
+
+    <social:jdbc-connection-repository/>
+
+    <bean id="userIdSource" class="org.springframework.social.security.AuthenticationNameUserIdSource" />
+
+    <bean id="connectController" class="org.springframework.social.connect.web.ConnectController"
+          autowire="constructor" />
+
+    <bean id="psc" class="org.springframework.social.connect.web.ProviderSignInController"
+          autowire="constructor" />
+    <bean id="signInAdapter" class="com.kk.teachme.servlet.signin.SimpleSignInAdapter"
+          autowire="constructor" />
+</beans>

@@ -14,11 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-/**
- * User: katya
- * Date: 8/8/13
- * Time: 5:40 PM
- */
 public class SimpleSignInAdapter implements SignInAdapter {
     private static class SignInUtils {
         public static void signin(final String userId) {

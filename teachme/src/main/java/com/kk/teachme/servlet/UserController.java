@@ -55,7 +55,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/reg_user")
-    public String regUser(@RequestParam String userName, Model model) {
+    public String registerUser(@RequestParam String userName, Model model) {
         userName = userName.trim();
         boolean userExists = userDepot.checkIfExists(userName);
         String resultMessage = null;
@@ -65,6 +65,7 @@ public class UserController {
             userDepot.addObject(new User(userName));
             resultMessage = "ok";
         }
+
         model.addAttribute("result", resultMessage);
         return "result";
     }
