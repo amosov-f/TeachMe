@@ -35,7 +35,8 @@ public class FileController {
     }
 
     @RequestMapping(value = "/upload")
-    public @ResponseBody String upload(@RequestParam(required = false) MultipartFile file) {
+    @ResponseBody
+    public String upload(@RequestParam(required = false) MultipartFile file) {
         if (file == null) {
             return null;
         }

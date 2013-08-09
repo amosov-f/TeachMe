@@ -32,13 +32,7 @@
             width: 69%;
         }
 
-        .problem:hover {
-            border-color: #66afe9;
-            outline: 0;
-            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
-            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
-            cursor: pointer;
-        }
+
 
         body {
             padding-top: 65px;
@@ -54,149 +48,56 @@
 
     $(document).ready(function() {
 
-<%      id2solution = (Map<Integer, Solution>)request.getAttribute("solutionMap");   %>
-
+    <%
+        id2solution = (Map<Integer, Solution>)request.getAttribute("solutionMap");
+    %>
         var existTags = new Array();
-<%      for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {    %>
+    <%
+        for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {
+    %>
             existTags.push('<%=tag.getName()%>');
-<%      }   %>
+    <%
+        }
+    %>
         existTags.sort();
 
-        $('#tag').bind('change keyup', updateProblems);
+        $('#tag').bind('change keyup', showProblemList);
         $('#tag').autocomplete({
             maxHeight: 150,
             lookup: existTags
         });
 
-<%      if (request.getAttribute("problemId") != null) {
+    <%
+        if (request.getAttribute("problemId") != null) {
             for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {
                 if (problem.getId() == (Integer)request.getAttribute("problemId")) {
-                    Solution solution = id2solution.get(problem.getId());   %>
-                    var problem = {
-                        id: <%=problem.getId()%>,
-                        name: decode('<%=URLEncoder.encode(problem.getName(), "UTF-8")%>'),
-                        statement:  decode('<%=URLEncoder.encode(problem.getStatement(), "UTF-8")%>'),
-                        figures:  '<%=problem.getFiguresString()%>',
-                        tags:  '<%=problem.getTagsString(false)%>',
-                        solution:  decode('<%=URLEncoder.encode(solution.getSolutionText())%>'),
-                        checker:  '<%=solution.getChecker().getName()%>'
-                    };
-                    showProblem(problem);
-<%              }
+    %>
+                    showProblem(<%= problem.getId() %>);
+    <%
+                }
             }
-        }   %>
+        }
+    %>
 
-        updateProblems();
+        showProblemList();
     });
 
-    function updateProblems() {
-        $('#problems').empty();
-
-        var isEmpty = true;
-<%      for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {    %>
-            var ok = false;
-            if ($('#tag').val() == '') {
-                ok = true;
+    function showProblem(problemId) {
+        $.ajax({
+            url: '/problem_' + problemId,
+            success: function(data) {
+                $('#right-part').html(data);
             }
-<%          for (Tag tag : problem.getTags()) { %>
-                if ($('#tag').val() == '<%=tag.getName()%>') {
-                    ok = true;
-                }
-<%          }   %>
-            if (ok) {
-
-<%              Solution solution = id2solution.get(problem.getId());   %>
-
-                var problem = {
-                    id: <%=problem.getId()%>,
-                    name: decode('<%=URLEncoder.encode(problem.getName(), "UTF-8")%>'),
-                    statement:  decode('<%=URLEncoder.encode(problem.getStatement(), "UTF-8")%>'),
-                    figures:  '<%=problem.getFiguresString()%>',
-                    tags:  '<%=problem.getTagsString(false)%>',
-                    solution:  decode('<%=URLEncoder.encode(solution.getSolutionText())%>'),
-                    checker:  '<%=solution.getChecker().getName()%>'
-                };
-
-                $('#problems').append(createProblemItem(problem));
-
-                isEmpty = false;
-            }
-<%      }   %>
-
-        if (isEmpty) {
-            $('#problems').append('<div align="center">Задачи не найдены</div>');
-        }
+        });
     }
 
-
-    function editProblem(event) {
-        document.location.href = 'http://localhost:8080/edit_problem?problem_id=' + event.data.param;
-    }
-
-    function createProblemItem(problem) {
-        var problemItem = $('<a class="list-group-item" style="cursor: pointer;"></a>');
-        problemItem.click({param: problem}, showProblem);
-
-        problemItem.append('<p class="list-group-item-text">' + problem.name + '</p>');
-
-        if (problem.tags != null && problem.tags != '') {
-            var tags = problem.tags.split(/,/);
-            for (var i = 0; i < tags.length; ++i) {
-                problemItem.append('&nbsp' + '<span class="label label-info">' + tags[i] + '</span>');
+    function showProblemList() {
+        $.ajax({
+            url: '/by_tag?tag=' + $('#tag').val(),
+            success: function(data) {
+                $('#left-part').html(data);
             }
-        }
-
-        return problemItem;
-    }
-
-    function showProblem(problem) {
-        if (problem.data != null) {
-            problem = problem.data.param;
-        }
-        $('#problemView').empty();
-        $('#problemView').append(createProblemPanel(problem));
-    }
-
-    function createProblemPanel(problem) {
-        var problemPanel = $('<div class="problem panel panel-info"></div>');
-        problemPanel.click({param: problem.id}, editProblem);
-
-        problemPanel.append('<div class="panel-heading">' + problem.name + '</div>');
-
-        var statementWell = $('<div class="well">' + problem.statement.replace(/\n/g, '<br>') + '</div>');
-
-        var figuresDiv = $('<div align="center"></div>');
-
-        if (problem.figures != null && problem.figures != '') {
-            var figures = problem.figures.split(/,/);
-            figuresDiv.append('<br><br>');
-            for (var i = 0; i < figures.length; ++i) {
-
-                figuresDiv.append(
-                        '<img src="http://localhost:8080/files/' + figures[i] + '" style="height: 30%; max-width: 90%;"/>'
-                );
-            }
-        }
-
-        statementWell.append(figuresDiv);
-        problemPanel.append(statementWell);
-
-        if (problem.tags != null && problem.tags != '') {
-            var tags = problem.tags.split(/,/);
-            for (var i = 0; i < tags.length; ++i) {
-                problemPanel.append('<span class="label label-info">' + tags[i] + '</span>' + '&nbsp');
-            }
-            problemPanel.append('<br><br>');
-        }
-
-        problemPanel.append('Тип ответа: ' + '<span class="label">' + problem.checker + '</span><br>');
-        problemPanel.append('Ответ: ' + '<span class="label label-success">' + problem.solution + '</span>');
-
-        return problemPanel;
-    }
-
-    function decode(str) {
-        return decodeURIComponent(str).replace(/\+/g, ' ');
+        });
     }
 
 </script>
@@ -204,26 +105,24 @@
 
 <div class="navbar navbar-fixed-top" >
     <div class="container">
-        <a href="http://localhost:8080/admin" class="navbar-brand">Админка</a>
+        <a href="/admin" class="navbar-brand">Админка</a>
         <div class="nav-collapse collapse navbar-responsive-collapse">
             <div class="navbar-form pull-left">
                 <input id="tag" type="text" class="form-control col-lg-8" placeholder="поиск по тегу">
             </div>
             <div class="navbar-form pull-right">
-                <button class="btn btn-primary" onclick="document.location.href = 'http://localhost:8080/new_problem'">
+                <a class="btn btn-primary" href="/new_problem">
                     Новая задача
-                </button>
+                </a>
             </div>
         </div>
     </div>
 </div>
 
 <div class="container">
-    <div class="left-part">
-        <div id="problems" class="list-group"></div>
+    <div id="left-part" class="left-part">
     </div>
-    <div class="right-part">
-        <div id="problemView" class="affix" style="width: 60%;"></div>
+    <div id="right-part" class="right-part">
     </div>
 </div>
 
