@@ -16,6 +16,7 @@
     <properties>
         <jetty.version>8.1.5.v20120716</jetty.version>
         <spring.version>3.1.2.RELEASE</spring.version>
+        <spring-social.version>1.1.0.M2</spring-social.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -91,12 +92,12 @@
             <artifactId>maven-jetty-plugin</artifactId>
             <version>7.0.0.pre5</version>
         </dependency>
+
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20090211</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -123,33 +124,33 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jetbrains</groupId>
+            <groupId>com.intellij</groupId>
             <artifactId>annotations</artifactId>
-            <version>7.0.2</version>
+            <version>12.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.social</groupId>
             <artifactId>spring-social-core</artifactId>
-            <version>1.1.0.M2</version>
+            <version>${spring-social.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.social</groupId>
             <artifactId>spring-social-web</artifactId>
-            <version>1.1.0.M2</version>
+            <version>${spring-social.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.social</groupId>
             <artifactId>spring-social-config</artifactId>
-            <version>1.1.0.M2</version>
+            <version>${spring-social.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.social</groupId>
             <artifactId>spring-social-security</artifactId>
-            <version>1.1.0.M2</version>
+            <version>${spring-social.version}</version>
         </dependency>
 
         <dependency>
@@ -209,4 +210,11 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>org.springframework.maven.snapshot</id>
+            <name>Spring Maven Snapshot Repository</name>
+            <url>http://maven.springframework.org/snapshot</url>
+        </repository>
+    </repositories>
 </project>
