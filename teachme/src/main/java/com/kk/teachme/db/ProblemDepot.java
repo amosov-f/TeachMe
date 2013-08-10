@@ -86,6 +86,22 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         );
     }
 
+    public List<Problem> getByTagList(List<Tag> tagList) {
+        if (tagList == null || tagList.size() == 0) {
+            return null;
+        }
+
+        List<Problem> problemList = new ArrayList<Problem>();
+
+        for (Problem problem : getByTag(tagList.get(0))) {
+            if (problem.getTags().containsAll(tagList)) {
+                problemList.add(problem);
+            }
+        }
+
+        return problemList;
+    }
+
     public List<Problem> getSolvedProblems(User user) {
         return jdbcTemplate.query("select problem_id from user_problem where user_id = ? and status_id = ?",
                 getProblemIdRowMapper("problem_id"),

@@ -30,7 +30,7 @@ public class TCTLoader {
     SolutionDepot solutionDepot;
 
     public void fill() {
-        fill(7);
+        fill(40);
     }
 
     public void fill(int cards) {
@@ -47,22 +47,23 @@ public class TCTLoader {
 
         tagDepot.createIfNotExist("пдд");
 
-        int i;
-        for (i = tct; i < cards; i++) {
-            String cardURLString = "http://www.pddrussia.com/static/ab/bilet/b" + (i+1) + ".json";
-            try {
-                get(cardURLString);
-            } catch (Exception e) {
+        int nailed;
+        for (nailed = tct; nailed < cards; nailed++) {
+            String cardURLString = "http://www.pddrussia.com/static/ab/bilet/b" + (nailed+1) + ".json";
+            if (get(cardURLString) == false) {
+                System.out.println("Failed to load card #" + nailed + 1);
                 break;
             }
         }
 
-        configDepot.setValue("tct", i > tct ? i : tct);
+        if (nailed > tct) {
+            configDepot.setValue("tct", nailed);
+            System.out.println("Cards from " + (tct+1) + " to " + nailed + " loaded");
+        }
 
     }
 
-    private void get(String cardURLString)
-            throws MalformedURLException, IOException, JSONException {
+    private boolean get(String cardURLString) {
 
         try {
 
@@ -121,19 +122,20 @@ public class TCTLoader {
                     (problemDepot.addObject
                         (new Problem(name, statement, figures, TCT)), solutionText, 1);
 
-
             }
 
         } catch (MalformedURLException e) {
-            System.out.println("URLException in TCTLoader.get(" + cardURLString + ");");
-            throw e;
+            e.printStackTrace();
+            return false;
         } catch (IOException e) {
-            System.out.println("IOException in TCTLoader.get(" + cardURLString + ");");
-            throw e;
+            e.printStackTrace();
+            return false;
         } catch (JSONException e) {
-            System.out.println("JSONException in TCTLoader.get(" + cardURLString + ");");
-            throw e;
+            e.printStackTrace();
+            return false;
         }
+
+        return true;
 
     }
 
