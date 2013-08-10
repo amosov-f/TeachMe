@@ -44,14 +44,14 @@ public class ProblemController {
 
 
     @RequestMapping(value = "/problem_{problem_id:\\d+}")
-    public String getProblem(@PathVariable int problem_id, Model model) throws JSONException {
+    public String getProblem(@PathVariable int problem_id, Model model) {
         model.addAttribute("problem", problemDepot.getById(problem_id));
         model.addAttribute("solution", solutionDepot.getSolution(problem_id));
-        return "problem_panel";
+        return "problem/problem_panel";
     }
 
     @RequestMapping(value = "/by_tag")
-    public String getProblemsByTag(@RequestParam String tag, Model model) throws JSONException {
+    public String getProblemsByTag(@RequestParam(required = false) String tag, Model model) {
         List<Problem> problems;
         if (tag == null || tag.isEmpty()) {
             problems = problemDepot.getAllProblems();
@@ -61,7 +61,20 @@ public class ProblemController {
 
         model.addAttribute("problemList", problems);
 
-        return "problem_group_item";
+        return "problem/problem_list";
+    }
+
+    @RequestMapping(value = "/by_tag_list")
+    public String getProblemsByTagList(@RequestParam(required = false) String tags, Model model) {
+        List<Problem> problems;
+
+        if (tags == null || tags.isEmpty()) {
+            problems = problemDepot.getAllProblems();
+        } else {
+            problems = null;
+        }
+
+        return  "problem/problem_list";
     }
 
     @RequestMapping(value = "/count_by_tag", produces = "application/json; charset=utf-8")

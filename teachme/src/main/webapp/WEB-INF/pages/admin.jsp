@@ -44,14 +44,9 @@
 
 <script>
 
-<%  Map<Integer, Solution> id2solution;  %>
+    var existTags = new Array();
 
     $(document).ready(function() {
-
-    <%
-        id2solution = (Map<Integer, Solution>)request.getAttribute("solutionMap");
-    %>
-        var existTags = new Array();
     <%
         for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {
     %>
@@ -92,12 +87,21 @@
     }
 
     function showProblemList() {
+        if ($('#tag').val() !== '' && existTags.indexOf($('#tag').val()) == -1) {
+            return;
+        }
+
         $.ajax({
             url: '/by_tag?tag=' + $('#tag').val(),
+            beforeSend: function() {
+                $('#loading').text('Загрузка...');
+            },
             success: function(data) {
                 $('#left-part').html(data);
+                $('#loading').text('');
             }
         });
+
     }
 
 </script>
@@ -110,6 +114,7 @@
             <div class="navbar-form pull-left">
                 <input id="tag" type="text" class="form-control col-lg-8" placeholder="поиск по тегу">
             </div>
+            <p id="loading" class="navbar-text pull-left"></p>
             <div class="navbar-form pull-right">
                 <a class="btn btn-primary" href="/new_problem">
                     Новая задача

@@ -54,6 +54,7 @@
             font-size: 200%;
         }
 
+
     </style>
 
     <title></title>
@@ -126,10 +127,31 @@
     });
 
     function submitProblem() {
+        if ($('#problemId').val() === '' && $('#statement').val() === '') {
+            alert("Не бывает задач без условия!");
+            return false;
+        }
+
+
         $('#tags').val(concat(chosenTags));
         $('#newTags').val(concat(newTags));
         $('#problem').submit();
-        return false;
+        return true;
+    }
+
+    function cancel() {
+    <%
+        if (request.getAttribute("problem") == null) {
+    %>
+            document.location.href = '/admin'
+    <%
+        } else {
+    %>
+            document.location.href = '/admin?problem_id=<%=((Problem)request.getAttribute("problem")).getId()%>'
+    <%
+        }
+    %>
+
     }
 
     function uploadFigure() {
@@ -282,15 +304,7 @@
                     type="file"
                     accept="image/*"
                     onchange="return uploadFigure();"
-                    />
-            <!--<input
-                    id="figureReference"
-                    type="text"
-                    class="form-control"
-                    readonly="true"
-                    placeholder="ссылка на рисунок"
-                    style="float: right; width: 50%;"
-            /> -->
+            />
 
         </form>
 
@@ -316,6 +330,9 @@
 <div align="center" style="height: 7%;">
     <button class="btn btn-default" type="button" onclick="return submitProblem();" style="width: 30%; height: 90%">
         Сохранить
+    </button>
+    <button class="btn" type="button" onclick="cancel()" style="width: 10%; height: 90%">
+        Отмена
     </button>
 </div>
 
