@@ -22,6 +22,10 @@ public class Problem {
         this(id, name, statement, figures, new ArrayList<Tag>());
     }
 
+    public Problem(int id, String name, String statement) {
+        this(id, name, statement, new ArrayList<String>(), new ArrayList<Tag>());
+    }
+
     public Problem(String name, String statement, List<String> figures, List<Tag> tags) {
         this(-1, name, statement, figures, tags);
     }
