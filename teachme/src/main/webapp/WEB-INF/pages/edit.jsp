@@ -175,7 +175,7 @@
 
     </script>
 
-    <div align="center">
+    <div align="center" style="height: 8%;">
         <h2 id="title"></h2>
     </div>
 

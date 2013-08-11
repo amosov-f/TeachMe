@@ -8,7 +8,6 @@
 </head>
 
 <body>
-
 <%
     if (request.getAttribute("problem") != null) {
         Problem problem = (Problem)request.getAttribute("problem");
@@ -56,11 +55,10 @@
         <%
             }
         %>
-            Тип ответа: <span class="label"><%= solution.getChecker().getName() %></span><br>
-            Ответ: <span class="label label-success"><%= solution.getSolutionText() %></span>
+            <span class="label"><%= solution.getChecker().getName() %></span>
+            <span class="label label-success"><%= solution.getSolutionText() %></span>
         </div>
 <%
     }
 %>
-
 </body>

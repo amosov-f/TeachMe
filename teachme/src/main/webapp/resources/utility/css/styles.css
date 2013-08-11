@@ -25,13 +25,11 @@
 .btn-delete, .btn-delete:active, .btn-delete:checked, .btn-delete:enabled {
     background-color: transparent;
     color: #9C9C9C;
+    padding-bottom: 1%;
     font-size: 100%;
 }
 
-
-
 .btn-delete:hover {
-
     color: #474949;
 }
 
@@ -42,7 +40,7 @@
 }
 
 .panel {
-    width: 60%;
+    width: 59%;
 }
 
 .problem:hover {
