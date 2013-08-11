@@ -93,6 +93,12 @@ public class AdminController {
         return admin(problem_id, model);
     }
 
+    @RequestMapping(value = "/delete_problem")
+    public String deleteProblem(@RequestParam int problem_id, Model model) {
+        problemDepot.deleteById(problem_id);
+        return admin(-1, model);
+    }
+
     @RequestMapping(value = "/new_problem")
     public String newProblem(Model model) {
         model.addAttribute("checkerMap", checkerDepot.getAllCheckers());

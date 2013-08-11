@@ -50,11 +50,15 @@
             }
         %>
             existTags.sort();
-
         <%
             if (request.getAttribute("problem") != null) {
                 Problem problem = (Problem)request.getAttribute("problem");
         %>
+                $('#title').html(
+                        'Задача #<%=problem.getId()%>' +
+                        '<button class="btn btn-delete" onclick="deleteProblem()">&#10006</button>'
+                );
+
                 $('#problemId').val(<%=problem.getId()%>);
                 $('#name').val('<%=problem.getName()%>');
 
@@ -75,7 +79,13 @@
 
                 $('#solution').val("<%=(String)request.getAttribute("solution")%>");
                 $('#checkerId').val("<%=(Integer)request.getAttribute("checkerId")%>");
-    <%      }   %>
+        <%
+            } else {
+        %>
+                $('#title').append('<h2>Новая задача</h2>');
+        <%
+            }
+        %>
 
             $('#tagsEdit').tags({tags: existTags, newTagsOutput: $('#newTagsView')});
             $('#file').filestyle({input: false, classButton: 'btn btn-default', buttonText: 'Загрузить'});
@@ -111,7 +121,12 @@
         <%
             }
         %>
+        }
 
+        function deleteProblem() {
+            if (confirm("Вы точно хотите удалить задачу?")) {
+                document.location.href = 'delete_problem?problem_id=' + $('#problemId').val();
+            }
         }
 
         function uploadFigure() {
@@ -135,9 +150,11 @@
             $('#file').val(null);
             if (figureId != null && figureId != '') {
                 $('#figureView').append(
-                        '<img src="http://localhost:8080/files/' + figureId + '" style="max-height: 30%; max-width: 90%;"/>');
+                        '<img src="http://localhost:8080/files/' + figureId + '" style="max-height: 30%; max-width: 90%;"/>'
+                );
+
                 $('#figureView').append(
-                        '<button class="btn btn-mini btn-delete" type="button" onclick="clearFigure()">&times</button>'
+                        '<button class="btn btn-delete left-top" type="button" onclick="clearFigure()">&#10006</button>'
                 );
             }
         }
@@ -159,7 +176,7 @@
     </script>
 
     <div align="center">
-        <h2>Задача</h2>
+        <h2 id="title"></h2>
     </div>
 
     <div style="height: 80%;">

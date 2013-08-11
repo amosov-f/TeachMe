@@ -22,13 +22,23 @@
     width: 69%;
 }
 
-.btn-delete, .btn-delete:hover, .btn-delete:active {
+.btn-delete, .btn-delete:active, .btn-delete:checked, .btn-delete:enabled {
+    background-color: transparent;
+    color: #9C9C9C;
+    font-size: 100%;
+}
+
+
+
+.btn-delete:hover {
+
+    color: #474949;
+}
+
+.left-top {
     position: absolute;
     top: 0;
     left: 0;
-    background-color: transparent;
-    color: #FF0000;
-    font-size: 200%;
 }
 
 .panel {

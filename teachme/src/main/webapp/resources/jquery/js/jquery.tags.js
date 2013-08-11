@@ -16,8 +16,6 @@
             tags = options.tags;
 
             return this.each(function() {
-
-
                 $(this).autocomplete({
                     delimiter: splitter,
                     maxHeight: 130,
