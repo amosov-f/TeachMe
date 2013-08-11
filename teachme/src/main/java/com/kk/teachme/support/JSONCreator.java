@@ -78,8 +78,11 @@ public class JSONCreator {
 
     public static JSONObject valueOf(UserProblem userProblem) throws JSONException {
         JSONObject json = new JSONObject();
+        json.put("id", userProblem.getProblem().getId());
         json.put("name", userProblem.getProblem().getName());
-        json.put("status", userProblem.getStatus().toString());
+        if (userProblem.getStatus() != null){
+            json.put("status", userProblem.getStatus().toString());
+        }
         return json;
     }
 

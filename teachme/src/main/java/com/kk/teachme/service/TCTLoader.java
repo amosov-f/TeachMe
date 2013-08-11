@@ -30,7 +30,7 @@ public class TCTLoader {
     SolutionDepot solutionDepot;
 
     public void fill() {
-        fill(40);
+        fill(20);
     }
 
     public void fill(int cards) {
