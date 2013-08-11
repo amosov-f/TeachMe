@@ -218,7 +218,6 @@ public class ProblemController {
     @ResponseBody
     public String getAllUserProblems(@RequestParam int user_id) throws JSONException {
         List<UserProblem> answerList = userProblemDepot.getAllUserProblems(user_id);
-        System.out.println(answerList.get(0).getProblem().getId());
         return JSONCreator.valueOfList(answerList).toString();
     }
 
