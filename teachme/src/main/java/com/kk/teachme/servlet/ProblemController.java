@@ -18,6 +18,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -50,6 +54,15 @@ public class ProblemController {
         return "problem/problem_panel";
     }
 
+    @RequestMapping(value = "/edit_{problem_id:\\d+}")
+    public String editProblem(@PathVariable int problem_id, Model model) {
+        model.addAttribute("problem", problemDepot.getById(problem_id));
+        model.addAttribute("solution", solutionDepot.getSolution(problem_id));
+        return "problem/problem_edit";
+    }
+
+
+
     @RequestMapping(value = "/by_tag")
     public String getProblemsByTag(@RequestParam(required = false) String tag, Model model) {
         List<Problem> problems;
@@ -65,14 +78,23 @@ public class ProblemController {
     }
 
     @RequestMapping(value = "/by_tag_list")
-    public String getProblemsByTagList(@RequestParam(required = false) String tags, Model model) {
+    public String getProblemsByTagList(@RequestParam String tags, Model model) throws UnsupportedEncodingException {
         List<Problem> problems;
 
         if (tags == null || tags.isEmpty()) {
             problems = problemDepot.getAllProblems();
         } else {
-            problems = null;
+            List<Tag> tagList = new ArrayList<Tag>();
+            for (String tag : URLDecoder.decode(tags, "UTF-8").split(",")) {
+                if (tagDepot.getByName(tag) != null) {
+                    tagList.add(tagDepot.getByName(tag));
+                }
+            }
+            problems = problemDepot.getByTagList(tagList);
         }
+
+
+        model.addAttribute("problemList", problems);
 
         return  "problem/problem_list";
     }

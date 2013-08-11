@@ -1,0 +1,44 @@
+.edit-left-part {
+    float: left;
+    width: 48%;
+    height: 100%;
+    padding-left: 3%;
+}
+
+.edit-right-part {
+    float: right;
+    width: 48%;
+    height: 100%;
+    padding-right: 3%;
+}
+
+.admin-left-part {
+    float: left;
+    width: 29%;
+}
+
+.admin-right-part {
+    float: right;
+    width: 69%;
+}
+
+.btn-delete, .btn-delete:hover, .btn-delete:active {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: transparent;
+    color: #FF0000;
+    font-size: 200%;
+}
+
+.panel {
+    width: 60%;
+}
+
+.problem:hover {
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+    cursor: pointer;
+}
