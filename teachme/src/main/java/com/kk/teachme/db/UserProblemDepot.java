@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.*;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class UserProblemDepot {
 
     SimpleJdbcTemplate jdbcTemplate;
 
-    public void addObject(final UserProblem userProblem) {
+    public void addObject(final UserProblem userProblem, final User user) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         final int update = jdbcTemplate.getJdbcOperations().update(
                 new PreparedStatementCreator() {
@@ -26,7 +27,7 @@ public class UserProblemDepot {
                         PreparedStatement preparedStatement =
                                 conn.prepareStatement("insert into user_problem (user_id, problem_id, status_id) values(?, ?, ?)"
                                         , Statement.RETURN_GENERATED_KEYS);
-                        preparedStatement.setInt(1, userProblem.getUser().getId());
+                        preparedStatement.setInt(1, user.getId());
                         preparedStatement.setInt(2, userProblem.getProblem().getId());
                         preparedStatement.setInt(3, statusDepot.getStatusId(userProblem.getStatus()));
                         return preparedStatement;
@@ -44,24 +45,24 @@ public class UserProblemDepot {
                 problemId);
         if (problemList.size() < 1) {
             addObject(new UserProblem(
-                    userDepot.getById(userId),
-                    problemDepot.getById(problemId),
-                    Status.NEW
-            ));
+                    problemDepot.getById(problemId)
+            ),
+                    userDepot.getById(userId)
+            );
             return true;
         }
         return false;
     }
 
     public List<UserProblem> getAllUserProblems(int userId) {
-        return jdbcTemplate.query("select user_id, problem_id, status_id " +
+        return jdbcTemplate.query("select problem_id, status_id " +
                 "from user_problem where user_id = ?",
                 getRowMapper(),
                 userId);
     }
 
     public List<UserProblem> getUnsolvedProblems(int userId) {
-        return jdbcTemplate.query("select user_id, problem_id, status_id " +
+        return jdbcTemplate.query("select problem_id, status_id " +
                 "from user_problem where user_id = ? and status_id != ?",
                 getRowMapper(),
                 userId,
@@ -69,7 +70,7 @@ public class UserProblemDepot {
     }
 
     public List<UserProblem> getSolvedProblems(int userId) {
-        return jdbcTemplate.query("select user_id, problem_id, status_id " +
+        return jdbcTemplate.query("select problem_id, status_id " +
                 "from user_problem where user_id = ? and status_id = ?",
                 getRowMapper(),
                 userId,
@@ -79,7 +80,7 @@ public class UserProblemDepot {
 
     public List<UserProblem> getProblemsByTag(int userId, int  tagId) {
 
-        return jdbcTemplate.query("select up.user_id, up.problem_id, up.status_id " +
+        return jdbcTemplate.query("select up.problem_id, up.status_id " +
                 "from user_problem up inner join problem_tag pt on pt.problem_id = up.problem_id " +
                 "where up.user_id = ? and pt.tag_id = ?",
                 getRowMapper(),
@@ -93,7 +94,6 @@ public class UserProblemDepot {
         return new ParameterizedRowMapper<UserProblem>() {
             public UserProblem mapRow(ResultSet resultSet, int i) throws SQLException {
                 return new UserProblem(
-                        userDepot.getById(resultSet.getInt("user_id")),
                         problemDepot.getById(resultSet.getInt("problem_id")),
                         statusDepot.getById(resultSet.getInt("status_id")));
             }
