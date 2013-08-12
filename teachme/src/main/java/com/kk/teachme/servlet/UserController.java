@@ -1,9 +1,8 @@
 package com.kk.teachme.servlet;
 
-import com.kk.teachme.db.ProblemDepot;
-import com.kk.teachme.db.StatusDepot;
-import com.kk.teachme.db.UserDepot;
+import com.kk.teachme.db.*;
 import com.kk.teachme.model.Problem;
+import com.kk.teachme.model.Solution;
 import com.kk.teachme.model.Status;
 import com.kk.teachme.model.User;
 import com.kk.teachme.support.JSONCreator;
@@ -20,6 +19,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/")
@@ -32,7 +35,42 @@ public class UserController {
     ProblemDepot problemDepot;
 
     @Autowired
+    SolutionDepot solutionDepot;
+
+    @Autowired
+    TagDepot tagDepot;
+
+    @Autowired
     StatusDepot statusDepot;
+
+    @RequestMapping(value = "/user_problem")
+    public String getProblem(@RequestParam int problem_id, Model model) {
+        model.addAttribute("problem", problemDepot.getById(problem_id));
+        return "problem/user_problem";
+    }
+
+    @RequestMapping(value = "/user")
+    public String user(Model model) {
+        List<Problem> problems;
+        problems = problemDepot.getAllProblems();
+        if (problems == null) {
+            problems = new ArrayList<Problem>();
+        }
+
+        model.addAttribute("problemList", problems);
+        model.addAttribute("tagList", tagDepot.getAllTags());
+
+        return "user";
+    }
+
+    @RequestMapping(value = "/submit")
+    public String submit(@RequestParam int problem_id, @RequestParam String solution_text, Model model) {
+        Solution solution = solutionDepot.getSolution(problem_id);
+
+        model.addAttribute("solveStatus", solution.getChecker().check(solution_text, solution.getSolutionText()));
+
+        return "problem/solve_status";
+    }
 
     @RequestMapping(value = "/login")
     public String loginForm(Model model) {

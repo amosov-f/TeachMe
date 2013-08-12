@@ -1,5 +1,6 @@
 <%@ page import="com.kk.teachme.model.Problem" %>
 <%@ page import="java.util.List" %>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <body>
@@ -11,7 +12,7 @@
     } else {
         List<Problem> problems = (List<Problem>)request.getAttribute("problemList");
 %>
-        <div class="list-group">
+        <div class="list-group" style="margin-top: 10px;">
         <%
             for (Problem problem : problems) {
                 request.setAttribute("problem", problem);

@@ -1,6 +1,7 @@
 <%@ page import="com.kk.teachme.model.Problem" %>
 <%@ page import="com.kk.teachme.model.Tag" %>
 <%@ page import="com.kk.teachme.model.Solution" %>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <head>
@@ -13,17 +14,7 @@
         Problem problem = (Problem)request.getAttribute("problem");
         Solution solution = (Solution)request.getAttribute("solution");
 %>
-
-        <script>
-            $(document).ready(function() {
-                $('#problemPanel').click(function() {
-                    document.location.href = '/edit_problem?problem_id=<%=problem.getId()%>'
-                });
-            });
-        </script>
-
-
-        <div id="problemPanel" class="problem panel panel-info affix" value="<%=problem.getId()%>">
+        <div id="problemPanel" class="problem problem-edit panel panel-info" value="<%=problem.getId()%>">
             <div class="panel-heading"><%= problem.getName()%></div>
             <div class="well">
                 <%= problem.getStatement().replaceAll("\n", "<br>") %>
@@ -58,6 +49,14 @@
             <span class="label"><%= solution.getChecker().getName() %></span>
             <span class="label label-success"><%= solution.getSolutionText() %></span>
         </div>
+
+        <script>
+            $(document).ready(function() {
+                $('#problemPanel').click(function() {
+                    document.location.href = '/edit_problem?problem_id=<%=problem.getId()%>'
+                });
+            });
+        </script>
 <%
     }
 %>
