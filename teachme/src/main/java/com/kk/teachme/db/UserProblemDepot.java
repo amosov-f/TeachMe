@@ -10,12 +10,14 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserProblemDepot {
     UserDepot userDepot;
     ProblemDepot problemDepot;
     StatusDepot statusDepot;
+    TagDepot tagDepot;
 
     SimpleJdbcTemplate jdbcTemplate;
 
@@ -78,17 +80,36 @@ public class UserProblemDepot {
         );
     }
 
-    public List<UserProblem> getProblemsByTag(int userId, int  tagId) {
+    public List<UserProblem> getProblemsByTag(int userId, int tagId) {
 
-        return jdbcTemplate.query("select up.problem_id, up.status_id " +
+        List<Problem> problemList = problemDepot.getByTag(tagDepot.getById(tagId));
+
+        List<UserProblem> userProblems = jdbcTemplate.query("select up.problem_id, up.status_id " +
                 "from user_problem up inner join problem_tag pt on pt.problem_id = up.problem_id " +
                 "where up.user_id = ? and pt.tag_id = ?",
                 getRowMapper(),
                 userId,
                 tagId);
+
+        List<UserProblem> resultUserProblemList = new ArrayList<UserProblem>();
+
+        for (Problem problem : problemList) {
+
+            UserProblem newUserProblem = new UserProblem(problem);
+            resultUserProblemList.add(newUserProblem);
+
+            for (UserProblem userProblem : userProblems) {
+                if (userProblem.getProblem().getId() == newUserProblem.getProblem().getId()) {
+                    newUserProblem.setStatus(userProblem.getStatus());
+                    break;
+                }
+            }
+
+        }
+
+        return resultUserProblemList;
+
     }
-
-
 
     protected ParameterizedRowMapper<UserProblem> getRowMapper() {
         return new ParameterizedRowMapper<UserProblem>() {
@@ -117,6 +138,11 @@ public class UserProblemDepot {
     @Required
     public void setStatusDepot(StatusDepot statusDepot) {
         this.statusDepot = statusDepot;
+    }
+
+    @Required
+    public void setTagDepot(TagDepot tagDepot) {
+        this.tagDepot = tagDepot;
     }
 
 }

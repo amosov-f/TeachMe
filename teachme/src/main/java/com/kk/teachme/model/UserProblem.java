@@ -7,7 +7,7 @@ public class UserProblem {
 
     public UserProblem(Problem problem) {
         this.problem = problem;
-        status = null;
+        status = Status.NEW;
     }
 
     public UserProblem(Problem problem, Status status) {

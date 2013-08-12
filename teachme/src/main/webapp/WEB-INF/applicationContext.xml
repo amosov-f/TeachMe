@@ -59,6 +59,7 @@
         <property name="userDepot" ref="userDepot"/>
         <property name="problemDepot" ref="problemDepot"/>
         <property name="statusDepot" ref="statusDepot"/>
+        <property name="tagDepot" ref="tagDepot"/>
     </bean>
     
     <bean id="fileDepot" class="com.kk.teachme.db.FileDepot">
