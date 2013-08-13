@@ -14,7 +14,7 @@
         Problem problem = (Problem)request.getAttribute("problem");
         Solution solution = (Solution)request.getAttribute("solution");
 %>
-        <div id="problemPanel" class="problem problem-edit panel panel-info" value="<%=problem.getId()%>">
+        <div id="problemPanel" class="panel panel-info panel-edit margin-top" value="<%=problem.getId()%>">
             <div class="panel-heading"><%= problem.getName()%></div>
             <div class="well">
                 <%= problem.getStatement().replaceAll("\n", "<br>") %>

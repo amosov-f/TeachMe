@@ -22,69 +22,6 @@
 </head>
 
 <body style="padding-top: 50px;">
-
-<script>
-
-    var existTags = new Array();
-
-    $(document).ready(function() {
-        <%
-            for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {
-        %>
-        existTags.push('<%=tag.getName()%>');
-        <%
-            }
-        %>
-        existTags.sort();
-
-        $('#tag').tags({tags: existTags});
-        $('#tag').bind('change keyup', showProblemList);
-
-        <%
-            if (request.getAttribute("problemId") != null) {
-                for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {
-                    if (problem.getId() == (Integer)request.getAttribute("problemId")) {
-        %>
-                        showProblem(<%= problem.getId() %>);
-        <%
-                    }
-                }
-            }
-        %>
-
-        showProblemList();
-    });
-
-    function showProblem(problemId) {
-        $.ajax({
-            url: '/user_problem',
-            data: 'problem_id=' + problemId,
-            success: function(data) {
-                $('#right-part').html(data);
-            }
-        });
-    }
-
-    function showProblemList() {
-        if ($('#tag').tags('newTags').length != 0) {
-            return;
-        }
-
-        $.ajax({
-            url: '/by_tag_list',
-            data: 'tags=' + concat($('#tag').tags('chosenTags')),
-            beforeSend: function() {
-                $('#loading').text('Загрузка...');
-            },
-            success: function(data) {
-                $('#left-part').html(data);
-                $('#loading').text('');
-            }
-        });
-    }
-</script>
-
-
 <%
 
     if (request == null || request.getSession() == null || request.getSession().getAttribute("user") == null) {
@@ -119,10 +56,74 @@
     </div>
 
     <div class="container">
-        <div id="left-part" class="admin-left-part">
+        <div id="left-part" class="left-part">
         </div>
-        <div id="right-part" class="admin-right-part">
+        <div id="right-part" class="right-part">
         </div>
     </div>
+
+    <script>
+
+        var existTags = new Array();
+
+        $(document).ready(function() {
+        <%
+            for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {
+        %>
+                existTags.push('<%=tag.getName()%>');
+        <%
+            }
+        %>
+            existTags.sort();
+
+            $('#tag').tags({tags: existTags});
+            $('#tag').bind('change keyup', showProblemList);
+
+        <%
+            if (request.getAttribute("problemId") != null) {
+                for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {
+                    if (problem.getId() == (Integer)request.getAttribute("problemId")) {
+        %>
+                        showProblem(<%= problem.getId() %>);
+        <%
+                    }
+                }
+            }
+        %>
+
+            showProblemList();
+        });
+
+        function showProblem(problemId) {
+            $.ajax({
+                url: '/user_problem',
+                data: 'problem_id=' + problemId,
+                success: function(data) {
+                    $('#right-part').html(data);
+                }
+            });
+        }
+
+        function showProblemList() {
+            if ($('#tag').tags('newTags').length != 0) {
+                return;
+            }
+
+            $.ajax({
+                url: '/by_tag_list',
+                data: 'tags=' + concat($('#tag').tags('chosenTags')),
+                beforeSend: function() {
+                    $('#loading').text('Загрузка...');
+                },
+                success: function(data) {
+                    $('#left-part').html(data);
+                    $('#loading').text('');
+                    $('.list-group-item').click(function() {
+                        showProblem($(this).attr('id'));
+                    });
+                }
+            });
+        }
+    </script>
 
 </body>

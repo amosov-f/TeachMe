@@ -22,11 +22,35 @@
 
 <body style="padding-top: 50px;">
 
+    <div class="navbar navbar-fixed-top" >
+        <div class="container">
+            <a href="/admin" class="navbar-brand">Админка</a>
+            <div class="nav-collapse collapse navbar-responsive-collapse">
+                <div class="navbar-form pull-left">
+                    <input id="tag" type="text" class="form-control col-lg-8" placeholder="поиск по тегам" size="31">
+                </div>
+                <p id="loading" class="navbar-text pull-left"></p>
+                <div class="navbar-form pull-right">
+                    <a class="btn btn-primary" href="/new_problem">
+                        Новая задача
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <form id="left-part" class="left-part">
+        </form>
+        <form id="right-part" class="right-part">
+        </form>
+    </div>
+
+
     <script>
 
-        var existTags = new Array();
-
         $(document).ready(function() {
+            var existTags = new Array();
         <%
             for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {
         %>
@@ -40,11 +64,11 @@
             $('#tag').bind('change keyup', showProblemList);
 
 
-            <%
-                if (request.getAttribute("problemId") != null) {
-                    for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {
-                        if (problem.getId() == (Integer)request.getAttribute("problemId")) {
-            %>
+        <%
+            if (request.getAttribute("problemId") != null) {
+                for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {
+                    if (problem.getId() == (Integer)request.getAttribute("problemId")) {
+        %>
                         showProblem(<%= problem.getId() %>);
         <%
                     }
@@ -78,33 +102,15 @@
                 success: function(data) {
                     $('#left-part').html(data);
                     $('#loading').text('');
+                    $('.list-group-item').click(function() {
+                        showProblem($(this).attr('id'));
+                    });
                 }
             });
+
+
         }
+
     </script>
-
-    <div class="navbar navbar-fixed-top" >
-        <div class="container">
-            <a href="/admin" class="navbar-brand">Админка</a>
-            <div class="nav-collapse collapse navbar-responsive-collapse">
-                <div class="navbar-form pull-left">
-                    <input id="tag" type="text" class="form-control col-lg-8" placeholder="поиск по тегам" size="31">
-                </div>
-                <p id="loading" class="navbar-text pull-left"></p>
-                <div class="navbar-form pull-right">
-                    <a class="btn btn-primary" href="/new_problem">
-                        Новая задача
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div id="left-part" class="admin-left-part">
-        </div>
-        <div id="right-part" class="admin-right-part">
-        </div>
-    </div>
 
 </body>
