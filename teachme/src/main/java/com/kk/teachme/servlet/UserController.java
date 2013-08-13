@@ -1,10 +1,8 @@
 package com.kk.teachme.servlet;
 
+import com.kk.teachme.checker.SolveStatus;
 import com.kk.teachme.db.*;
-import com.kk.teachme.model.Problem;
-import com.kk.teachme.model.Solution;
-import com.kk.teachme.model.Status;
-import com.kk.teachme.model.User;
+import com.kk.teachme.model.*;
 import com.kk.teachme.support.JSONCreator;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +43,9 @@ public class UserController {
     @Autowired
     StatusDepot statusDepot;
 
+    @Autowired
+    UserProblemDepot userProblemDepot;
+
     @RequestMapping(value = "/user_problem")
     public String getProblem(@RequestParam int problem_id, Model model) {
         model.addAttribute("problem", problemDepot.getById(problem_id));
@@ -64,12 +67,69 @@ public class UserController {
     }
 
     @RequestMapping(value = "/submit")
-    public String submit(@RequestParam int problem_id, @RequestParam String solution_text, Model model) {
+    public String submit(@RequestParam int problem_id, @RequestParam String solution_text, HttpServletRequest request, Model model) {
+        if (request.getSession().getAttribute("user") == null) {
+            return "login";
+        }
+
+        User user = (User)request.getSession().getAttribute("user");
+        Problem problem = problemDepot.getById(problem_id);
         Solution solution = solutionDepot.getSolution(problem_id);
 
-        model.addAttribute("solveStatus", solution.getChecker().check(solution_text, solution.getSolutionText()));
+        SolveStatus solveStatus = solution.getChecker().check(solution_text, solution.getSolutionText());
+
+        if (solveStatus == SolveStatus.CORRECT) {
+            userProblemDepot.setStatus(user, problem, Status.SOLVED);
+        }
+
+        model.addAttribute("solveStatus", solveStatus);
+        model.addAttribute(
+                "itemClass",
+                "user-problem-" + userProblemDepot.getStatus(user, problem).toString().toLowerCase()
+        );
 
         return "user_problem/solve_status";
+    }
+
+    @RequestMapping(value = "/read")
+    @ResponseBody
+    public String read(@RequestParam int problem_id, HttpServletRequest request, Model model) throws JSONException {
+        User user = (User)request.getSession().getAttribute("user");
+        Problem problem = problemDepot.getById(problem_id);
+
+        Status status = userProblemDepot.getStatus(user, problem);
+
+        if (!status.equals(Status.SOLVED)) {
+            userProblemDepot.setStatus(user, problem, Status.READ);
+
+        }
+
+        return "user-problem-" + userProblemDepot.getStatus(user, problem).toString().toLowerCase();
+    }
+
+    @RequestMapping(value = "/user_problems_by_tag_list")
+    public String getByTagList(@RequestParam int user_id, @RequestParam String tags, Model model) throws UnsupportedEncodingException {
+        List<UserProblem> userProblems;
+
+        User user = userDepot.getById(user_id);
+
+        if (tags == null || tags.isEmpty()) {
+            userProblems = userProblemDepot.getAllUserProblems(user);
+        } else {
+            List<Tag> tagList = new ArrayList<Tag>();
+            for (String tag : URLDecoder.decode(tags, "UTF-8").split(",")) {
+                if (tagDepot.getByName(tag) != null) {
+                    tagList.add(tagDepot.getByName(tag));
+                }
+            }
+            userProblems = userProblemDepot.getByTagList(user, tagList);
+        }
+
+        model.addAttribute("userProblemList", userProblems);
+
+        //System.out.println(userProblems);
+
+        return "user_problem/user_problem_list";
     }
 
     @RequestMapping(value = "/login")
@@ -100,6 +160,8 @@ public class UserController {
         }
 
         userDepot.addObject(new User(login));
+
+        model.addAttribute("login", login);
 
         return "login";
     }

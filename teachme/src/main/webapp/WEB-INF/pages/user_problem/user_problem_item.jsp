@@ -7,9 +7,8 @@
 <%
     UserProblem userProblem = (UserProblem)request.getAttribute("userProblem");
 %>
-
-    <a id="<%= userProblem.getProblem().getId() %>" class="list-group-item" style="cursor: pointer;">
-        <p class="user-problem-<%= userProblem.getStatus().toString().toLowerCase() %> list-group-item-text">
+    <a name="<%= userProblem.getProblem().getId() %>" class="list-group-item" style="cursor: pointer;">
+        <p id="name<%= userProblem.getProblem().getId() %>" class="user-problem-<%= userProblem.getStatus().toString().toLowerCase() %>">
             <%= userProblem.getProblem().getName() %>
         </p>
     <%

@@ -23,9 +23,7 @@
 
 <body style="padding-top: 50px;">
 <%
-
-    if (request == null || request.getSession() == null || request.getSession().getAttribute("user") == null) {
-
+    if (request.getSession().getAttribute("user") == null) {
 %>
         <jsp:forward page="login.jsp"/>
 <%
@@ -102,6 +100,19 @@
                     $('#right-part').html(data);
                 }
             });
+
+            $.ajax({
+                url: '/read',
+                data: 'problem_id=' + problemId,
+                success: function(data) {
+                    setItemClass(problemId, data);
+                }
+            });
+        }
+
+        function setItemClass(problemId, className) {
+            $('#name' + problemId).removeClass();
+            $('#name' + problemId).addClass(className);
         }
 
         function showProblemList() {
@@ -110,8 +121,8 @@
             }
 
             $.ajax({
-                url: '/by_tag_list',
-                data: 'tags=' + concat($('#tag').tags('chosenTags')),
+                url: '/user_problems_by_tag_list',
+                data: 'user_id=' + <%=user.getId()%> + '&tags=' + concat($('#tag').tags('chosenTags')),
                 beforeSend: function() {
                     $('#loading').text('Загрузка...');
                 },
@@ -119,11 +130,25 @@
                     $('#left-part').html(data);
                     $('#loading').text('');
                     $('.list-group-item').click(function() {
-                        showProblem($(this).attr('id'));
+                        showProblem($(this).attr('name'));
                     });
                 }
             });
         }
+
+        function submit() {
+            var problemId =  $('#userProblemPanel').attr('name');
+            $.ajax({
+                url: '/submit',
+                data: 'problem_id=' + problemId + '&solution_text=' + $('#solution').val(),
+                success: function(data) {
+                    $('#solveStatus').html(data);
+
+                    setItemClass(problemId, $('#itemClass').val());
+                }
+            });
+        }
+
     </script>
 
 </body>

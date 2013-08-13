@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -46,7 +45,6 @@ public class ProblemController {
     @Autowired
     UserProblemDepot userProblemDepot;
 
-
     @RequestMapping(value = "/problem_{problem_id:\\d+}")
     public String getProblem(@PathVariable int problem_id, Model model) {
         model.addAttribute("problem", problemDepot.getById(problem_id));
@@ -64,7 +62,7 @@ public class ProblemController {
 
 
     @RequestMapping(value = "/by_tag")
-    public String getProblemsByTag(@RequestParam(required = false) String tag, Model model) {
+    public String getByTag(@RequestParam(required = false) String tag, Model model) {
         List<Problem> problems;
         if (tag == null || tag.isEmpty()) {
             problems = problemDepot.getAllProblems();
@@ -78,7 +76,7 @@ public class ProblemController {
     }
 
     @RequestMapping(value = "/by_tag_list")
-    public String getProblemsByTagList(@RequestParam String tags, Model model) throws UnsupportedEncodingException {
+    public String getByTagList(@RequestParam String tags, Model model) throws UnsupportedEncodingException {
         List<Problem> problems;
 
         if (tags == null || tags.isEmpty()) {
@@ -206,6 +204,7 @@ public class ProblemController {
 
     //methods from UserProblemDepot
 
+    /*
     @RequestMapping(value = "/add_uproblem", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String addUserProblem(@RequestParam int user_id, @RequestParam int problem_id)
@@ -238,8 +237,9 @@ public class ProblemController {
     @RequestMapping(value = "/uproblems_tag", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String getUserProblemsByTag(@RequestParam int user_id, @RequestParam int tag_id) throws JSONException {
-        List<UserProblem> answerList = userProblemDepot.getProblemsByTag(user_id, tag_id);
+        List<UserProblem> answerList = userProblemDepot.getByTag(user_id, tag_id);
         return JSONCreator.valueOfList(answerList).toString();
     }
 
+    */
 }

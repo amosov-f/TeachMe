@@ -61,8 +61,8 @@
             existTags.sort();
 
             $('#tag').tags({tags: existTags});
-            $('#tag').bind('change keyup', showProblemList);
 
+            $('#tag').bind('change keyup', showProblemList);
 
         <%
             if (request.getAttribute("problemId") != null) {
@@ -103,7 +103,7 @@
                     $('#left-part').html(data);
                     $('#loading').text('');
                     $('.list-group-item').click(function() {
-                        showProblem($(this).attr('id'));
+                        showProblem($(this).attr('name'));
                     });
                 }
             });

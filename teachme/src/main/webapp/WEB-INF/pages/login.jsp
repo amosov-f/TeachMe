@@ -22,14 +22,24 @@
         <h3>Войти в TeachMe</h3>
     </div>
 
+
     <form class="container">
+
         <div class="form-group">
+        <%
+            if (request.getAttribute("login") != null) {
+                String login = (String)request.getAttribute("login");
+        %>
+                <h4><span style="color: blue;"><%= login %></span>, вы успешно зарегестрированы!</h4>
+        <%
+            }
+        %>
             <input id="login" class="form-control" type="text" name="login" placeholder="Введите логин"/>
         </div>
 
         <div class="form-horizontal">
             <button id="button1" class="btn btn-primary" type="submit" onclick="logIn()">Войти</button>
-            <button id="button2" class="btn" type="submit" onclick="register()">Зарегестрироваться</button>
+            <button id="button2" class="btn" type="submit" onclick="register()">Зарегистрироваться</button>
         </div>
     </form>
 

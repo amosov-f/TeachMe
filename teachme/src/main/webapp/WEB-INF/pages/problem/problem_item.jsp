@@ -8,8 +8,7 @@
 <%
     Problem problem = (Problem)request.getAttribute("problem");
 %>
-
-    <a id="<%= problem.getId() %>" class="list-group-item" style="cursor: pointer;">
+    <a name="<%= problem.getId() %>" class="list-group-item" style="cursor: pointer;">
         <p class="list-group-item-text"><%= problem.getName() %></p>
     <%
         for (Tag tag : problem.getTags()) {

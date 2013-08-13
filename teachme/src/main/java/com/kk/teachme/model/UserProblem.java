@@ -31,4 +31,11 @@ public class UserProblem {
         this.status = status;
     }
 
+    @Override
+    public String toString() {
+        return "UserProblem{" +
+                "problem=" + problem.getId() +
+                ", status=" + status +
+                '}';
+    }
 }

@@ -21,7 +21,7 @@ public class UserProblemDepot {
 
     SimpleJdbcTemplate jdbcTemplate;
 
-    public void addObject(final UserProblem userProblem, final User user) {
+    public void addObject(final User user, final UserProblem userProblem) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         final int update = jdbcTemplate.getJdbcOperations().update(
                 new PreparedStatementCreator() {
@@ -38,20 +38,43 @@ public class UserProblemDepot {
 
     }
 
-    public boolean addUserProblem(User user, Problem problem, Status status) {
-        List<UserProblem> problemList =
-                jdbcTemplate.query("select * from user_problem " +
-                "where user_id = ? and problem_id = ?",
+    public boolean setStatus(User user, Problem problem, Status status) {
+        List<UserProblem> problemList = jdbcTemplate.query(
+                "select * from user_problem where user_id = ? and problem_id = ?",
                 getRowMapper(),
                 user.getId(),
-                problem.getId());
+                problem.getId()
+        );
         if (problemList.size() == 0 && status != null && status != Status.NEW) {
-            addObject(new UserProblem(problem, status), user);
+            addObject(user, new UserProblem(problem, status));
             return true;
         }
+        jdbcTemplate.update(
+                "update user_problem set status_id = ? where user_id = ? and problem_id = ?",
+                statusDepot.getStatusId(status),
+                user.getId(),
+                problem.getId()
+        );
+
         return false;
     }
 
+    public Status getStatus(User user, Problem problem) {
+        List<UserProblem> userProblemList = jdbcTemplate.query(
+                "select * from user_problem where user_id = ? and problem_id = ?",
+                getRowMapper(),
+                user.getId(),
+                problem.getId()
+        );
+
+        if (userProblemList.isEmpty()) {
+            return Status.NEW;
+        }
+
+        return userProblemList.get(0).getStatus();
+    }
+
+     //brigantina+@yandex.ru   для бухгалтера реквизиты банковской кариы контактны
     public List<UserProblem> getAllUserProblems(User user) {
 
         List<UserProblem> userProblems = jdbcTemplate.query("select problem_id, status_id " +
@@ -117,7 +140,7 @@ public class UserProblemDepot {
         );
     }
 
-    public List<UserProblem> getProblemsByTag(User user, Tag tag) {
+    public List<UserProblem> getByTag(User user, Tag tag) {
 
         List<UserProblem> userProblems = jdbcTemplate.query("select up.problem_id, up.status_id " +
                 "from user_problem up inner join problem_tag pt on pt.problem_id = up.problem_id " +
@@ -146,7 +169,7 @@ public class UserProblemDepot {
         return resultUserProblems;
     }
 
-    public List<UserProblem> getProblemsByTagList(User user, List<Tag> tags) {
+    public List<UserProblem> getByTagList(User user, List<Tag> tags) {
 
         if (tags == null || tags.isEmpty()) {
             return new ArrayList<UserProblem>();
