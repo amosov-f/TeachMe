@@ -16,10 +16,11 @@
         <logout logout-url="/signout" delete-cookies="JSESSIONID" />
         <intercept-url pattern="/favicon.ico" access="permitAll" />
         <intercept-url pattern="/resources/**" access="permitAll" />
+        <intercept-url pattern="/auth/**" access="permitAll" />
         <intercept-url pattern="/signin/**" access="permitAll" />
         <intercept-url pattern="/signup/**" access="permitAll" />
-        <intercept-url pattern="/disconnect/facebook" access="permitAll" />
         <intercept-url pattern="/**" access="isAuthenticated()"  />
+        <remember-me />
     </http>
 
     <authentication-manager alias="authenticationManager">

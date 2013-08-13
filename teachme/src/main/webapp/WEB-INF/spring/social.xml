@@ -28,10 +28,12 @@
     <bean id="userIdSource" class="org.springframework.social.security.AuthenticationNameUserIdSource" />
 
     <bean id="connectController" class="org.springframework.social.connect.web.ConnectController"
-          autowire="constructor" />
+          autowire="constructor">
+    </bean>
 
     <bean id="psc" class="org.springframework.social.connect.web.ProviderSignInController"
-          autowire="constructor" />
+          autowire="constructor">
+    </bean>
     <bean id="signInAdapter" class="com.kk.teachme.servlet.signin.SimpleSignInAdapter"
           autowire="constructor" />
 </beans>

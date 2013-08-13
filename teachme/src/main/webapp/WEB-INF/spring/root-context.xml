@@ -10,7 +10,8 @@
 
     <import resource="data.xml" />
     <import resource="security.xml" />
+    <import resource="mvc.xml" />
     <import resource="social.xml" />
 
-    <context:component-scan base-package="com.kk.teachme" />
+    <context:component-scan base-package="com.kk.teachme.servlet" />
 </beans>
