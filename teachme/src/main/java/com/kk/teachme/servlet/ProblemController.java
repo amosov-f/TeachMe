@@ -214,7 +214,7 @@ public class ProblemController {
     @ResponseBody
     public String addUserProblem(@RequestParam int user_id, @RequestParam int problem_id, @RequestParam int status_id)
             throws JSONException {
-        userProblemDepot.addUserProblem(
+        userProblemDepot.setStatus(
                 userDepot.getById(user_id),
                 problemDepot.getById(problem_id),
                 statusDepot.getById(status_id)
@@ -247,7 +247,7 @@ public class ProblemController {
     @ResponseBody
     public String getUserProblemsByTag(@RequestParam int user_id, @RequestParam int tag_id) throws JSONException {
         List<UserProblem> answerList =
-                userProblemDepot.getProblemsByTag(userDepot.getById(user_id), tagDepot.getById(tag_id));
+                userProblemDepot.getByTag(userDepot.getById(user_id), tagDepot.getById(tag_id));
         return JSONCreator.valueOfList(answerList).toString();
     }
 
