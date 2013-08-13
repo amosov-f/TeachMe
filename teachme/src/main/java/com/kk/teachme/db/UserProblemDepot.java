@@ -38,76 +38,152 @@ public class UserProblemDepot {
 
     }
 
-    public boolean addUserProblem(int userId, int problemId) {
+    public boolean addUserProblem(User user, Problem problem, Status status) {
         List<UserProblem> problemList =
                 jdbcTemplate.query("select * from user_problem " +
                 "where user_id = ? and problem_id = ?",
                 getRowMapper(),
-                userId,
-                problemId);
-        if (problemList.size() < 1) {
-            addObject(new UserProblem(
-                    problemDepot.getById(problemId)
-            ),
-                    userDepot.getById(userId)
-            );
+                user.getId(),
+                problem.getId());
+        if (problemList.size() == 0 && status != null && status != Status.NEW) {
+            addObject(new UserProblem(problem, status), user);
             return true;
         }
         return false;
     }
 
-    public List<UserProblem> getAllUserProblems(int userId) {
-        return jdbcTemplate.query("select problem_id, status_id " +
+    public List<UserProblem> getAllUserProblems(User user) {
+
+        List<UserProblem> userProblems = jdbcTemplate.query("select problem_id, status_id " +
                 "from user_problem where user_id = ?",
                 getRowMapper(),
-                userId);
+                user.getId());
+        List<Problem> allProblems = problemDepot.getAllProblems();
+
+        List<UserProblem> allUserProblems = new ArrayList<UserProblem>();
+
+        for (Problem problem : allProblems) {
+            boolean flag = false;
+            for (UserProblem userProblem : userProblems) {
+                if (userProblem.getProblem().getId() == problem.getId()) {
+                    allUserProblems.add(new UserProblem(problem, userProblem.getStatus()));
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag == false) {
+                allUserProblems.add(new UserProblem(problem, Status.NEW));
+            }
+        }
+
+        return allUserProblems;
     }
 
-    public List<UserProblem> getUnsolvedProblems(int userId) {
-        return jdbcTemplate.query("select problem_id, status_id " +
-                "from user_problem where user_id = ? and status_id != ?",
+
+    public List<UserProblem> getUnsolvedProblems(User user) {
+        List<UserProblem> userProblems = jdbcTemplate.query("select problem_id, status_id " +
+                "from user_problem where user_id = ?",
                 getRowMapper(),
-                userId,
-                statusDepot.getStatusId(Status.SOLVED));
+                user.getId());
+        List<Problem> allProblems = problemDepot.getAllProblems();
+
+        List<UserProblem> unsolvedUserProblems = new ArrayList<UserProblem>();
+
+        for (Problem problem : allProblems) {
+            boolean flag = false;
+            for (UserProblem userProblem : userProblems) {
+                if (userProblem.getProblem().getId() == problem.getId()) {
+                    flag = true;
+                    if (userProblem.getStatus() != Status.SOLVED) {
+                        unsolvedUserProblems.add(new UserProblem(problem, userProblem.getStatus()));
+                    }
+                    break;
+                }
+            }
+            if (flag == false) {
+                unsolvedUserProblems.add(new UserProblem(problem, Status.NEW));
+            }
+        }
+
+        return unsolvedUserProblems;
     }
 
-    public List<UserProblem> getSolvedProblems(int userId) {
+    public List<UserProblem> getSolvedProblems(User user) {
         return jdbcTemplate.query("select problem_id, status_id " +
                 "from user_problem where user_id = ? and status_id = ?",
                 getRowMapper(),
-                userId,
+                user.getId(),
                 statusDepot.getStatusId(Status.SOLVED)
         );
     }
 
-    public List<UserProblem> getProblemsByTag(int userId, int tagId) {
-
-        List<Problem> problemList = problemDepot.getByTag(tagDepot.getById(tagId));
+    public List<UserProblem> getProblemsByTag(User user, Tag tag) {
 
         List<UserProblem> userProblems = jdbcTemplate.query("select up.problem_id, up.status_id " +
                 "from user_problem up inner join problem_tag pt on pt.problem_id = up.problem_id " +
                 "where up.user_id = ? and pt.tag_id = ?",
                 getRowMapper(),
-                userId,
-                tagId);
+                user.getId(),
+                tag.getId());
+        List<Problem> problems = problemDepot.getByTag(tag);
 
-        List<UserProblem> resultUserProblemList = new ArrayList<UserProblem>();
+        List<UserProblem> resultUserProblems = new ArrayList<UserProblem>();
 
-        for (Problem problem : problemList) {
-
-            UserProblem newUserProblem = new UserProblem(problem);
-            resultUserProblemList.add(newUserProblem);
-
+        for (Problem problem : problems) {
+            boolean flag = false;
             for (UserProblem userProblem : userProblems) {
-                if (userProblem.getProblem().getId() == newUserProblem.getProblem().getId()) {
-                    newUserProblem.setStatus(userProblem.getStatus());
+                if (userProblem.getProblem().getId() == problem.getId()) {
+                    resultUserProblems.add(new UserProblem(problem, userProblem.getStatus()));
+                    flag = true;
                     break;
                 }
             }
-
+            if (flag == false) {
+                resultUserProblems.add(new UserProblem(problem, Status.NEW));
+            }
         }
 
-        return resultUserProblemList;
+        return resultUserProblems;
+    }
+
+    public List<UserProblem> getProblemsByTagList(User user, List<Tag> tags) {
+
+        if (tags == null || tags.isEmpty()) {
+            return new ArrayList<UserProblem>();
+        }
+
+        List<UserProblem> userProblemsBy1 = jdbcTemplate.query("select up.problem_id, up.status_id " +
+                "from user_problem up inner join problem_tag pt on pt.problem_id = up.problem_id " +
+                "where up.user_id = ? and pt.tag_id = ?",
+                getRowMapper(),
+                user.getId(),
+                tags.get(0).getId());
+        List<Problem> problems = problemDepot.getByTagList(tags);
+
+        List<UserProblem> userProblems = new ArrayList<UserProblem>();
+        for (UserProblem userProblem : userProblemsBy1) {
+            if (userProblem.getProblem().getTags().containsAll(tags)) {
+                userProblems.add(userProblem);
+            }
+        }
+
+        List<UserProblem> resultUserProblems = new ArrayList<UserProblem>();
+
+        for (Problem problem : problems) {
+            boolean flag = false;
+            for (UserProblem userProblem : userProblems) {
+                if (userProblem.getProblem().getId() == problem.getId()) {
+                    resultUserProblems.add(new UserProblem(problem, userProblem.getStatus()));
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag == false) {
+                resultUserProblems.add(new UserProblem(problem, Status.NEW));
+            }
+        }
+
+        return resultUserProblems;
 
     }
 
