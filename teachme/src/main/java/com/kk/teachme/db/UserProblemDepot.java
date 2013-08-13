@@ -82,7 +82,7 @@ public class UserProblemDepot {
 
 
 
-    public List<UserProblem> getProblemsByTag(int userId, Tag tag) {
+    public List<UserProblem> getProblemsByTag(User user, Tag tag) {
 
         List<Problem> problemList = problemDepot.getByTag(tag);
 
@@ -90,7 +90,7 @@ public class UserProblemDepot {
                 "from user_problem up inner join problem_tag pt on pt.problem_id = up.problem_id " +
                 "where up.user_id = ? and pt.tag_id = ?",
                 getRowMapper(),
-                userId,
+                user.getId(),
                 tag.getId());
 
         List<UserProblem> resultUserProblemList = new ArrayList<UserProblem>();
