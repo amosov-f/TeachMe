@@ -1,27 +1,9 @@
-.edit-left-part {
-    float: left;
-    width: 48%;
-    height: 100%;
-    padding-left: 3%;
-}
-
-.edit-right-part {
-    float: right;
-    width: 48%;
-    height: 100%;
-    padding-right: 3%;
-}
-
 .left-part {
-    float: left;
-    width: 29%;
     height: 100%;
     overflow: scroll;
 }
 
 .right-part {
-    float: right;
-    width: 69%;
     height: 100%;
     overflow: scroll;
 }

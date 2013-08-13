@@ -19,9 +19,8 @@
 
 <body>
     <div align="center">
-        <h3>Войти в TeachMe</h3>
+        <h2>Войти в TeachMe</h2>
     </div>
-
 
     <form class="container">
 

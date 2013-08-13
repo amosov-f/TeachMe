@@ -40,9 +40,9 @@
     </div>
 
     <div class="container">
-        <form id="left-part" class="left-part">
+        <form id="left-part" class="left-part col-4">
         </form>
-        <form id="right-part" class="right-part">
+        <form id="right-part" class="right-part col-8">
         </form>
     </div>
 
@@ -107,8 +107,6 @@
                     });
                 }
             });
-
-
         }
 
     </script>

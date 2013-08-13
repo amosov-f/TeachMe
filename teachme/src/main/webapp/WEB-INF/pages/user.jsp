@@ -36,8 +36,8 @@
         <div class="container">
             <a href="/user" class="navbar-brand">TeachMe</a>
             <div class="nav-collapse collapse navbar-responsive-collapse">
-                <div class="navbar-form pull-left">
-                    <input id="tag" type="text" class="form-control col-lg-8" placeholder="поиск по тегам" size="31">
+                <div class="navbar-form pull-left col-3">
+                    <input id="tag" type="text" class="form-control" placeholder="поиск по тегам">
                 </div>
                 <p id="loading" class="navbar-text pull-left"></p>
                 <div class="navbar-form pull-right">
@@ -54,9 +54,9 @@
     </div>
 
     <div class="container">
-        <div id="left-part" class="left-part">
+        <div id="left-part" class="left-part col-4">
         </div>
-        <div id="right-part" class="right-part">
+        <div id="right-part" class="right-part col-8">
         </div>
     </div>
 
@@ -98,6 +98,14 @@
                 data: 'problem_id=' + problemId,
                 success: function(data) {
                     $('#right-part').html(data);
+                    $('#submit').click(submit);
+                    $('#solution').focus();
+                    $('#solution').keypress(function(e) {
+                        if (e.which == 13) {
+                            //$('#submit').attr('checked', 'checked');
+                            submit();
+                        }
+                    });
                 }
             });
 
@@ -119,7 +127,6 @@
             if ($('#tag').tags('newTags').length != 0) {
                 return;
             }
-
             $.ajax({
                 url: '/user_problems_by_tag_list',
                 data: 'user_id=' + <%=user.getId()%> + '&tags=' + concat($('#tag').tags('chosenTags')),
@@ -143,7 +150,7 @@
                 data: 'problem_id=' + problemId + '&solution_text=' + $('#solution').val(),
                 success: function(data) {
                     $('#solveStatus').html(data);
-
+                    $('#solution').select();
                     setItemClass(problemId, $('#itemClass').val());
                 }
             });

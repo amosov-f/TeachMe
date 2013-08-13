@@ -179,9 +179,9 @@
         <h2 id="title"></h2>
     </div>
 
-    <div style="height: 80%;">
+    <div class="container" style="height: 80%;">
 
-        <form class="form-inline edit-left-part" id="problem" method="post" action="/add_problem">
+        <form class="form-inline col-6" id="problem" method="post" action="/add_problem" style="height: 100%;">
             <input type="hidden" id="problemId" name="problem_id"/>
 
             <legend>Название</legend>
@@ -210,7 +210,7 @@
         </form>
 
 
-        <div class="edit-right-part">
+        <div class="col-6" style="height: 100%;">
 
             <form class="form-group" id="figure" method="post" action="/files/upload" enctype="multipart/form-data" style="width:100%; height: 15%;">
                 <legend>Рисунок</legend>

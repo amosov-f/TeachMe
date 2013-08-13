@@ -14,32 +14,39 @@
         <div id="userProblemPanel" name="<%= problem.getId() %>" class="panel panel-info margin-top" value="<%=problem.getId()%>">
             <div class="panel-heading"><%= problem.getName()%></div>
             <div class="well">
-                <%= problem.getStatement().replaceAll("\n", "<br>") %>
-
-                <div align="center">
-                    <%
-                        if (!problem.getFigures().isEmpty()) {
-                    %>
-                    <br><br>
+                <p><%= problem.getStatement().replaceAll("\n", "<br>") %></p>
+            <%
+                if (!problem.getFigures().isEmpty()) {
+            %>
+                    <div align="center">
                     <%
                         for (String figure : problem.getFigures()) {
                     %>
-                    <img src="/files/<%= figure %>" style="height: 30%; max-width: 90%;"/>
+                            <img src="/files/<%= figure %>" style="height: 30%; max-width: 90%;"/>
                     <%
-                            }
                         }
                     %>
-                </div>
+                    </div>
+            <%
+                }
+            %>
             </div>
 
             <div class="container">
-                <h5>Ваш ответ:</h5>
-                <input id="solution" name="solution" class="form-control" type="text" />
+                <div class="col-4">
+                    <div class="form-group col-12">
+                        <input id="solution" name="solution" class="form-control col-12" type="text" placeholder="Ваш ответ" />
+                    </div>
+                    <div class="form-group col-12">
+                        <button id="submit" class="btn btn-primary col-12">
+                            Отправить
+                        </button>
+                    </div>
+                </div>
+                <div class="col-8">
+                    <div id="solveStatus"></div>
+                </div>
 
-                <button class="btn btn-primary" onclick="submit()" style="margin-top: 10px; margin-bottom: 10px">
-                    Отправить
-                </button>
-                <div id="solveStatus"></div>
             </div>
         </div>
 
