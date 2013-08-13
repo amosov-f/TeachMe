@@ -39,7 +39,9 @@ CREATE TABLE checker (
 
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
-  login text
+  username varchar(20),
+  password varchar(255),
+
 );
 
 CREATE TABLE user_problem (

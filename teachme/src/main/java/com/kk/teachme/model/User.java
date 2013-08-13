@@ -1,43 +1,54 @@
 package com.kk.teachme.model;
 
-import java.util.Map;
-
 public class User {
-
     private int id;
-    private String login;
+    private String username;
+    private final String firstName;
+    private final String lastName;
 
-    public User(String login) {
-        this(-1, login);
+    public User(String username) {
+        this(-1, username);
     }
 
-    public User(int id, String login) {
+    public User(int id, String username) {
         this.id = id;
-        this.login = login;
+        this.username = username;
+        this.firstName = "";
+        this.lastName = "";
+    }
+
+    public User(String username, String firstName, String lastName) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public int getId() {
         return id;
     }
 
-    public String getLogin() {
-        return login;
-    }
-
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", login='" + login + '\'' +
-                '}';
+        return username;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
 }

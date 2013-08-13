@@ -10,14 +10,13 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class StatusDepot {
 
-    SimpleJdbcTemplate jdbcTemplate;
+    SimpleJdbcTemplate simpleJdbcTemplate;
 
     private Map<Integer, Status> id2status = new HashMap<Integer, Status>();
 
@@ -28,7 +27,7 @@ public class StatusDepot {
                 while (true) {
                     try {
                         final Map<Integer, Status> map = new HashMap<Integer, Status>();
-                        jdbcTemplate.getJdbcOperations().query("select * from problem_status", new RowCallbackHandler() {
+                        simpleJdbcTemplate.getJdbcOperations().query("select * from problem_status", new RowCallbackHandler() {
                             @Override
                             public void processRow(ResultSet resultSet) throws SQLException {
                                 int id = resultSet.getInt("id");
@@ -54,7 +53,7 @@ public class StatusDepot {
     }
 
     public Status getStatus(User user, Problem problem) {
-        List<Status> statuses = jdbcTemplate.query(
+        List<Status> statuses = simpleJdbcTemplate.query(
                 "select status_id from user_problem where user_id = ? and problem_id = ?",
                 getRowMapper(),
                 user.getId(),
@@ -82,7 +81,7 @@ public class StatusDepot {
     }
 
     public boolean setStatus(User user, Problem problem, Status status) {
-        jdbcTemplate.update(
+        simpleJdbcTemplate.update(
                 "update user_problem set user_id = ? and problem_id = ? and status_id = ?",
                 user.getId(),
                 problem.getId(),
@@ -101,8 +100,8 @@ public class StatusDepot {
     }
 
     @Required
-    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+        this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 
 }

@@ -10,10 +10,10 @@ import java.util.List;
 
 public class ConfigDepot {
 
-    SimpleJdbcTemplate jdbcTemplate;
+    SimpleJdbcTemplate simpleJdbcTemplate;
 
     public void addVariable(String variable, int value) {
-        jdbcTemplate.update(
+        simpleJdbcTemplate.update(
                 "insert into config (variable, value) values (?, ?)",
                 variable,
                 value
@@ -21,7 +21,7 @@ public class ConfigDepot {
     }
 
     public void setValue(String variable, int value) {
-        jdbcTemplate.update(
+        simpleJdbcTemplate.update(
                 "update config set value = ? where variable = ?",
                 value,
                 variable
@@ -30,7 +30,7 @@ public class ConfigDepot {
 
     public Integer getValue(String variable) {
 
-        final List<Integer> values = jdbcTemplate.query("select value from config where variable = ?",
+        final List<Integer> values = simpleJdbcTemplate.query("select value from config where variable = ?",
             new ParameterizedRowMapper<Integer>() {
                 @Override
                 public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
@@ -46,8 +46,8 @@ public class ConfigDepot {
     }
 
     @Required
-    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+        this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 
 }

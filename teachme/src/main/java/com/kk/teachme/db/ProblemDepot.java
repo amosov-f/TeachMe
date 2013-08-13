@@ -1,14 +1,12 @@
 package com.kk.teachme.db;
 
 import com.kk.teachme.model.*;
-import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +23,7 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     @Override
     public int addObject(final Problem problem) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
-        final int update = jdbcTemplate.getJdbcOperations().update(
+        final int update = simpleJdbcTemplate.getJdbcOperations().update(
                 new PreparedStatementCreator() {
                     public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
                         PreparedStatement preparedStatement =
@@ -55,7 +53,7 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     public Problem getById(int id) {
         final Problem byId = super.getById(id);
         if (byId != null) {
-            final List<Integer> query = jdbcTemplate.query("select tag_id from problem_tag where problem_id = ?", new ParameterizedRowMapper<Integer>() {
+            final List<Integer> query = simpleJdbcTemplate.query("select tag_id from problem_tag where problem_id = ?", new ParameterizedRowMapper<Integer>() {
                 @Override
                 public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
                     return resultSet.getInt(1);
@@ -79,7 +77,7 @@ public class ProblemDepot extends AbstractDepot<Problem> {
             return null;
         }
 
-        return jdbcTemplate.query(
+        return simpleJdbcTemplate.query(
                 "select * from problem inner join (select * from problem_tag where tag_id = ?) t on problem.id = t.problem_id",
                 getProblemIdRowMapper("id"),
                 tag.getId()
@@ -87,7 +85,7 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     }
 
     public List<Problem> getSolvedProblems(User user) {
-        return jdbcTemplate.query("select problem_id from user_problem where user_id = ? and status_id = ?",
+        return simpleJdbcTemplate.query("select problem_id from user_problem where user_id = ? and status_id = ?",
                 getProblemIdRowMapper("problem_id"),
                 user.getId(),
                 statusDepot.getStatusId(Status.SOLVED)
@@ -95,15 +93,15 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     }
 
     public List<Problem> getAllProblems() {
-        return jdbcTemplate.query("select * from problem", getProblemIdRowMapper("id"));
+        return simpleJdbcTemplate.query("select * from problem", getProblemIdRowMapper("id"));
     }
 
     public void setById(int id, Problem problem) {
         //if (getById(id) == null) ... suppose, that problem with @id exists
 
-        jdbcTemplate.update("delete from problem_tag where problem_id = ?", id);
+        simpleJdbcTemplate.update("delete from problem_tag where problem_id = ?", id);
 
-        jdbcTemplate.update(
+        simpleJdbcTemplate.update(
                 "update problem set name = ?, statement = ?, figures = ? where id = ?",
                 problem.getName(),
                 problem.getStatement(),
@@ -118,19 +116,19 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     }
 
     public void addTagToProblem(Problem problem, Tag tag) {
-        jdbcTemplate.update("insert ignore into problem_tag values (?, ?)", problem.getId(), tag.getId());
+        simpleJdbcTemplate.update("insert ignore into problem_tag values (?, ?)", problem.getId(), tag.getId());
     }
 
     public void addFigureToProblem(Problem problem, String figure) {
-        jdbcTemplate.update("insert ignore into problem_figure values (?, ?)", problem.getId(), figure);
+        simpleJdbcTemplate.update("insert ignore into problem_figure values (?, ?)", problem.getId(), figure);
     }
 
     public void changeProblemStatement(Problem problem, String newStatement) {
-        jdbcTemplate.update("update problem set statement = ? where id = ?", newStatement, problem.getId());
+        simpleJdbcTemplate.update("update problem set statement = ? where id = ?", newStatement, problem.getId());
     }
 
     public int getProblemsByTagCount(Tag tag) {
-        return jdbcTemplate.query(
+        return simpleJdbcTemplate.query(
                 "select * from problem_tag where tag_id = ?",
                 getProblemIdRowMapper("problem_id"),
                 tag.getId()
@@ -146,20 +144,20 @@ public class ProblemDepot extends AbstractDepot<Problem> {
             return false;
         }
 
-        jdbcTemplate.update("delete from user_problem where problem_id = ?", id);
-        jdbcTemplate.update("delete from problem_tag where problem_id = ?", id);
-        jdbcTemplate.update("delete from solution where id = ?", id);
-        jdbcTemplate.update("delete from problem where id = ?", id);
+        simpleJdbcTemplate.update("delete from user_problem where problem_id = ?", id);
+        simpleJdbcTemplate.update("delete from problem_tag where problem_id = ?", id);
+        simpleJdbcTemplate.update("delete from solution where id = ?", id);
+        simpleJdbcTemplate.update("delete from problem where id = ?", id);
 
         return true;
     }
 
 
     public void deleteAllProblems() {
-        jdbcTemplate.update("delete from user_problem where problem_id >= 1");
-        jdbcTemplate.update("delete from problem_tag where problem_id >= 1");
-        jdbcTemplate.update("delete from solution where id >= 1");
-        jdbcTemplate.update("delete from problem where id >= 1");
+        simpleJdbcTemplate.update("delete from user_problem where problem_id >= 1");
+        simpleJdbcTemplate.update("delete from problem_tag where problem_id >= 1");
+        simpleJdbcTemplate.update("delete from solution where id >= 1");
+        simpleJdbcTemplate.update("delete from problem where id >= 1");
     }
 
     @Override

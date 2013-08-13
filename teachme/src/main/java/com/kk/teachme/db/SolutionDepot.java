@@ -12,7 +12,7 @@ import java.util.List;
 
 public class SolutionDepot {
     CheckerDepot checkerDepot;
-    SimpleJdbcTemplate jdbcTemplate;
+    SimpleJdbcTemplate simpleJdbcTemplate;
 
     public SolveStatus check(int problemId, String userAnswer) {
         Solution solution = getSolution(problemId);
@@ -23,7 +23,7 @@ public class SolutionDepot {
     }
 
     public void addSolution(int problemId, String solution, int checkerId) {
-        jdbcTemplate.update(
+        simpleJdbcTemplate.update(
                 "insert into solution (id, solution_text, checker_id) values (?, ?, ?)",
                 problemId,
                 solution,
@@ -32,7 +32,7 @@ public class SolutionDepot {
     }
 
     public void setSolution(int problemId, String solution, int checkerId) {
-        jdbcTemplate.update(
+        simpleJdbcTemplate.update(
                 "update solution set solution_text = ?, checker_id = ? where id = ?",
                 solution,
                 checkerId,
@@ -41,7 +41,7 @@ public class SolutionDepot {
     }
 
     public Solution getSolution(int problemId) {
-        List<Solution> solutions = jdbcTemplate.query(
+        List<Solution> solutions = simpleJdbcTemplate.query(
                 "select * from solution where id = ?",
                 new ParameterizedRowMapper<Solution>() {
                     @Override
@@ -61,7 +61,7 @@ public class SolutionDepot {
     }
 
     public int getCheckerId(int problemId) {
-        List<Integer> checkerIds = jdbcTemplate.query(
+        List<Integer> checkerIds = simpleJdbcTemplate.query(
                 "select * from solution where id = ?",
                 new ParameterizedRowMapper<Integer>() {
                     @Override
@@ -83,7 +83,7 @@ public class SolutionDepot {
     }
 
     @Required
-    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+        this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 }

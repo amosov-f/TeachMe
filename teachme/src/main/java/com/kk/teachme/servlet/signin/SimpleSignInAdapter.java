@@ -1,7 +1,5 @@
 package com.kk.teachme.servlet.signin;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
@@ -15,12 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 public class SimpleSignInAdapter implements SignInAdapter {
-    private static class SignInUtils {
-        public static void signin(final String userId) {
-            SecurityContextHolder.getContext()
-                    .setAuthentication(new UsernamePasswordAuthenticationToken(userId, null, null));
-        }
-    }
 
     private final RequestCache requestCache;
 

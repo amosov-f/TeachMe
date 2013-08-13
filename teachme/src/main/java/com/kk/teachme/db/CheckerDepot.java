@@ -2,7 +2,6 @@ package com.kk.teachme.db;
 
 import com.kk.teachme.checker.Checker;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -17,7 +16,7 @@ import java.util.Map;
 public class CheckerDepot implements ApplicationContextAware {
 
     ApplicationContext applicationContext;
-    SimpleJdbcTemplate jdbcTemplate;
+    SimpleJdbcTemplate simpleJdbcTemplate;
 
     private Map<Integer, Checker> id2checker = new HashMap<Integer, Checker>();
 
@@ -36,7 +35,7 @@ public class CheckerDepot implements ApplicationContextAware {
                 while (true) {
                     try {
                         final Map<Integer, Checker> map = new HashMap<Integer, Checker>();
-                        jdbcTemplate.getJdbcOperations().query("select * from checker", new RowCallbackHandler() {
+                        simpleJdbcTemplate.getJdbcOperations().query("select * from checker", new RowCallbackHandler() {
                             @Override
                             public void processRow(ResultSet resultSet) throws SQLException {
                                 int id = resultSet.getInt("id");
@@ -61,8 +60,8 @@ public class CheckerDepot implements ApplicationContextAware {
     }
 
     @Required
-    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+        this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 
     @Override

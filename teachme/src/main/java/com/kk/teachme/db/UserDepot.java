@@ -16,14 +16,14 @@ public class UserDepot extends AbstractDepot<User> {
     @Override
     public int addObject(final User user) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
-        final int update = jdbcTemplate.getJdbcOperations().update(
+        final int update = simpleJdbcTemplate.getJdbcOperations().update(
                 new PreparedStatementCreator() {
                     public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
                         PreparedStatement preparedStatement = conn.prepareStatement(
                                 "insert into user (login) values (?)",
                                 Statement.RETURN_GENERATED_KEYS
                         );
-                        preparedStatement.setString(1, user.getLogin());
+                        preparedStatement.setString(1, user.getUsername());
                         return preparedStatement;
                     }
                 }, keyHolder);
@@ -37,7 +37,7 @@ public class UserDepot extends AbstractDepot<User> {
 
     public boolean checkIfExists(String userLogin){
          // check if user with userLogin exists
-         return !jdbcTemplate.query("select * from user where login = ?", getRowMapper(), userLogin).isEmpty();
+         return !simpleJdbcTemplate.query("select * from user where login = ?", getRowMapper(), userLogin).isEmpty();
     }
 
     @Override

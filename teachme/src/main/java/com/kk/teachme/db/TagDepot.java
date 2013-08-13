@@ -2,7 +2,6 @@ package com.kk.teachme.db;
 
 import com.kk.teachme.model.Tag;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -67,7 +66,7 @@ public class TagDepot extends AbstractDepot<Tag> {
         Tag tag = name2tag.get(name);
         if (tag == null) {
             final KeyHolder keyHolder = new GeneratedKeyHolder();
-            final int update = jdbcTemplate.getJdbcOperations().update(
+            final int update = simpleJdbcTemplate.getJdbcOperations().update(
                     new PreparedStatementCreator() {
                         public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
                             PreparedStatement preparedStatement =
@@ -115,11 +114,11 @@ public class TagDepot extends AbstractDepot<Tag> {
         id2tag.put(tag.getId(), tag);
         name2tag.put(tag.getName(), tag);
 
-        jdbcTemplate.update("update tag set name = ? where id = ?", tag.getName(), tag.getId());
+        simpleJdbcTemplate.update("update tag set name = ? where id = ?", tag.getName(), tag.getId());
     }
 
     private List<Tag> getDataBaseTags() {
-        return new ArrayList<Tag>(jdbcTemplate.query("select * from tag", getRowMapper()));
+        return new ArrayList<Tag>(simpleJdbcTemplate.query("select * from tag", getRowMapper()));
     }
 
     @Override

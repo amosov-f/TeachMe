@@ -2,9 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="
             http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
-		    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+		    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
@@ -13,30 +15,36 @@
         <property name="password" value="12345"/>
     </bean>
 
-    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
+    <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
         <constructor-arg ref="dataSource"/>
     </bean>
 
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg ref="dataSource"/>
+    </bean>
+
+    <tx:annotation-driven />
+
     <bean id="configDepot" class="com.kk.teachme.db.ConfigDepot">
-        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
 
     <bean id="tagDepot" class="com.kk.teachme.db.TagDepot" init-method="init">
-        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
 
     <bean id="problemDepot" class="com.kk.teachme.db.ProblemDepot">
-        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="tagDepot" ref="tagDepot"/>
         <property name="statusDepot" ref="statusDepot"/>
     </bean>
 
     <bean id="checkerDepot" class="com.kk.teachme.db.CheckerDepot" init-method="init">
-        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
 
     <bean id="solutionDepot" class="com.kk.teachme.db.SolutionDepot">
-        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="checkerDepot" ref="checkerDepot"/>
     </bean>
 
@@ -47,16 +55,16 @@
     </bean>
 
     <bean id="statusDepot" class="com.kk.teachme.db.StatusDepot" init-method="init">
-        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
 
     <bean id="userDepot" class="com.kk.teachme.db.UserDepot">
-        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="problemDepot" ref="problemDepot"/>
     </bean>
 
     <bean id="userProblemDepot" class="com.kk.teachme.db.UserProblemDepot">
-        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="statusDepot" ref="statusDepot"/>
     </bean>
 

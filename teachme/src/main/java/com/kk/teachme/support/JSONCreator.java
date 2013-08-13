@@ -1,6 +1,5 @@
 package com.kk.teachme.support;
 
-import com.kk.teachme.db.UserDepot;
 import com.kk.teachme.model.User;
 import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Tag;
@@ -50,7 +49,7 @@ public class JSONCreator {
     public static JSONObject valueOf(User user) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("id", user.getId());
-        json.put("login", user.getLogin());
+        json.put("login", user.getUsername());
         //JSONArray tags = new JSONArray();
         //for (Tag t : problem.getTags()) {
         //    tags.put(t.getName());
