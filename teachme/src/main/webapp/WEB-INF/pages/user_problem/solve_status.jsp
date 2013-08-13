@@ -10,7 +10,7 @@
     if (solveStatus.equals(SolveStatus.CORRECT)) {
 %>
         <div class="alert alert-success">
-            Ответ верный!
+            Поздравляем! Ответ верный!
         </div>
 <%
     }

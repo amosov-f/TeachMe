@@ -46,7 +46,7 @@ public class UserController {
     @RequestMapping(value = "/user_problem")
     public String getProblem(@RequestParam int problem_id, Model model) {
         model.addAttribute("problem", problemDepot.getById(problem_id));
-        return "problem/user_problem";
+        return "user_problem/user_problem";
     }
 
     @RequestMapping(value = "/user")
@@ -69,7 +69,7 @@ public class UserController {
 
         model.addAttribute("solveStatus", solution.getChecker().check(solution_text, solution.getSolutionText()));
 
-        return "problem/solve_status";
+        return "user_problem/solve_status";
     }
 
     @RequestMapping(value = "/login")
@@ -78,33 +78,36 @@ public class UserController {
     }
 
     @RequestMapping(value = "/login_user")
-    public String loginUser(@RequestParam String userName, HttpServletRequest request, Model model) {
-        boolean userExists = userDepot.checkIfExists(userName);
-        String resultMessage = null;
-        if (!userExists) {
-            resultMessage = "Error! User not exists";
-        } else {
-            HttpSession session = request.getSession(true);
-            session.setAttribute("username", userName);
-            resultMessage = "ok";
+    public String loginUser(@RequestParam String login, HttpServletRequest request, Model model) {
+        if (!userDepot.checkIfExists(login)) {
+            model.addAttribute("result", "Error! This user does not exist!");
+            return "result";
         }
-        model.addAttribute("result", resultMessage);
-        return "result";
+
+        HttpSession session = request.getSession(true);
+        session.setAttribute("user", userDepot.getByLogin(login));
+
+        return user(model);
     }
 
     @RequestMapping(value = "/reg_user")
-    public String regUser(@RequestParam String userName, Model model) {
-        userName = userName.trim();
-        boolean userExists = userDepot.checkIfExists(userName);
-        String resultMessage = null;
-        if (userExists) {
-            resultMessage = "Error! user already exists";
-        } else {
-            userDepot.addObject(new User(userName));
-            resultMessage = "ok";
+    public String regUser(@RequestParam String login, Model model) {
+        login = login.trim();
+
+        if (userDepot.checkIfExists(login)) {
+            model.addAttribute("result", "Error! User already exists!");
+            return "result";
         }
-        model.addAttribute("result", resultMessage);
-        return "result";
+
+        userDepot.addObject(new User(login));
+
+        return "login";
+    }
+
+    @RequestMapping(value = "/logout_user")
+    public String logoutUser(HttpServletRequest request) {
+        request.getSession().setAttribute("user", null);
+        return "login";
     }
 
     @RequestMapping(value = "/user_{user_id:\\d+}", produces = "application/json; charset=utf-8")

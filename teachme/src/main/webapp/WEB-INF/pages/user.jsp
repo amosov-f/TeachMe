@@ -1,6 +1,7 @@
 <%@ page import="com.kk.teachme.model.Problem" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.kk.teachme.model.Tag" %>
+<%@ page import="com.kk.teachme.model.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <head>
@@ -83,23 +84,45 @@
     }
 </script>
 
-<div class="navbar navbar-fixed-top" >
-    <div class="container">
-        <a href="/user" class="navbar-brand">Решалка</a>
-        <div class="nav-collapse collapse navbar-responsive-collapse">
-            <div class="navbar-form pull-left">
-                <input id="tag" type="text" class="form-control col-lg-8" placeholder="поиск по тегам" size="31">
+
+<%
+
+    if (request == null || request.getSession() == null || request.getSession().getAttribute("user") == null) {
+
+%>
+        <jsp:forward page="login.jsp"/>
+<%
+
+    }
+
+    User user = (User)request.getSession(true).getAttribute("user");
+%>
+    <div class="navbar navbar-fixed-top" >
+        <div class="container">
+            <a href="/user" class="navbar-brand">TeachMe</a>
+            <div class="nav-collapse collapse navbar-responsive-collapse">
+                <div class="navbar-form pull-left">
+                    <input id="tag" type="text" class="form-control col-lg-8" placeholder="поиск по тегам" size="31">
+                </div>
+                <p id="loading" class="navbar-text pull-left"></p>
+                <div class="navbar-form pull-right">
+                    |
+                    <a class="btn" href="/logout_user">
+                        Выйти
+                    </a>
+                </div>
+                <div class="navbar-text pull-right" href="">
+                    <%= user.getLogin() %>
+                </div>
             </div>
-            <p id="loading" class="navbar-text pull-left"></p>
         </div>
     </div>
-</div>
 
-<div class="container">
-    <div id="left-part" class="admin-left-part">
+    <div class="container">
+        <div id="left-part" class="admin-left-part">
+        </div>
+        <div id="right-part" class="admin-right-part">
+        </div>
     </div>
-    <div id="right-part" class="admin-right-part">
-    </div>
-</div>
 
 </body>
