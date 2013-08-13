@@ -9,7 +9,7 @@
     Problem problem = (Problem)request.getAttribute("problem");
 %>
 
-    <a class="list-group-item" onclick="showProblem(<%=problem.getId()%>);" style="cursor: pointer;">
+    <a id="<%= problem.getId() %>" class="list-group-item" style="cursor: pointer;">
         <p class="list-group-item-text"><%= problem.getName() %></p>
     <%
         for (Tag tag : problem.getTags()) {

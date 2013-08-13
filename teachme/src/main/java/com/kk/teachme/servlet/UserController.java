@@ -46,7 +46,7 @@ public class UserController {
     @RequestMapping(value = "/user_problem")
     public String getProblem(@RequestParam int problem_id, Model model) {
         model.addAttribute("problem", problemDepot.getById(problem_id));
-        return "user_problem/user_problem";
+        return "user_problem/user_problem_panel";
     }
 
     @RequestMapping(value = "/user")

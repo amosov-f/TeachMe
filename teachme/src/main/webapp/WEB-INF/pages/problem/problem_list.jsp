@@ -12,7 +12,7 @@
     } else {
         List<Problem> problems = (List<Problem>)request.getAttribute("problemList");
 %>
-        <div class="list-group" style="margin-top: 10px;">
+        <div class="list-group margin-top">
         <%
             for (Problem problem : problems) {
                 request.setAttribute("problem", problem);
