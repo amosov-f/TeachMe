@@ -47,7 +47,8 @@ CREATE TABLE user (
 CREATE TABLE user_problem (
    user_id INTEGER,
    problem_id INTEGER,
-   status_id INTEGER
+   status_id INTEGER,
+   attempts INTEGER
 );
 
 CREATE TABLE problem_status (

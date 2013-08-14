@@ -1,0 +1,1 @@
+alter table user_problem add column attempts integer default 0;
