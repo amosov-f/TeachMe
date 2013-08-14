@@ -1,11 +1,11 @@
 .left-part {
     height: 100%;
-    overflow: scroll;
+    overflow-y: scroll;
 }
 
 .right-part {
     height: 100%;
-    overflow: scroll;
+    overflow-y: scroll;
 }
 
 .margin-top {
