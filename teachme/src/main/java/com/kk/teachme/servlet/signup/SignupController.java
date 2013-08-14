@@ -34,7 +34,6 @@ public class SignupController {
         SignInUtils.signIn(user.getUsername());
         ProviderSignInUtils.handlePostSignUp(user.getUsername(), request);
 
-        System.out.println("!!!");
         return "user";
     }
 }

@@ -33,9 +33,7 @@
 
     }
 
-    //Белы Куна д. 30, лит А, 214
     User user = (User)request.getSession().getAttribute("user");
-    System.out.println(user.getFirstName() + " " + user.getLastName());
 %>
     <div class="navbar navbar-fixed-top" >
         <div class="container">
