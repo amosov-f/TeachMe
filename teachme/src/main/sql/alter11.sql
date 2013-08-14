@@ -1,0 +1,1 @@
+insert into problem_status (status) values("attempted");

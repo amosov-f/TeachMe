@@ -2,5 +2,5 @@ package com.kk.teachme.model;
 
 
 public enum Status {
-    NEW, READ, SOLVED
+    NEW, READ, ATTEMPTED, SOLVED
 }
