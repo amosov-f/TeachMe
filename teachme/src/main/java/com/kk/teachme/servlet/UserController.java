@@ -54,7 +54,7 @@ public class UserController {
         User user = (User)request.getSession().getAttribute("user");
 
         List<UserProblem> userProblems;
-        userProblems = userProblemDepot.getAllUserProblems(user);
+        userProblems = userProblemDepot.getAllUserProblems(user.getId());
 
         model.addAttribute("userProblemList", userProblems);
         model.addAttribute("tagList", tagDepot.getAllTags());

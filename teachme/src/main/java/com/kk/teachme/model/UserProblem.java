@@ -75,4 +75,3 @@ public class UserProblem {
         return problem.hashCode();
     }
 }
-}
