@@ -43,16 +43,16 @@
 }
 
 .user-problem-read {
-    color: #f89406;
+    color: #8f8f8f;
     font-weight: bold;
 }
 
 .user-problem-new {
-    color: #999999;
+    color: #595959;
     font-weight: bold;
 }
 
 .user-problem-attempted {
-    color: #E52B50;
+    color: rgba(210, 110, 6, 0.69);
     font-weight: bold;
 }
