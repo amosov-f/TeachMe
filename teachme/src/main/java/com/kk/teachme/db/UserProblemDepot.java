@@ -128,6 +128,15 @@ public class UserProblemDepot {
         return unsolvedUserProblems;
     }
 
+    public List<UserProblem> getReadProblems(User user) {
+        return jdbcTemplate.query(
+                "select problem_id, status_id from user_problem where user_id = ? and status_id = ?",
+                getRowMapper(),
+                user.getId(),
+                statusDepot.getStatusId(Status.READ)
+        );
+    }
+
     public List<UserProblem> getSolvedProblems(User user) {
         return simpleJdbcTemplate.query("select problem_id, status_id " +
                 "from user_problem where user_id = ? and status_id = ?",

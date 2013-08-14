@@ -98,14 +98,13 @@ public class UserController {
 
         if (!status.equals(Status.SOLVED)) {
             userProblemDepot.setStatus(user, problem, Status.READ);
-
         }
 
         return "user-problem-" + userProblemDepot.getStatus(user, problem).toString().toLowerCase();
     }
 
-    @RequestMapping(value = "/user_problems_by_tag_list")
-    public String getByTagList(@RequestParam int user_id, @RequestParam String tags, Model model) throws UnsupportedEncodingException {
+    @RequestMapping(value = "/user_problems")
+    public String getByTagList(@RequestParam int user_id, @RequestParam String tags, @RequestParam String filter, Model model) throws UnsupportedEncodingException {
         List<UserProblem> userProblems;
 
         User user = userDepot.getById(user_id);
@@ -122,9 +121,15 @@ public class UserController {
             userProblems = userProblemDepot.getByTagList(user, tagList);
         }
 
-        model.addAttribute("userProblemList", userProblems);
+        if (filter == null || filter.isEmpty()) {
+            userProblems.retainAll(userProblemDepot.getAllUserProblems(user));
+        } else if (filter.equals("unsolved")) {
+            userProblems.retainAll(userProblemDepot.getUnsolvedProblems(user));
+        } else if (filter.equals("read")) {
+            userProblems.retainAll(userProblemDepot.getReadProblems(user));
+        }
 
-        //System.out.println(userProblems);
+        model.addAttribute("userProblemList", userProblems);
 
         return "user_problem/user_problem_list";
     }
