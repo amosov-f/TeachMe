@@ -65,21 +65,28 @@ public class TagDepot extends AbstractDepot<Tag> {
     public Tag createIfNotExist(final String name) {
         Tag tag = name2tag.get(name);
         if (tag == null) {
-            final KeyHolder keyHolder = new GeneratedKeyHolder();
-            final int update = simpleJdbcTemplate.getJdbcOperations().update(
-                    new PreparedStatementCreator() {
-                        public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
-                            PreparedStatement preparedStatement =
-                                    conn.prepareStatement("insert into tag (name)values(?)"
-                                            , Statement.RETURN_GENERATED_KEYS);
-                            preparedStatement.setString(1, name);
-                            return preparedStatement;
-                        }
-                    }, keyHolder);
-            if (update > 0) {
-                tag = new Tag(keyHolder.getKey().intValue(), name);
-                id2tag.put(tag.getId(), tag);
-                name2tag.put(tag.getName(), tag);
+            List<Tag> tagList = getByNameFromDB(name);
+            if (tagList.size() == 0) {
+                System.out.println("Adding new tag: " + name);
+                final KeyHolder keyHolder = new GeneratedKeyHolder();
+                final int update = simpleJdbcTemplate.getJdbcOperations().update(
+                        new PreparedStatementCreator() {
+                            public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
+                                PreparedStatement preparedStatement =
+                                        conn.prepareStatement("insert into tag (name)values(?)"
+                                                , Statement.RETURN_GENERATED_KEYS);
+                                preparedStatement.setString(1, name);
+                                return preparedStatement;
+                            }
+                        }, keyHolder);
+                if (update > 0) {
+                    tag = new Tag(keyHolder.getKey().intValue(), name);
+                    id2tag.put(tag.getId(), tag);
+                    name2tag.put(tag.getName(), tag);
+                }
+            } else {
+                id2tag.put(tagList.get(0).getId(), tagList.get(0));
+                name2tag.put(tagList.get(0).getName(), tagList.get(0));
             }
         }
         return tag;
@@ -115,6 +122,12 @@ public class TagDepot extends AbstractDepot<Tag> {
         name2tag.put(tag.getName(), tag);
 
         simpleJdbcTemplate.update("update tag set name = ? where id = ?", tag.getName(), tag.getId());
+    }
+
+    private List<Tag> getByNameFromDB(String name) {
+        return simpleJdbcTemplate.query("select * from tag where name = ?",
+                getRowMapper(),
+                name);
     }
 
     private List<Tag> getDataBaseTags() {

@@ -11,12 +11,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,6 +30,12 @@ import java.util.List;
 @Controller
 @RequestMapping("/")
 public class ProblemController {
+    @Autowired
+    StatusDepot statusDepot;
+
+    @Autowired
+    UserDepot userDepot;
+
     @Autowired
     ConfigDepot configDepot;
 
@@ -41,35 +51,56 @@ public class ProblemController {
     @Autowired
     UserProblemDepot userProblemDepot;
 
-
-    @RequestMapping(value = "/problem_{problem_id:\\d+}", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String getProblems(@PathVariable int problem_id) throws JSONException {
-        Problem problem = problemDepot.getById(problem_id);
-        if (problem == null) {
-            return JSONCreator.errorJSON("Incorrect id").toString();
-        }
-        JSONObject json = JSONCreator.valueOf(problem);
-        return JSONCreator.resultJSON(json).toString();
+    @RequestMapping(value = "/problem_{problem_id:\\d+}")
+    public String getProblem(@PathVariable int problem_id, Model model) {
+        model.addAttribute("problem", problemDepot.getById(problem_id));
+        model.addAttribute("solution", solutionDepot.getSolution(problem_id));
+        return "problem/problem_panel";
     }
 
-    @RequestMapping(value = "/by_tag", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String getProblemsByTagId(@RequestParam int tag_id) throws JSONException {
-        Tag tag = tagDepot.getCached(tag_id);
-        if (tag == null) {
-            return JSONCreator.errorJSON("Incorrect id").toString();
+    @RequestMapping(value = "/edit_{problem_id:\\d+}")
+    public String editProblem(@PathVariable int problem_id, Model model) {
+        model.addAttribute("problem", problemDepot.getById(problem_id));
+        model.addAttribute("solution", solutionDepot.getSolution(problem_id));
+        return "problem/problem_edit";
+    }
+
+
+
+    @RequestMapping(value = "/by_tag")
+    public String getByTag(@RequestParam(required = false) String tag, Model model) {
+        List<Problem> problems;
+        if (tag == null || tag.isEmpty()) {
+            problems = problemDepot.getAllProblems();
+        } else {
+            problems = problemDepot.getByTag(tagDepot.getByName(tag));
         }
 
-        List<Problem> problems = problemDepot.getByTag(tag);
+        model.addAttribute("problemList", problems);
 
-        JSONObject result = JSONCreator.okJson();
-        JSONArray array = new JSONArray();
-        for (Problem problem : problems) {
-            array.put(JSONCreator.valueOf(problem));
+        return "problem/problem_list";
+    }
+
+    @RequestMapping(value = "/by_tag_list")
+    public String getByTagList(@RequestParam String tags, Model model) throws UnsupportedEncodingException {
+        List<Problem> problems;
+
+        if (tags == null || tags.isEmpty()) {
+            problems = problemDepot.getAllProblems();
+        } else {
+            List<Tag> tagList = new ArrayList<Tag>();
+            for (String tag : URLDecoder.decode(tags, "UTF-8").split(",")) {
+                if (tagDepot.getByName(tag) != null) {
+                    tagList.add(tagDepot.getByName(tag));
+                }
+            }
+            problems = problemDepot.getByTagList(tagList);
         }
-        result.put("problems", array);
-        return result.toString();
+
+
+        model.addAttribute("problemList", problems);
+
+        return  "problem/problem_list";
     }
 
     @RequestMapping(value = "/count_by_tag", produces = "application/json; charset=utf-8")
@@ -179,31 +210,44 @@ public class ProblemController {
 
     //methods from UserProblemDepot
 
+    @RequestMapping(value = "/add_uproblem", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String addUserProblem(@RequestParam int user_id, @RequestParam int problem_id, @RequestParam int status_id)
+            throws JSONException {
+        userProblemDepot.setStatus(
+                userDepot.getById(user_id),
+                problemDepot.getById(problem_id),
+                statusDepot.getById(status_id)
+        );
+        return JSONCreator.okJson().toString();
+    }
+
     @RequestMapping(value = "/all_uproblems", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getAllUserProblems(@RequestParam int userId) throws JSONException {
-        List<UserProblem> answerList = userProblemDepot.getAllUserProblems(userId);
+    public String getAllUserProblems(@RequestParam int user_id) throws JSONException {
+        List<UserProblem> answerList = userProblemDepot.getAllUserProblems(userDepot.getById(user_id));
         return JSONCreator.valueOfList(answerList).toString();
     }
 
     @RequestMapping(value = "/solved_uproblems", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getSolvedUserProblems(@RequestParam int userId) throws JSONException {
-        List<UserProblem> answerList = userProblemDepot.getSolvedProblems(userId);
+    public String getSolvedUserProblems(@RequestParam int user_id) throws JSONException {
+        List<UserProblem> answerList = userProblemDepot.getSolvedProblems(userDepot.getById(user_id));
         return JSONCreator.valueOfList(answerList).toString();
     }
 
     @RequestMapping(value = "/unsolved_uproblems", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getUnsolvedUserProblems(@RequestParam int userId) throws JSONException {
-        List<UserProblem> answerList = userProblemDepot.getUnsolvedProblems(userId);
+    public String getUnsolvedUserProblems(@RequestParam int user_id) throws JSONException {
+        List<UserProblem> answerList = userProblemDepot.getUnsolvedProblems(userDepot.getById(user_id));
         return JSONCreator.valueOfList(answerList).toString();
     }
 
     @RequestMapping(value = "/uproblems_tag", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getUserProblemsByTag(@RequestParam int userId, @RequestParam int tagId) throws JSONException {
-        List<UserProblem> answerList = userProblemDepot.getProblemsByTag(userId, tagId);
+    public String getUserProblemsByTag(@RequestParam int user_id, @RequestParam int tag_id) throws JSONException {
+        List<UserProblem> answerList =
+                userProblemDepot.getByTag(userDepot.getById(user_id), tagDepot.getById(tag_id));
         return JSONCreator.valueOfList(answerList).toString();
     }
 

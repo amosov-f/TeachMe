@@ -1,4 +1,5 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
 <%@ page import="java.util.List" %>
 <%@ page import="com.kk.teachme.checker.Checker" %>
 <%@ page import="java.util.Map" %>
@@ -10,314 +11,246 @@
 
 <!DOCTYPE html>
 
+
+<html style="height: 100%;">
 <head>
+
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script type="text/javascript" src="/resources/utility/js/utility.js"></script>
 
     <script type="text/javascript" src="/resources/jquery/js/jquery-2.0.2.js"></script>
     <script type="text/javascript" src="/resources/jquery/js/jquery.form.js"></script>
     <script type="text/javascript" src="/resources/jquery/js/jquery.autocomplete.js"></script>
-
+    <script type="text/javascript" src="/resources/jquery/js/jquery.tags.js"></script>
 
     <script type="text/javascript" src="/resources/bootstrap/js/bootstrap.js"></script>
     <script type="text/javascript" src="/resources/bootstrap/js/bootstrap.file-input.js"></script>
 
-
-    <link href="/resources/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
     <link href="/resources/jquery/css/jquery.autocomplete.css" rel="stylesheet" type="text/css"/>
+    <link href="/resources/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="/resources/utility/css/styles.css" rel="stylesheet" type="text/css"/>
 
-    <style>
-        .left-part {
-            float: left;
-            width: 48%;
-            height: 100%;
-            padding-left: 3%;
-        }
-
-        .right-part {
-            float: right;
-            width: 48%;
-            height: 100%;
-            padding-right: 3%;
-        }
-
-        body, html {
-            height: 100%;
-        }
-
-        .btn-delete, .btn-delete:hover, .btn-delete:active {
-            position: absolute;
-            top: 0;
-            left: 0;
-            background-color: transparent;
-            color: #FF0000;
-            font-size: 200%;
-        }
-
-    </style>
-
-    <title></title>
 </head>
 
-<body>
+<body style="height: 100%;">
 
-<%
-    //show text box (name)
-    //show text box (statement)
-    //list of checkers
-    //text box for answer
-    //add an ability to choose suggestedTags and add new
-    //submit button
-%>
+    <script>
 
-<script type="text/javascript">
+        var figureId;
 
-    var figureId;
-
-    var existTags = new Array();
-    var chosenTags = new Array();
-    var newTags = new Array();
-
-    var splitter = /,\s*/;
-
-    $(document).ready(function() {
-<%      for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {    %>
-            existTags.push("<%=tag.getName()%>");
-<%      }   %>
-        existTags.sort();
-
-<%      if (request.getAttribute("problem") != null) {
-            Problem problem = (Problem)request.getAttribute("problem"); %>
-
-            $('#problemId').val(<%=problem.getId()%>);
-            $('#name').val('<%=problem.getName()%>');
-
-            $('#statement').val(decode('<%=URLEncoder.encode(problem.getStatement(), "UTF-8")%>'));
-
-<%          if (!problem.getFigures().isEmpty()) {  %>
-                figureId = "<%=problem.getFigures().get(0)%>";
-                updateFigure();
-<%          }   %>
-
-            $('#tags').val("<%=problem.getTagsString(false)%>");
-            $('#tagsEdit').val('<%=problem.getTagsString(true)%>');
-
-            $('#solution').val("<%=(String)request.getAttribute("solution")%>");
-            $('#checkerId').val("<%=(Integer)request.getAttribute("checkerId")%>");
-<%      }   %>
-
-
-        $('#file').filestyle({input: false, classButton: 'btn btn-default',  buttonText: 'Загрузить'});
-
-        $('#tagsEdit').bind('click change paste keyup keydown textchange', updateTags);
-        $('#tagsEdit').autocomplete({
-            delimiter: splitter,
-            maxHeight: 130,
-            onSelect: function() {
-                $('#tagsEdit').val($('#tagsEdit').val() + ', ');
+        $(document).ready(function() {
+            var existTags = new Array();
+        <%
+            for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {
+        %>
+                existTags.push("<%=tag.getName()%>");
+        <%
             }
-        });
+        %>
+            existTags.sort();
+        <%
+            if (request.getAttribute("problem") != null) {
+                Problem problem = (Problem)request.getAttribute("problem");
+        %>
+                $('#title').html(
+                        'Задача #<%=problem.getId()%>' +
+                        '<button class="btn btn-delete" onclick="deleteProblem()">&#10006</button>'
+                );
 
-        connectByEnter('#name', '#statement');
-        connectByEnter('#solution', '#tagsEdit');
-        connectByEnter('#tagsEdit', '#name');
+                $('#problemId').val(<%=problem.getId()%>);
+                $('#name').val('<%=problem.getName()%>');
 
-        updateTags();
-    });
+                $('#statement').val(decodeURIComponent('<%=URLEncoder.encode(problem.getStatement(), "UTF-8")%>').replace(/\+/g, ' '));
 
-    function submitProblem() {
-        $('#tags').val(concat(chosenTags));
-        $('#newTags').val(concat(newTags));
-        $('#problem').submit();
-        return false;
-    }
 
-    function uploadFigure() {
-        if ($('#file')[0].files[0].size > 1000000) {
-            alert('Файл слишком большой');
-            return false;
-        }
-        var options = {
-            success: function(data) {
-                figureId = data;
-                updateFigure();
-            }
-        };
-        $('#figure').ajaxSubmit(options);
-
-        return true;
-    }
-
-    function updateFigure() {
-        $('#figures').val(figureId);
-        $('#figureView').html(null);
-        $('#file').val(null);
-        if (figureId != null && figureId != '') {
-            $('#figureView').append(
-                    '<img src="http://localhost:8080/files/' + figureId + '" style="max-height: 30%; max-width: 90%;"/>');
-            $('#figureView').append(
-                    '<button class="btn btn-mini btn-delete" type="button" onclick="clearFigure()">&times</button>'
-            );
-        }
-    }
-
-    function clearFigure() {
-        figureId = null;
-        updateFigure();
-    }
-
-    function updateTags() {
-        chosenTags = jQuery.unique(trim($('#tagsEdit').val()).split(splitter));
-        newTags = сomplement(chosenTags, existTags);
-        $('#newTagsView').val(viewConcat(newTags));
-        $('#tagsEdit').autocomplete().setOptions({lookup: сomplement(existTags, chosenTags)});
-    }
-
-    function contains(obj, el) {
-        return obj.indexOf(el) != -1;
-    }
-
-    function сomplement(a, b) {
-        var result = [];
-        for (var i = 0; i < a.length; ++i) {
-            if (!contains(b, a[i])) {
-                result.push(a[i]);
-            }
-        }
-        return result;
-    }
-
-    function concat(strArray) {
-        var result = '';
-        for (var i = 0; i < strArray.length; ++i) {
-            if (i > 0) {
-                result += ',';
-            }
-            result += strArray[i];
-        }
-        return encodeURIComponent(result);
-    }
-
-    function viewConcat(strArray) {
-        var result = '';
-        for (var i = 0; i < strArray.length; ++i) {
-            if (i > 0) {
-                result += ', ';
-            }
-            result += strArray[i];
-        }
-        return result;
-    }
-
-    function trim(str) {
-        var l = -1;
-        for (var i = 0; i < str.length; ++i) {
-            if (str[i] != ' ' &&  str[i] != ',') {
-                if (l == -1) {
-                    l = i;
+            <%
+                if (!problem.getFigures().isEmpty()) {
+            %>
+                    figureId = "<%=problem.getFigures().get(0)%>";
+                    updateFigure();
+            <%
                 }
-                r = i;
+            %>
+
+                $('#tags').val("<%=problem.getTagsString(false)%>");
+                $('#tagsEdit').val('<%=problem.getTagsString(true)%>');
+
+                $('#solution').val("<%=(String)request.getAttribute("solution")%>");
+                $('#checkerId').val("<%=(Integer)request.getAttribute("checkerId")%>");
+        <%
+            } else {
+        %>
+                $('#title').append('<h2>Новая задача</h2>');
+        <%
+            }
+        %>
+
+            $('#tagsEdit').tags({tags: existTags, newTagsOutput: $('#newTagsView')});
+            $('#file').filestyle({input: false, classButton: 'btn btn-default', buttonText: 'Загрузить'});
+
+            connectByEnter('#name', '#statement');
+            connectByEnter('#solution', '#tagsEdit');
+            connectByEnter('#tagsEdit', '#name');
+        });
+
+        function submitProblem() {
+            if ($('#problemId').val() === '' && $('#statement').val() === '') {
+                alert("Не бывает задач без условия!");
+                return false;
+            }
+
+            $('#tags').val(concat($('#tagsEdit').tags('chosenTags')));
+            $('#newTags').val(concat($('#tagsEdit').tags('newTags')));
+
+            $('#problem').submit();
+
+            return true;
+        }
+
+        function cancel() {
+        <%
+            if (request.getAttribute("problem") == null) {
+        %>
+                document.location.href = '/admin'
+        <%
+            } else {
+        %>
+                document.location.href = '/admin?problem_id=<%=((Problem)request.getAttribute("problem")).getId()%>'
+        <%
+            }
+        %>
+        }
+
+        function deleteProblem() {
+            if (confirm("Вы точно хотите удалить задачу?")) {
+                document.location.href = 'delete_problem?problem_id=' + $('#problemId').val();
             }
         }
-        return str.substr(l, r + 1);
-    }
 
-    function decode(str) {
-        return decodeURIComponent(str).replace(/\+/g, ' ');
-    }
-
-    function connectByEnter(from, to) {
-        $(from).keypress(function(e) {
-            if (e.which == 13) {
-                $(to).focus();
-                e.preventDefault();
+        function uploadFigure() {
+            if ($('#file')[0].files[0].size > 1000000) {
+                alert('Файл слишком большой');
+                return false;
             }
-        });
-    }
+            $('#figure').ajaxSubmit({
+                success: function(data) {
+                    figureId = data;
+                    updateFigure();
+                }
+            });
 
-</script>
+            return true;
+        }
 
-<div align="center">
-    <h2>Задача</h2>
-</div>
+        function updateFigure() {
+            $('#figures').val(figureId);
+            $('#figureView').html(null);
+            $('#file').val(null);
+            if (figureId != null && figureId != '') {
+                $('#figureView').append(
+                        '<img src="http://localhost:8080/files/' + figureId + '" style="max-height: 30%; max-width: 90%;"/>'
+                );
 
-<div style="height: 80%;">
+                $('#figureView').append(
+                        '<button class="btn btn-delete left-top" type="button" onclick="clearFigure()">&#10006</button>'
+                );
+            }
+        }
 
-    <form class="form-inline left-part" id="problem" method="post" action="/add_problem">
-        <input type="hidden" id="problemId" name="problem_id"/>
+        function clearFigure() {
+            figureId = null;
+            updateFigure();
+        }
 
-        <legend>Название</legend>
-        <input type="text" id="name" class="form-control" name="name"/>
+        function connectByEnter(from, to) {
+            $(from).keypress(function(e) {
+                if (e.which == 13) {
+                    $(to).focus();
+                    e.preventDefault();
+                }
+            });
+        }
 
-        <legend>Условие</legend>
-        <textarea id="statement" class="form-control" name="statement" style="height: 30%;"></textarea>
+    </script>
 
-        <input type="hidden" id="figures" name="figures"/>
-        <input type="hidden" id="tags" name="tags"/>
+    <div align="center" style="height: 8%;">
+        <h2 id="title"></h2>
+    </div>
 
+    <div class="container" style="height: 80%;">
 
-        <legend>Ответ</legend>
-        <textarea id="solution" name="solution" class="form-control" ></textarea>
+        <form class="form-inline col-6" id="problem" method="post" action="/add_problem" style="height: 100%;">
+            <input type="hidden" id="problemId" name="problem_id"/>
 
-        <legend>Тип ответа</legend>
-        <select id="checkerId" name="checker_id" class="form-control" size="1" style="width: 30%;">
-<%          Map<Integer, Checker> checkers = (Map<Integer, Checker>)request.getAttribute("checkerMap"); %>
-<%          for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
-                <option value="<%=checker.getKey()%>"><%=checker.getValue().getName()%></option>
-<%          }   %>
-        </select>
+            <legend>Название</legend>
+            <input type="text" id="name" class="form-control" name="name"/>
 
-        <input type="hidden" id="newTags" name="newTags" />
+            <legend>Условие</legend>
+            <textarea id="statement" class="form-control" name="statement" style="height: 30%;"></textarea>
 
-    </form>
+            <input type="hidden" id="figures" name="figures"/>
+            <input type="hidden" id="tags" name="tags"/>
 
 
-    <div class="right-part">
+            <legend>Ответ</legend>
+            <textarea id="solution" name="solution" class="form-control" ></textarea>
 
-        <form class="form-group" id="figure" method="post" action="/files/upload" enctype="multipart/form-data" style="width:100%; height: 15%;">
-            <legend>Рисунок</legend>
-            <input
-                    name="file"
-                    id="file"
-                    type="file"
-                    accept="image/*"
-                    onchange="return uploadFigure();"
-                    />
-            <!--<input
-                    id="figureReference"
-                    type="text"
-                    class="form-control"
-                    readonly="true"
-                    placeholder="ссылка на рисунок"
-                    style="float: right; width: 50%;"
-            /> -->
+            <legend>Тип ответа</legend>
+            <select id="checkerId" name="checker_id" class="form-control" size="1" style="width: 30%;">
+    <%          Map<Integer, Checker> checkers = (Map<Integer, Checker>)request.getAttribute("checkerMap"); %>
+    <%          for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
+                    <option value="<%=checker.getKey()%>"><%=checker.getValue().getName()%></option>
+    <%          }   %>
+            </select>
+
+            <input type="hidden" id="newTags" name="newTags" />
 
         </form>
 
-        <div class="media" id="figureView" style="max-height: 35%; position: relative;"></div>
 
-        <div style="height: 50%;">
-            <legend>Теги</legend>
-            <input id="newTagsView" class="form-control" readonly="true" style="width: 100%" placeholder="новые теги" />
-            <br>
-            <input
-                    id="tagsEdit"
-                    type="search"
-                    class="form-control"
-                    placeholder="введите теги через запятую..."
-                    style="width: 100%"
-                    />
+        <div class="col-6" style="height: 100%;">
+
+            <form class="form-group" id="figure" method="post" action="/files/upload" enctype="multipart/form-data" style="width:100%; height: 15%;">
+                <legend>Рисунок</legend>
+                <input
+                        name="file"
+                        id="file"
+                        type="file"
+                        accept="image/*"
+                        onchange="return uploadFigure();"
+                />
+
+            </form>
+
+            <div class="media" id="figureView" style="max-height: 35%; position: relative;"></div>
+
+            <div style="height: 50%;">
+                <legend>Теги</legend>
+                <input id="newTagsView" class="form-control" readonly="true" style="width: 100%" placeholder="новые теги"/>
+                <br>
+                <input
+                        id="tagsEdit"
+                        type="text"
+                        class="form-control"
+                        placeholder="введите теги через запятую..."
+                        style="width: 100%"
+                />
+            </div>
+
         </div>
 
     </div>
 
-</div>
-
-<div align="center" style="height: 7%;">
-    <button class="btn btn-default" type="button" onclick="return submitProblem();" style="width: 30%; height: 90%">
-        Сохранить
-    </button>
-</div>
+    <div align="center" style="height: 7%;">
+        <button class="btn btn-default" type="button" onclick="return submitProblem();" style="width: 30%; height: 90%">
+            Сохранить
+        </button>
+        <button class="btn" type="button" onclick="cancel()" style="width: 10%; height: 90%">
+            Отмена
+        </button>
+    </div>
 
 </body>
 </html>

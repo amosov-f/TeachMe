@@ -5,6 +5,11 @@ public class UserProblem {
     private Problem problem;
     private Status status;
 
+    public UserProblem(Problem problem) {
+        this.problem = problem;
+        status = Status.NEW;
+    }
+
     public UserProblem(Problem problem, Status status) {
         this.problem = problem;
         this.status = status;
@@ -24,5 +29,13 @@ public class UserProblem {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "UserProblem{" +
+                "problem=" + problem.getId() +
+                ", status=" + status +
+                '}';
     }
 }

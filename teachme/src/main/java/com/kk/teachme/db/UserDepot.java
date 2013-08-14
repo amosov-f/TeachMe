@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.*;
+import java.util.List;
 
 public class UserDepot extends AbstractDepot<User> {
 
@@ -38,6 +39,14 @@ public class UserDepot extends AbstractDepot<User> {
     public boolean checkIfExists(String userLogin){
          // check if user with userLogin exists
          return !simpleJdbcTemplate.query("select * from user where login = ?", getRowMapper(), userLogin).isEmpty();
+    }
+
+    public User getByLogin(String login) {
+        List<User> userList = simpleJdbcTemplate.query("select * from user where login = ?", getRowMapper(), login);
+        if (userList.isEmpty()) {
+            return null;
+        }
+        return userList.get(0);
     }
 
     @Override

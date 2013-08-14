@@ -1,6 +1,7 @@
 <%@ page import="com.kk.teachme.model.Problem" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.kk.teachme.model.Tag" %>
+<%@ page import="com.kk.teachme.model.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <head>
@@ -21,36 +22,49 @@
 </head>
 
 <body style="padding-top: 50px;">
+<%
+    if (request.getSession().getAttribute("user") == null) {
+%>
+        <jsp:forward page="login.jsp"/>
+<%
 
+    }
+
+    User user = (User)request.getSession(true).getAttribute("user");
+%>
     <div class="navbar navbar-fixed-top" >
         <div class="container">
-            <a href="/admin" class="navbar-brand">Админка</a>
+            <a href="/user" class="navbar-brand">TeachMe</a>
             <div class="nav-collapse collapse navbar-responsive-collapse">
-                <div class="navbar-form pull-left">
-                    <input id="tag" type="text" class="form-control col-lg-8" placeholder="поиск по тегам" size="31">
+                <div class="navbar-form pull-left col-3">
+                    <input id="tag" type="text" class="form-control" placeholder="поиск по тегам">
                 </div>
                 <p id="loading" class="navbar-text pull-left"></p>
                 <div class="navbar-form pull-right">
-                    <a class="btn btn-primary" href="/new_problem">
-                        Новая задача
+                    |
+                    <a class="btn" href="/logout_user">
+                        Выйти
                     </a>
+                </div>
+                <div class="navbar-text pull-right" href="">
+                    <%= user.getLogin() %>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="container">
-        <form id="left-part" class="left-part col-4">
-        </form>
-        <form id="right-part" class="right-part col-8">
-        </form>
+        <div id="left-part" class="left-part col-4">
+        </div>
+        <div id="right-part" class="right-part col-8">
+        </div>
     </div>
-
 
     <script>
 
+        var existTags = new Array();
+
         $(document).ready(function() {
-            var existTags = new Array();
         <%
             for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {
         %>
@@ -61,7 +75,6 @@
             existTags.sort();
 
             $('#tag').tags({tags: existTags});
-
             $('#tag').bind('change keyup', showProblemList);
 
         <%
@@ -81,21 +94,42 @@
 
         function showProblem(problemId) {
             $.ajax({
-                url: '/problem_' + problemId,
+                url: '/user_problem',
+                data: 'problem_id=' + problemId,
                 success: function(data) {
                     $('#right-part').html(data);
+                    $('#submit').click(submit);
+                    $('#solution').focus();
+                    $('#solution').keypress(function(e) {
+                        if (e.which == 13) {
+                            //$('#submit').attr('checked', 'checked');
+                            submit();
+                        }
+                    });
                 }
             });
+
+            $.ajax({
+                url: '/read',
+                data: 'problem_id=' + problemId,
+                success: function(data) {
+                    setItemClass(problemId, data);
+                }
+            });
+        }
+
+        function setItemClass(problemId, className) {
+            $('#name' + problemId).removeClass();
+            $('#name' + problemId).addClass(className);
         }
 
         function showProblemList() {
             if ($('#tag').tags('newTags').length != 0) {
                 return;
             }
-
             $.ajax({
-                url: '/by_tag_list',
-                data: 'tags=' + concat($('#tag').tags('chosenTags')),
+                url: '/user_problems_by_tag_list',
+                data: 'user_id=' + <%=user.getId()%> + '&tags=' + concat($('#tag').tags('chosenTags')),
                 beforeSend: function() {
                     $('#loading').text('Загрузка...');
                 },
@@ -105,6 +139,22 @@
                     $('.list-group-item').click(function() {
                         showProblem($(this).attr('name'));
                     });
+                }
+            });
+        }
+
+        function submit() {
+            var problemId =  $('#userProblemPanel').attr('name');
+            $.ajax({
+                url: '/submit',
+                data: 'problem_id=' + problemId + '&solution_text=' + $('#solution').val(),
+                beforeSend: function() {
+                    $('#solveStatus').html('');
+                },
+                success: function(data) {
+                    $('#solveStatus').html(data);
+                    $('#solution').select();
+                    setItemClass(problemId, $('#itemClass').val());
                 }
             });
         }

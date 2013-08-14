@@ -1,11 +1,8 @@
 package com.kk.teachme.servlet;
 
-import com.kk.teachme.db.ProblemDepot;
-import com.kk.teachme.db.StatusDepot;
-import com.kk.teachme.db.UserDepot;
-import com.kk.teachme.model.Problem;
-import com.kk.teachme.model.Status;
-import com.kk.teachme.model.User;
+import com.kk.teachme.checker.SolveStatus;
+import com.kk.teachme.db.*;
+import com.kk.teachme.model.*;
 import com.kk.teachme.support.JSONCreator;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,6 +17,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -31,7 +32,102 @@ public class UserController {
     ProblemDepot problemDepot;
 
     @Autowired
+    SolutionDepot solutionDepot;
+
+    @Autowired
+    TagDepot tagDepot;
+
+    @Autowired
     StatusDepot statusDepot;
+
+    @Autowired
+    UserProblemDepot userProblemDepot;
+
+    @RequestMapping(value = "/user_problem")
+    public String getProblem(@RequestParam int problem_id, Model model) {
+        model.addAttribute("problem", problemDepot.getById(problem_id));
+        return "user_problem/user_problem_panel";
+    }
+
+    @RequestMapping(value = "/user")
+    public String user(Model model) {
+        List<Problem> problems;
+        problems = problemDepot.getAllProblems();
+        if (problems == null) {
+            problems = new ArrayList<Problem>();
+        }
+
+        model.addAttribute("problemList", problems);
+        model.addAttribute("tagList", tagDepot.getAllTags());
+
+        return "user";
+    }
+
+    @RequestMapping(value = "/submit")
+    public String submit(@RequestParam int problem_id, @RequestParam String solution_text, HttpServletRequest request, Model model) {
+        if (request.getSession().getAttribute("user") == null) {
+            return "login";
+        }
+
+        User user = (User)request.getSession().getAttribute("user");
+        Problem problem = problemDepot.getById(problem_id);
+        Solution solution = solutionDepot.getSolution(problem_id);
+
+        SolveStatus solveStatus = solution.getChecker().check(solution_text, solution.getSolutionText());
+
+        if (solveStatus == SolveStatus.CORRECT) {
+            userProblemDepot.setStatus(user, problem, Status.SOLVED);
+        }
+
+        model.addAttribute("solveStatus", solveStatus);
+        model.addAttribute(
+                "itemClass",
+                "user-problem-" + userProblemDepot.getStatus(user, problem).toString().toLowerCase()
+        );
+
+        return "user_problem/solve_status";
+    }
+
+    @RequestMapping(value = "/read")
+    @ResponseBody
+    public String read(@RequestParam int problem_id, HttpServletRequest request, Model model) throws JSONException {
+        User user = (User)request.getSession().getAttribute("user");
+        Problem problem = problemDepot.getById(problem_id);
+
+        Status status = userProblemDepot.getStatus(user, problem);
+
+        if (!status.equals(Status.SOLVED)) {
+            userProblemDepot.setStatus(user, problem, Status.READ);
+
+        }
+
+        return "user-problem-" + userProblemDepot.getStatus(user, problem).toString().toLowerCase();
+    }
+
+    @RequestMapping(value = "/user_problems_by_tag_list")
+    public String getByTagList(@RequestParam int user_id, @RequestParam String tags, Model model) throws UnsupportedEncodingException {
+        List<UserProblem> userProblems;
+
+        User user = userDepot.getById(user_id);
+
+        if (tags == null || tags.isEmpty()) {
+            userProblems = userProblemDepot.getAllUserProblems(user);
+        } else {
+            List<Tag> tagList = new ArrayList<Tag>();
+            for (String tag : URLDecoder.decode(tags, "UTF-8").split(",")) {
+                if (tagDepot.getByName(tag) != null) {
+                    tagList.add(tagDepot.getByName(tag));
+                }
+            }
+            userProblems = userProblemDepot.getByTagList(user, tagList);
+        }
+
+        model.addAttribute("userProblemList", userProblems);
+
+        //System.out.println(userProblems);
+
+        return "user_problem/user_problem_list";
+    }
 
     @RequestMapping(value = "/login")
     public String loginForm(Model model) {
@@ -39,34 +135,38 @@ public class UserController {
     }
 
     @RequestMapping(value = "/login_user")
-    public String loginUser(@RequestParam String userName, HttpServletRequest request, Model model) {
-        boolean userExists = userDepot.checkIfExists(userName);
-        String resultMessage = null;
-        if (!userExists) {
-            resultMessage = "Error! User not exists";
-        } else {
-            HttpSession session = request.getSession(true);
-            session.setAttribute("username", userName);
-            resultMessage = "ok";
+    public String loginUser(@RequestParam String login, HttpServletRequest request, Model model) {
+        if (!userDepot.checkIfExists(login)) {
+            model.addAttribute("result", "Error! This user does not exist!");
+            return "result";
         }
-        model.addAttribute("result", resultMessage);
-        return "result";
+
+        HttpSession session = request.getSession(true);
+        session.setAttribute("user", userDepot.getByLogin(login));
+
+        return user(model);
     }
 
     @RequestMapping(value = "/reg_user")
-    public String registerUser(@RequestParam String userName, Model model) {
-        userName = userName.trim();
-        boolean userExists = userDepot.checkIfExists(userName);
-        String resultMessage = null;
-        if (userExists) {
-            resultMessage = "Error! user already exists";
-        } else {
-            userDepot.addObject(new User(userName));
-            resultMessage = "ok";
+    public String regUser(@RequestParam String login, Model model) {
+        login = login.trim();
+
+        if (userDepot.checkIfExists(login)) {
+            model.addAttribute("result", "Error! User already exists!");
+            return "result";
         }
 
-        model.addAttribute("result", resultMessage);
-        return "result";
+        userDepot.addObject(new User(login));
+
+        model.addAttribute("login", login);
+
+        return "login";
+    }
+
+    @RequestMapping(value = "/logout_user")
+    public String logoutUser(HttpServletRequest request) {
+        request.getSession().setAttribute("user", null);
+        return "login";
     }
 
     @RequestMapping(value = "/user_{user_id:\\d+}", produces = "application/json; charset=utf-8")

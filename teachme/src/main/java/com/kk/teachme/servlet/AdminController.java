@@ -4,22 +4,14 @@ import com.kk.teachme.db.*;
 import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Solution;
 import com.kk.teachme.model.Tag;
-import com.kk.teachme.support.JSONCreator;
-import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,6 +83,12 @@ public class AdminController {
         }
 
         return admin(problem_id, model);
+    }
+
+    @RequestMapping(value = "/delete_problem")
+    public String deleteProblem(@RequestParam int problem_id, Model model) {
+        problemDepot.deleteById(problem_id);
+        return admin(-1, model);
     }
 
     @RequestMapping(value = "/new_problem")
