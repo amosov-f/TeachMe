@@ -148,6 +148,9 @@
             $.ajax({
                 url: '/submit',
                 data: 'problem_id=' + problemId + '&solution_text=' + $('#solution').val(),
+                beforeSend: function() {
+                    $('#solveStatus').html('');
+                },
                 success: function(data) {
                     $('#solveStatus').html(data);
                     $('#solution').select();
