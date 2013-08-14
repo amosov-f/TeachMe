@@ -33,7 +33,9 @@
 
     }
 
-    User user = (User)request.getSession(true).getAttribute("user");
+    //Белы Куна д. 30, лит А, 214
+    User user = (User)request.getSession().getAttribute("user");
+    System.out.println(user.getFirstName() + " " + user.getLastName());
 %>
     <div class="navbar navbar-fixed-top" >
         <div class="container">
@@ -59,7 +61,7 @@
                     </a>
                 </div>
                 <div class="navbar-text pull-right" href="">
-                    <%= user.getLogin() %>
+                    <%= user.getFirstName() + " " + user.getLastName() %>
                 </div>
             </div>
         </div>
@@ -92,7 +94,7 @@
 
         <%
             if (request.getAttribute("problemId") != null) {
-                for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {
+                for (Problem problem : (List<Problem>)request.getAttribute("userProblemList")) {
                     if (problem.getId() == (Integer)request.getAttribute("problemId")) {
         %>
                         showProblem(<%= problem.getId() %>);

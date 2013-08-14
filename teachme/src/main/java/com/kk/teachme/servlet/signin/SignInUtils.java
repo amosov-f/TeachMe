@@ -1,5 +1,8 @@
 package com.kk.teachme.servlet.signin;
 
+import com.kk.teachme.db.UserDepot;
+import com.kk.teachme.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -9,8 +12,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 * Time: 2:13 AM
 */
 public class SignInUtils {
-    public static void signin(final String userId) {
+
+    public static void signIn(final String username) {
         SecurityContextHolder.getContext()
-                .setAuthentication(new UsernamePasswordAuthenticationToken(userId, null, null));
+                .setAuthentication(new UsernamePasswordAuthenticationToken(username, null, null));
+
     }
+
 }

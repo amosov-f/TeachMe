@@ -21,10 +21,13 @@ public class UserDepot extends AbstractDepot<User> {
                 new PreparedStatementCreator() {
                     public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
                         PreparedStatement preparedStatement = conn.prepareStatement(
-                                "insert into user (login) values (?)",
+                                "insert into user (username, first_name, last_name) values (?, ?, ?)",
                                 Statement.RETURN_GENERATED_KEYS
                         );
                         preparedStatement.setString(1, user.getUsername());
+                        preparedStatement.setString(2, user.getFirstName());
+                        preparedStatement.setString(3, user.getLastName());
+
                         return preparedStatement;
                     }
                 }, keyHolder);
@@ -36,13 +39,13 @@ public class UserDepot extends AbstractDepot<User> {
         return -1;
     }
 
-    public boolean checkIfExists(String userLogin){
+    public boolean contains(String username) {
          // check if user with userLogin exists
-         return !simpleJdbcTemplate.query("select * from user where login = ?", getRowMapper(), userLogin).isEmpty();
+         return !simpleJdbcTemplate.query("select * from user where username = ?", getRowMapper(), username).isEmpty();
     }
 
-    public User getByLogin(String login) {
-        List<User> userList = simpleJdbcTemplate.query("select * from user where login = ?", getRowMapper(), login);
+    public User getByUsername(String username) {
+        List<User> userList = simpleJdbcTemplate.query("select * from user where username = ?", getRowMapper(), username);
         if (userList.isEmpty()) {
             return null;
         }
@@ -53,7 +56,12 @@ public class UserDepot extends AbstractDepot<User> {
     protected ParameterizedRowMapper<User> getRowMapper() {
         return new ParameterizedRowMapper<User>() {
             public User mapRow(ResultSet resultSet, int i) throws SQLException {
-                return new User(resultSet.getInt("id"), resultSet.getString("login"));
+                return new User(
+                        resultSet.getInt("id"),
+                        resultSet.getString("username"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name")
+                );
             }
         };
     }

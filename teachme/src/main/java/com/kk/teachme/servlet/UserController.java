@@ -50,14 +50,13 @@ public class UserController {
     }
 
     @RequestMapping(value = "/user")
-    public String user(Model model) {
-        List<Problem> problems;
-        problems = problemDepot.getAllProblems();
-        if (problems == null) {
-            problems = new ArrayList<Problem>();
-        }
+    public String user(HttpServletRequest request, Model model) {
+        User user = (User)request.getSession().getAttribute("user");
 
-        model.addAttribute("problemList", problems);
+        List<UserProblem> userProblems;
+        userProblems = userProblemDepot.getAllUserProblems(user);
+
+        model.addAttribute("userProblemList", userProblems);
         model.addAttribute("tagList", tagDepot.getAllTags());
 
         return "user";
@@ -141,22 +140,22 @@ public class UserController {
 
     @RequestMapping(value = "/login_user")
     public String loginUser(@RequestParam String login, HttpServletRequest request, Model model) {
-        if (!userDepot.checkIfExists(login)) {
+        if (!userDepot.contains(login)) {
             model.addAttribute("result", "Error! This user does not exist!");
             return "result";
         }
 
         HttpSession session = request.getSession(true);
-        session.setAttribute("user", userDepot.getByLogin(login));
+        session.setAttribute("user", userDepot.getByUsername(login));
 
-        return user(model);
+        return user(request, model);
     }
 
     @RequestMapping(value = "/reg_user")
     public String regUser(@RequestParam String login, Model model) {
         login = login.trim();
 
-        if (userDepot.checkIfExists(login)) {
+        if (userDepot.contains(login)) {
             model.addAttribute("result", "Error! User already exists!");
             return "result";
         }

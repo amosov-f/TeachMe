@@ -1,8 +1,10 @@
 package com.kk.teachme.servlet.signup;
 
 import com.google.api.client.repackaged.com.google.common.base.Preconditions;
+import com.kk.teachme.db.UserDepot;
 import com.kk.teachme.model.User;
 import com.kk.teachme.servlet.signin.SignInUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.web.ProviderSignInUtils;
 import org.springframework.social.vkontakte.api.VKontakte;
@@ -14,8 +16,11 @@ import org.springframework.web.context.request.WebRequest;
 
 @Controller
 public class SignupController {
-    @RequestMapping(value="/signup", method=RequestMethod.GET)
-    public String signup(WebRequest request) {
+    @Autowired
+    UserDepot userDepot;
+
+    @RequestMapping(value = "/signup", method = RequestMethod.GET)
+    public String signUp(WebRequest request) {
         final Connection<?> connection = ProviderSignInUtils.getConnection(request);
         Preconditions.checkNotNull(connection);
         Preconditions.checkArgument(
@@ -23,11 +28,13 @@ public class SignupController {
 
         final VKontakte vkontakte = (VKontakte) connection.getApi();
         final VKontakteProfile profile = vkontakte.usersOperations().getProfile();
-        final User user =
-            new User(profile.getScreenName(), profile.getFirstName(), profile.getLastName());
 
-        SignInUtils.signin(user.getUsername());
+        User user = new User(profile.getScreenName(), profile.getFirstName(), profile.getLastName());
+
+        SignInUtils.signIn(user.getUsername());
         ProviderSignInUtils.handlePostSignUp(user.getUsername(), request);
-        return "redirect:/";
+
+        System.out.println("!!!");
+        return "user";
     }
 }
