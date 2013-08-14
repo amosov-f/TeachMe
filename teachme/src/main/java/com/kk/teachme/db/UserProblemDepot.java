@@ -181,10 +181,9 @@ public class UserProblemDepot {
 
     public List<UserProblem> getSolvedProblems(int userId) {
         return simpleJdbcTemplate.query("select problem_id, attempts " +
-                "from user_problem where user_id = ? and status_id = ?",
+                "from user_problem where user_id = ? and status_id > 0",
                 getRowMapper(),
-                userId,
-                statusDepot.getStatusId(Status.SOLVED)
+                userId
         );
     }
 
