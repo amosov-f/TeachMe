@@ -74,7 +74,6 @@ public class UserProblemDepot {
         return userProblemList.get(0).getStatus();
     }
 
-     //brigantina+@yandex.ru   для бухгалтера реквизиты банковской кариы контактны
     public List<UserProblem> getAllUserProblems(User user) {
 
         List<UserProblem> userProblems = jdbcTemplate.query("select problem_id, status_id " +
@@ -129,6 +128,15 @@ public class UserProblemDepot {
         }
 
         return unsolvedUserProblems;
+    }
+
+    public List<UserProblem> getReadProblems(User user) {
+        return jdbcTemplate.query(
+                "select problem_id, status_id from user_problem where user_id = ? and status_id = ?",
+                getRowMapper(),
+                user.getId(),
+                statusDepot.getStatusId(Status.READ)
+        );
     }
 
     public List<UserProblem> getSolvedProblems(User user) {

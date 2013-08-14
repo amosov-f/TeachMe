@@ -27,14 +27,96 @@
 
     <script type="text/javascript" src="/resources/bootstrap/js/bootstrap.js"></script>
     <script type="text/javascript" src="/resources/bootstrap/js/bootstrap.file-input.js"></script>
+    <script type="text/javascript" src="/resources/bootstrap/js/bootstrap-select.js"></script>
 
     <link href="/resources/jquery/css/jquery.autocomplete.css" rel="stylesheet" type="text/css"/>
     <link href="/resources/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="/resources/bootstrap/css/bootstrap-select.css" rel="stylesheet" type="text/css"/>
+
     <link href="/resources/utility/css/styles.css" rel="stylesheet" type="text/css"/>
 
 </head>
 
 <body style="height: 100%;">
+
+    <div align="center" style="height: 8%;">
+        <h2 id="title"></h2>
+    </div>
+
+    <div class="container" style="height: 80%;">
+
+        <form class="form-inline col-6" id="problem" method="post" action="/add_problem" style="height: 100%;">
+            <input type="hidden" id="problemId" name="problem_id"/>
+
+            <legend>Название</legend>
+            <input type="text" id="name" class="form-control" name="name"/>
+
+            <legend>Условие</legend>
+            <textarea id="statement" class="form-control" name="statement" style="height: 30%;"></textarea>
+
+            <input type="hidden" id="figures" name="figures"/>
+            <input type="hidden" id="tags" name="tags"/>
+
+
+            <legend>Ответ</legend>
+            <textarea id="solution" name="solution" class="form-control" ></textarea>
+
+            <legend>Тип ответа</legend>
+            <select id="checkerId" name="checker_id" class="selectpicker">
+    <%          Map<Integer, Checker> checkers = (Map<Integer, Checker>)request.getAttribute("checkerMap"); %>
+    <%          for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
+                    <option value="<%=checker.getKey()%>"><%=checker.getValue().getName()%></option>
+    <%          }   %>
+            </select>
+
+            <input type="hidden" id="newTags" name="newTags" />
+
+        </form>
+
+
+        <div class="col-6" style="height: 100%;">
+
+            <form class="form-group" id="figure" method="post" action="/files/upload" enctype="multipart/form-data" style="width:100%; height: 15%;">
+                <legend>Рисунок</legend>
+                <input
+                        name="file"
+                        id="file"
+                        type="file"
+                        accept="image/*"
+                        onchange="return uploadFigure();"
+                />
+
+            </form>
+
+            <div class="media" id="figureView" style="max-height: 35%; position: relative;"></div>
+
+            <div style="height: 50%;">
+                <legend>Теги</legend>
+                <input id="newTagsView" class="form-control" readonly="true" style="width: 100%" placeholder="новые теги"/>
+                <br>
+                <input
+                        id="tagsEdit"
+                        type="text"
+                        class="form-control"
+                        placeholder="введите теги через запятую..."
+                        style="width: 100%"
+                />
+            </div>
+
+        </div>
+
+    </div>
+
+    <div align="center" style="height: 7%;">
+        <button class="btn btn-default" type="button" onclick="return submitProblem();" style="width: 30%; height: 90%">
+            Сохранить
+        </button>
+        <button class="btn" type="button" onclick="cancel()" style="width: 10%; height: 90%">
+            Отмена
+        </button>
+    </div>
+
+
 
     <script>
 
@@ -79,10 +161,10 @@
 
                 $('#solution').val("<%=(String)request.getAttribute("solution")%>");
                 $('#checkerId').val("<%=(Integer)request.getAttribute("checkerId")%>");
-        <%
-            } else {
-        %>
-                $('#title').append('<h2>Новая задача</h2>');
+            <%
+                } else {
+            %>
+                    $('#title').append('<h2>Новая задача</h2>');
         <%
             }
         %>
@@ -93,6 +175,8 @@
             connectByEnter('#name', '#statement');
             connectByEnter('#solution', '#tagsEdit');
             connectByEnter('#tagsEdit', '#name');
+
+            $('.selectpicker').selectpicker();
         });
 
         function submitProblem() {
@@ -174,83 +258,6 @@
         }
 
     </script>
-
-    <div align="center" style="height: 8%;">
-        <h2 id="title"></h2>
-    </div>
-
-    <div class="container" style="height: 80%;">
-
-        <form class="form-inline col-6" id="problem" method="post" action="/add_problem" style="height: 100%;">
-            <input type="hidden" id="problemId" name="problem_id"/>
-
-            <legend>Название</legend>
-            <input type="text" id="name" class="form-control" name="name"/>
-
-            <legend>Условие</legend>
-            <textarea id="statement" class="form-control" name="statement" style="height: 30%;"></textarea>
-
-            <input type="hidden" id="figures" name="figures"/>
-            <input type="hidden" id="tags" name="tags"/>
-
-
-            <legend>Ответ</legend>
-            <textarea id="solution" name="solution" class="form-control" ></textarea>
-
-            <legend>Тип ответа</legend>
-            <select id="checkerId" name="checker_id" class="form-control" size="1" style="width: 30%;">
-    <%          Map<Integer, Checker> checkers = (Map<Integer, Checker>)request.getAttribute("checkerMap"); %>
-    <%          for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
-                    <option value="<%=checker.getKey()%>"><%=checker.getValue().getName()%></option>
-    <%          }   %>
-            </select>
-
-            <input type="hidden" id="newTags" name="newTags" />
-
-        </form>
-
-
-        <div class="col-6" style="height: 100%;">
-
-            <form class="form-group" id="figure" method="post" action="/files/upload" enctype="multipart/form-data" style="width:100%; height: 15%;">
-                <legend>Рисунок</legend>
-                <input
-                        name="file"
-                        id="file"
-                        type="file"
-                        accept="image/*"
-                        onchange="return uploadFigure();"
-                />
-
-            </form>
-
-            <div class="media" id="figureView" style="max-height: 35%; position: relative;"></div>
-
-            <div style="height: 50%;">
-                <legend>Теги</legend>
-                <input id="newTagsView" class="form-control" readonly="true" style="width: 100%" placeholder="новые теги"/>
-                <br>
-                <input
-                        id="tagsEdit"
-                        type="text"
-                        class="form-control"
-                        placeholder="введите теги через запятую..."
-                        style="width: 100%"
-                />
-            </div>
-
-        </div>
-
-    </div>
-
-    <div align="center" style="height: 7%;">
-        <button class="btn btn-default" type="button" onclick="return submitProblem();" style="width: 30%; height: 90%">
-            Сохранить
-        </button>
-        <button class="btn" type="button" onclick="cancel()" style="width: 10%; height: 90%">
-            Отмена
-        </button>
-    </div>
 
 </body>
 </html>

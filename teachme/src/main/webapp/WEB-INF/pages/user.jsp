@@ -15,8 +15,11 @@
     <script type="text/javascript" src="/resources/jquery/js/jquery.tags.js"></script>
 
     <script type="text/javascript" src="/resources/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/resources/bootstrap/js/bootstrap-select.js"></script>
 
     <link rel="stylesheet" type="text/css" href="/resources/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="/resources/bootstrap/css/bootstrap-select.css"/>
+
     <link rel="stylesheet" type="text/css" href="/resources/jquery/css/jquery.autocomplete.css"/>
     <link rel="stylesheet" type="text/css" href="/resources/utility/css/styles.css"/>
 </head>
@@ -39,6 +42,15 @@
                 <div class="navbar-form pull-left col-3">
                     <input id="tag" type="text" class="form-control" placeholder="поиск по тегам">
                 </div>
+
+                <div class="navbar-form pull-left">
+                    <select id="filter" class="selectpicker">
+                        <option value="">Без фильтра</option>
+                        <option value="unsolved">Не решенные</option>
+                        <option value="read">Прочитанные</option>
+                    </select>
+                </div>
+
                 <p id="loading" class="navbar-text pull-left"></p>
                 <div class="navbar-form pull-right">
                     |
@@ -62,9 +74,10 @@
 
     <script>
 
-        var existTags = new Array();
+
 
         $(document).ready(function() {
+            var existTags = new Array();
         <%
             for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {
         %>
@@ -88,7 +101,7 @@
                 }
             }
         %>
-
+            $('.selectpicker').selectpicker();
             showProblemList();
         });
 
@@ -128,8 +141,9 @@
                 return;
             }
             $.ajax({
-                url: '/user_problems_by_tag_list',
-                data: 'user_id=' + <%=user.getId()%> + '&tags=' + concat($('#tag').tags('chosenTags')),
+                url: '/user_problems',
+                data: 'user_id=' +
+                        <%=user.getId()%> + '&tags=' + concat($('#tag').tags('chosenTags')) + '&filter=' + $('#filter').val(),
                 beforeSend: function() {
                     $('#loading').text('Загрузка...');
                 },
