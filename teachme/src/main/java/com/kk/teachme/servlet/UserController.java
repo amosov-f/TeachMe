@@ -69,19 +69,20 @@ public class UserController {
         }
 
         User user = (User)request.getSession().getAttribute("user");
-        Problem problem = problemDepot.getById(problem_id);
         Solution solution = solutionDepot.getSolution(problem_id);
 
         SolveStatus solveStatus = solution.getChecker().check(solution_text, solution.getSolutionText());
 
         if (solveStatus == SolveStatus.CORRECT) {
-            userProblemDepot.setStatus(user, problem, Status.SOLVED);
+            userProblemDepot.attempt(user.getId(), problem_id, true);
+        } else if (solveStatus == SolveStatus.INCORRECT) {
+            userProblemDepot.attempt(user.getId(), problem_id, false);
         }
 
         model.addAttribute("solveStatus", solveStatus);
         model.addAttribute(
                 "itemClass",
-                "user-problem-" + userProblemDepot.getStatus(user, problem).toString().toLowerCase()
+                "user-problem-" + userProblemDepot.getStatus(user.getId(), problem_id).toString().toLowerCase()
         );
 
         return "user_problem/solve_status";
@@ -91,25 +92,22 @@ public class UserController {
     @ResponseBody
     public String read(@RequestParam int problem_id, HttpServletRequest request, Model model) throws JSONException {
         User user = (User)request.getSession().getAttribute("user");
-        Problem problem = problemDepot.getById(problem_id);
 
-        Status status = userProblemDepot.getStatus(user, problem);
+        Status status = userProblemDepot.getStatus(user.getId(), problem_id);
 
         if (!status.equals(Status.SOLVED)) {
-            userProblemDepot.setStatus(user, problem, Status.READ);
+            userProblemDepot.addUserProblem(user.getId(), problem_id);
         }
 
-        return "user-problem-" + userProblemDepot.getStatus(user, problem).toString().toLowerCase();
+        return "user-problem-" + userProblemDepot.getStatus(user.getId(), problem_id).toString().toLowerCase();
     }
 
     @RequestMapping(value = "/user_problems")
     public String getByTagList(@RequestParam int user_id, @RequestParam String tags, @RequestParam String filter, Model model) throws UnsupportedEncodingException {
         List<UserProblem> userProblems;
 
-        User user = userDepot.getById(user_id);
-
         if (tags == null || tags.isEmpty()) {
-            userProblems = userProblemDepot.getAllUserProblems(user);
+            userProblems = userProblemDepot.getAllUserProblems(user_id);
         } else {
             List<Tag> tagList = new ArrayList<Tag>();
             for (String tag : URLDecoder.decode(tags, "UTF-8").split(",")) {
@@ -117,15 +115,15 @@ public class UserController {
                     tagList.add(tagDepot.getByName(tag));
                 }
             }
-            userProblems = userProblemDepot.getByTagList(user, tagList);
+            userProblems = userProblemDepot.getByTagList(user_id, tagList);
         }
 
         if (filter == null || filter.isEmpty()) {
-            userProblems.retainAll(userProblemDepot.getAllUserProblems(user));
+            userProblems.retainAll(userProblemDepot.getAllUserProblems(user_id));
         } else if (filter.equals("unsolved")) {
-            userProblems.retainAll(userProblemDepot.getUnsolvedProblems(user));
+            userProblems.retainAll(userProblemDepot.getUnsolvedProblems(user_id));
         } else if (filter.equals("read")) {
-            userProblems.retainAll(userProblemDepot.getReadProblems(user));
+            userProblems.retainAll(userProblemDepot.getReadProblems(user_id));
         }
 
         model.addAttribute("userProblemList", userProblems);
