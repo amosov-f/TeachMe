@@ -65,7 +65,6 @@
 
     <bean id="userProblemDepot" class="com.kk.teachme.db.UserProblemDepot">
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-        <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="userDepot" ref="userDepot"/>
         <property name="problemDepot" ref="problemDepot"/>
         <property name="statusDepot" ref="statusDepot"/>
