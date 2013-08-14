@@ -101,7 +101,12 @@
                 }
             }
         %>
-            $('.selectpicker').selectpicker();
+            $('#filter').change(function() {
+                showProblemList();
+            });
+
+            $('#filter').selectpicker();
+
             showProblemList();
         });
 
