@@ -21,41 +21,45 @@
 
 <body>
     <div align="center">
-        <h2>Войти в TeachMe</h2>
+        <h2>
+            Войти в TeachMe
+            <form name="vk_signin" id="vk_signin" action="<c:url value="/signin/vkontakte"/>" method="post">
+                <input type="image" src="/resources/icons/vk.jpg"/>
+            </form>
+
+        </h2>
     </div>
 
-    <form class="container">
+    <%--<form class="container">--%>
 
-        <div class="form-group">
-        <%
-            if (request.getAttribute("login") != null) {
-                String login = (String)request.getAttribute("login");
-        %>
-                <h4><span style="color: blue;"><%= login %></span>, вы успешно зарегестрированы!</h4>
-        <%
-            }
-        %>
-            <input id="login" class="form-control" type="text" name="login" placeholder="Введите логин"/>
-        </div>
+        <%--<div class="form-group">--%>
+        <%--<%--%>
+            <%--if (request.getAttribute("login") != null) {--%>
+                <%--String login = (String)request.getAttribute("login");--%>
+        <%--%>--%>
+                <%--<h4><span style="color: blue;"><%= login %></span>, вы успешно зарегестрированы!</h4>--%>
+        <%--<%--%>
+            <%--}--%>
+        <%--%>--%>
+            <%--<input id="login" class="form-control" type="text" name="login" placeholder="Введите логин"/>--%>
+        <%--</div>--%>
 
-        <div class="form-horizontal">
-            <button id="button1" class="btn btn-primary" type="submit" onclick="logIn()">Войти</button>
-            <button id="button2" class="btn" type="submit" onclick="register()">Зарегистрироваться</button>
-        </div>
-    </form>
+        <%--<div class="form-horizontal">--%>
+            <%--<button id="button1" class="btn btn-primary" type="submit" onclick="logIn()">Войти</button>--%>
+            <%--<button id="button2" class="btn" type="submit" onclick="register()">Зарегистрироваться</button>--%>
+        <%--</div>--%>
+    <%--</form>--%>
 
-    <script type="text/javascript">
-        function logIn() {
-            $('form').attr('action', '/login_user');
-        }
-        function register() {
-            $('form').attr('action', '/reg_user');
-        }
-    </script>
+    <%--<script type="text/javascript">--%>
+        <%--function logIn() {--%>
+            <%--$('form').attr('action', '/login_user');--%>
+        <%--}--%>
+        <%--function register() {--%>
+            <%--$('form').attr('action', '/reg_user');--%>
+        <%--}--%>
+    <%--</script>--%>
+    <%----%>
 
-<form name="vk_signin" id="vk_signin" action="<c:url value="/signin/vkontakte"/>" method="POST">
-    <button type="submit">Sign In with VKontakte</button>
-</form>
 
 </body>
 </html>

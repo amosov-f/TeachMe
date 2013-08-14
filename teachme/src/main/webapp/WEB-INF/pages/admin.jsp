@@ -20,7 +20,7 @@
     <link rel="stylesheet" type="text/css" href="/resources/utility/css/styles.css"/>
 </head>
 
-<body style="padding-top: 50px;">
+<body style="padding-top: 60px;">
 
     <div class="navbar navbar-fixed-top" >
         <div class="container">

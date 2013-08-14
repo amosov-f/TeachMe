@@ -24,7 +24,7 @@
     <link rel="stylesheet" type="text/css" href="/resources/utility/css/styles.css"/>
 </head>
 
-<body style="padding-top: 50px;">
+<body style="padding-top: 60px;">
 <%
     if (request.getSession().getAttribute("user") == null) {
 %>
@@ -44,7 +44,7 @@
                 </div>
 
                 <div class="navbar-form pull-left">
-                    <select id="filter" class="selectpicker">
+                    <select id="filter" class="selectpicker show-tick" data-style="btn-info">
                         <option value="">Без фильтра</option>
                         <option value="unsolved">Не решенные</option>
                         <option value="read">Прочитанные</option>
