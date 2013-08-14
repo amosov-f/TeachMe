@@ -21,9 +21,9 @@ public class UserProblem {
     public Status getStatus() {
         if (attempts == null) {
             return Status.NEW;
-        } else if (attempts == 0) {
-            return Status.ATTEMPTED;
         } else if (attempts < 0) {
+            return Status.ATTEMPTED;
+        } else if (attempts == 0) {
             return Status.READ;
         } else {
             return Status.SOLVED;
