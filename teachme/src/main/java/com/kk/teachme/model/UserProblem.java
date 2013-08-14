@@ -3,16 +3,15 @@ package com.kk.teachme.model;
 
 public class UserProblem {
     private Problem problem;
-    private Status status;
+    private Integer attempts;
 
     public UserProblem(Problem problem) {
-        this.problem = problem;
-        status = Status.NEW;
+        this(problem, null);
     }
 
-    public UserProblem(Problem problem, Status status) {
+    public UserProblem(Problem problem, Integer attempts) {
         this.problem = problem;
-        this.status = status;
+        this.attempts = attempts;
     }
 
     public Problem getProblem() {
@@ -20,22 +19,42 @@ public class UserProblem {
     }
 
     public Status getStatus() {
-        return status;
+        if (attempts == null) {
+            return Status.NEW;
+        } else if (attempts <= 0) {
+            return Status.READ;
+        } else {
+            return Status.SOLVED;
+        }
     }
 
-    public void setProblem(Problem problem) {
-        this.problem = problem;
+    public int getAttempts() {
+        if (attempts == null) {
+            return 0;
+        } else {
+            return Math.abs(attempts);
+        }
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public Integer getRawAttempts() {
+        return attempts;
+    }
+
+    public void attempt(boolean solved) {
+        if (attempts <= 0) {
+            attempts--;
+            if (solved == true) {
+                attempts = Math.abs(attempts);
+            }
+        }
     }
 
     @Override
     public String toString() {
         return "UserProblem{" +
                 "problem=" + problem.getId() +
-                ", status=" + status +
+                ", status=" + getStatus() +
+                ", attempts=" + getAttempts() +
                 '}';
     }
 }

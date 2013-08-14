@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,25 +21,50 @@ public class UserProblemDepot {
 
     SimpleJdbcTemplate simpleJdbcTemplate;
 
-    public void addObject(final User user, final UserProblem userProblem) {
+    private void addObject(final int userId, final UserProblem userProblem) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         final int update = simpleJdbcTemplate.getJdbcOperations().update(
                 new PreparedStatementCreator() {
                     public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
                         PreparedStatement preparedStatement =
-                                conn.prepareStatement("insert into user_problem (user_id, problem_id, status_id) values(?, ?, ?)"
+                                conn.prepareStatement("insert into user_problem (user_id, problem_id, status_id, attempts) values(?, ?, ?, ?)"
                                         , Statement.RETURN_GENERATED_KEYS);
-                        preparedStatement.setInt(1, user.getId());
+                        preparedStatement.setInt(1, userId);
                         preparedStatement.setInt(2, userProblem.getProblem().getId());
                         preparedStatement.setInt(3, statusDepot.getStatusId(userProblem.getStatus()));
+                        preparedStatement.setInt(4, userProblem.getRawAttempts());
                         return preparedStatement;
                     }
                 }, keyHolder);
 
     }
 
-    public boolean setStatus(User user, Problem problem, Status status) {
-        List<UserProblem> problemList = simpleJdbcTemplate.query(
+    private void alterObject(final int userId, final UserProblem userProblem) {
+        simpleJdbcTemplate.update(
+                "update user_problem set status_id = ?, attempts = ? where user_id = ? and problem_id = ?",
+                statusDepot.getStatusId(userProblem.getStatus()),
+                userProblem.getRawAttempts(),
+                userId,
+                userProblem.getProblem().getId()
+        );
+    }
+
+    public boolean addUserProblem(int userId, int problemId) {
+        List<UserProblem> userProblems = simpleJdbcTemplate.query("select problem_id, attempts " +
+                "from user_problem where user_id = ? and problem_id = ?",
+                getRowMapper(),
+                userId,
+                problemId
+        );
+        if (userProblems.isEmpty()) {
+            addObject(userId, new UserProblem(problemDepot.getById(problemId), 0));
+            return true;
+        }
+        return false;
+    }
+
+ /*   public boolean setStatus(User user, Problem problem, Status status) {
+        List<UserProblem> problemList = jdbcTemplate.query(
                 "select * from user_problem where user_id = ? and problem_id = ?",
                 getRowMapper(),
                 user.getId(),
@@ -48,7 +74,7 @@ public class UserProblemDepot {
             addObject(user, new UserProblem(problem, status));
             return true;
         }
-        simpleJdbcTemplate.update(
+        jdbcTemplate.update(
                 "update user_problem set status_id = ? where user_id = ? and problem_id = ?",
                 statusDepot.getStatusId(status),
                 user.getId(),
@@ -56,28 +82,53 @@ public class UserProblemDepot {
         );
 
         return false;
-    }
+    } */
 
-    public Status getStatus(User user, Problem problem) {
-        List<UserProblem> userProblemList = simpleJdbcTemplate.query(
-                "select * from user_problem where user_id = ? and problem_id = ?",
+    public UserProblem attempt(int userId, int problemId, boolean solved) {
+
+        List<UserProblem> userProblems = simpleJdbcTemplate.query("select problem_id, attempts " +
+                "from user_problem where user_id = ? and problem_id = ?",
                 getRowMapper(),
-                user.getId(),
-                problem.getId()
+                userId,
+                problemId
         );
 
-        if (userProblemList.isEmpty()) {
+        UserProblem userProblem;
+        if (userProblems.isEmpty()) {
+            userProblem = new UserProblem(problemDepot.getById(problemId));
+            addObject(userId, userProblem);
+        } else {
+            userProblem = userProblems.get(0);
+        }
+
+        userProblem.attempt(solved);
+        alterObject(userId, userProblem);
+
+        return userProblem;
+
+    }
+
+    public Status getStatus(int userId, int problemId) {
+        List<UserProblem> userProblems = simpleJdbcTemplate.query("select problem_id, attempts " +
+                "from user_problem where user_id = ? and problem_id = ?",
+                getRowMapper(),
+                userId,
+                problemId
+        );
+
+        if (userProblems.isEmpty()) {
             return Status.NEW;
         }
 
-        return userProblemList.get(0).getStatus();
+        return userProblems.get(0).getStatus();
     }
 
-    public List<UserProblem> getAllUserProblems(User user) {
-        List<UserProblem> userProblems = simpleJdbcTemplate.query("select problem_id, status_id " +
+    public List<UserProblem> getAllUserProblems(int userId) {
+
+        List<UserProblem> userProblems = simpleJdbcTemplate.query("select problem_id, attempts " +
                 "from user_problem where user_id = ?",
                 getRowMapper(),
-                user.getId());
+                userId);
         List<Problem> allProblems = problemDepot.getAllProblems();
 
         List<UserProblem> allUserProblems = new ArrayList<UserProblem>();
@@ -86,24 +137,25 @@ public class UserProblemDepot {
             boolean flag = false;
             for (UserProblem userProblem : userProblems) {
                 if (userProblem.getProblem().getId() == problem.getId()) {
-                    allUserProblems.add(new UserProblem(problem, userProblem.getStatus()));
+                    allUserProblems.add(new UserProblem(problem, userProblem.getRawAttempts()));
                     flag = true;
                     break;
                 }
             }
-            if (!flag) {
-                allUserProblems.add(new UserProblem(problem, Status.NEW));
+            if (flag == false) {
+                allUserProblems.add(new UserProblem(problem));
             }
         }
 
         return allUserProblems;
     }
 
-    public List<UserProblem> getUnsolvedProblems(User user) {
-        List<UserProblem> userProblems = simpleJdbcTemplate.query("select problem_id, status_id " +
+
+    public List<UserProblem> getUnsolvedProblems(int userId) {
+        List<UserProblem> userProblems = simpleJdbcTemplate.query("select problem_id, attempts " +
                 "from user_problem where user_id = ?",
                 getRowMapper(),
-                user.getId());
+                userId);
         List<Problem> allProblems = problemDepot.getAllProblems();
 
         List<UserProblem> unsolvedUserProblems = new ArrayList<UserProblem>();
@@ -114,45 +166,43 @@ public class UserProblemDepot {
                 if (userProblem.getProblem().getId() == problem.getId()) {
                     flag = true;
                     if (userProblem.getStatus() != Status.SOLVED) {
-                        unsolvedUserProblems.add(new UserProblem(problem, userProblem.getStatus()));
+                        unsolvedUserProblems.add(new UserProblem(problem, userProblem.getRawAttempts()));
                     }
                     break;
                 }
             }
-            if (flag) {
-                continue;
+            if (flag == false) {
+                unsolvedUserProblems.add(new UserProblem(problem));
             }
-            unsolvedUserProblems.add(new UserProblem(problem, Status.NEW));
         }
 
         return unsolvedUserProblems;
     }
 
-    public List<UserProblem> getReadProblems(User user) {
-        return simpleJdbcTemplate.query(
-                "select problem_id, status_id from user_problem where user_id = ? and status_id = ?",
-                getRowMapper(),
-                user.getId(),
-                statusDepot.getStatusId(Status.READ)
-        );
-    }
-
-    public List<UserProblem> getSolvedProblems(User user) {
-        return simpleJdbcTemplate.query("select problem_id, status_id " +
+    public List<UserProblem> getSolvedProblems(int userId) {
+        return simpleJdbcTemplate.query("select problem_id, attempts " +
                 "from user_problem where user_id = ? and status_id = ?",
                 getRowMapper(),
-                user.getId(),
+                userId,
                 statusDepot.getStatusId(Status.SOLVED)
         );
     }
 
-    public List<UserProblem> getByTag(User user, Tag tag) {
+    public List<UserProblem> getReadProblems(int userId) {
+        return simpleJdbcTemplate.query("select problem_id, attempts " +
+                "from user_problem where user_id = ?",
+                getRowMapper(),
+                userId
+        );
+    }
 
-        List<UserProblem> userProblems = simpleJdbcTemplate.query("select up.problem_id, up.status_id " +
+    public List<UserProblem> getByTag(int userId, Tag tag) {
+
+        List<UserProblem> userProblems = simpleJdbcTemplate.query("select up.problem_id, up.attempts " +
                 "from user_problem up inner join problem_tag pt on pt.problem_id = up.problem_id " +
                 "where up.user_id = ? and pt.tag_id = ?",
                 getRowMapper(),
-                user.getId(),
+                userId,
                 tag.getId());
         List<Problem> problems = problemDepot.getByTag(tag);
 
@@ -162,30 +212,30 @@ public class UserProblemDepot {
             boolean flag = false;
             for (UserProblem userProblem : userProblems) {
                 if (userProblem.getProblem().getId() == problem.getId()) {
-                    resultUserProblems.add(new UserProblem(problem, userProblem.getStatus()));
+                    resultUserProblems.add(new UserProblem(problem, userProblem.getRawAttempts()));
                     flag = true;
                     break;
                 }
             }
-            if (!flag) {
-                resultUserProblems.add(new UserProblem(problem, Status.NEW));
+            if (flag == false) {
+                resultUserProblems.add(new UserProblem(problem));
             }
         }
 
         return resultUserProblems;
     }
 
-    public List<UserProblem> getByTagList(User user, List<Tag> tags) {
+    public List<UserProblem> getByTagList(int userId, List<Tag> tags) {
 
         if (tags == null || tags.isEmpty()) {
             return new ArrayList<UserProblem>();
         }
 
-        List<UserProblem> userProblemsBy1 = simpleJdbcTemplate.query("select up.problem_id, up.status_id " +
+        List<UserProblem> userProblemsBy1 = simpleJdbcTemplate.query("select up.problem_id, up.attempts " +
                 "from user_problem up inner join problem_tag pt on pt.problem_id = up.problem_id " +
                 "where up.user_id = ? and pt.tag_id = ?",
                 getRowMapper(),
-                user.getId(),
+                userId,
                 tags.get(0).getId());
         List<Problem> problems = problemDepot.getByTagList(tags);
 
@@ -202,13 +252,13 @@ public class UserProblemDepot {
             boolean flag = false;
             for (UserProblem userProblem : userProblems) {
                 if (userProblem.getProblem().getId() == problem.getId()) {
-                    resultUserProblems.add(new UserProblem(problem, userProblem.getStatus()));
+                    resultUserProblems.add(new UserProblem(problem, userProblem.getRawAttempts()));
                     flag = true;
                     break;
                 }
             }
-            if (!flag) {
-                resultUserProblems.add(new UserProblem(problem, Status.NEW));
+            if (flag == false) {
+                resultUserProblems.add(new UserProblem(problem));
             }
         }
 
@@ -221,10 +271,11 @@ public class UserProblemDepot {
             public UserProblem mapRow(ResultSet resultSet, int i) throws SQLException {
                 return new UserProblem(
                         problemDepot.getById(resultSet.getInt("problem_id")),
-                        statusDepot.getById(resultSet.getInt("status_id")));
+                        resultSet.getInt("attempts"));
             }
         };
     }
+
     @Required
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;

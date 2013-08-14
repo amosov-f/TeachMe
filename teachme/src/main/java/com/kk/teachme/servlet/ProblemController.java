@@ -212,34 +212,30 @@ public class ProblemController {
 
     @RequestMapping(value = "/add_uproblem", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String addUserProblem(@RequestParam int user_id, @RequestParam int problem_id, @RequestParam int status_id)
+    public String addUserProblem(@RequestParam int user_id, @RequestParam int problem_id)
             throws JSONException {
-        userProblemDepot.setStatus(
-                userDepot.getById(user_id),
-                problemDepot.getById(problem_id),
-                statusDepot.getById(status_id)
-        );
+        userProblemDepot.addUserProblem(user_id, problem_id);
         return JSONCreator.okJson().toString();
     }
 
     @RequestMapping(value = "/all_uproblems", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String getAllUserProblems(@RequestParam int user_id) throws JSONException {
-        List<UserProblem> answerList = userProblemDepot.getAllUserProblems(userDepot.getById(user_id));
+        List<UserProblem> answerList = userProblemDepot.getAllUserProblems(user_id);
         return JSONCreator.valueOfList(answerList).toString();
     }
 
     @RequestMapping(value = "/solved_uproblems", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String getSolvedUserProblems(@RequestParam int user_id) throws JSONException {
-        List<UserProblem> answerList = userProblemDepot.getSolvedProblems(userDepot.getById(user_id));
+        List<UserProblem> answerList = userProblemDepot.getSolvedProblems(user_id);
         return JSONCreator.valueOfList(answerList).toString();
     }
 
     @RequestMapping(value = "/unsolved_uproblems", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String getUnsolvedUserProblems(@RequestParam int user_id) throws JSONException {
-        List<UserProblem> answerList = userProblemDepot.getUnsolvedProblems(userDepot.getById(user_id));
+        List<UserProblem> answerList = userProblemDepot.getUnsolvedProblems(user_id);
         return JSONCreator.valueOfList(answerList).toString();
     }
 
@@ -247,7 +243,7 @@ public class ProblemController {
     @ResponseBody
     public String getUserProblemsByTag(@RequestParam int user_id, @RequestParam int tag_id) throws JSONException {
         List<UserProblem> answerList =
-                userProblemDepot.getByTag(userDepot.getById(user_id), tagDepot.getById(tag_id));
+                userProblemDepot.getByTag(user_id, tagDepot.getById(tag_id));
         return JSONCreator.valueOfList(answerList).toString();
     }
 
