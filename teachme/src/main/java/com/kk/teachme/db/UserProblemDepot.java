@@ -129,7 +129,7 @@ public class UserProblemDepot {
     }
 
     public List<UserProblem> getReadProblems(User user) {
-        return jdbcTemplate.query(
+        return simpleJdbcTemplate.query(
                 "select problem_id, status_id from user_problem where user_id = ? and status_id = ?",
                 getRowMapper(),
                 user.getId(),
