@@ -7,7 +7,7 @@
 <%
     if (request.getAttribute("problemList") == null || ((List<Problem>)request.getAttribute("problemList")).isEmpty()) {
 %>
-        <div align="center">Задачи не найдены</div>
+        <h5>Задачи не найдены</h5>
 <%
     } else {
         List<Problem> problems = (List<Problem>)request.getAttribute("problemList");

@@ -9,7 +9,9 @@
     Object object = request.getAttribute("userProblemList");
     if (object == null || ((List<UserProblem>)object).isEmpty()) {
 %>
-        <div align="center">Задачи не найдены</div>
+        <div align="center">
+            <h5>Задачи не найдены</h5>
+        </div>
 <%
     } else {
 %>

@@ -22,48 +22,58 @@
 </head>
 
 <body style="padding-top: 50px;">
-
 <%
     User user = (User)request.getSession().getAttribute("user");
 %>
-
-    <div class="navbar navbar-fixed-top" >
+    <div class="navbar navbar-fixed-top" role="navigation">
         <div class="container">
-            <a href="/admin" class="navbar-brand">Админка</a>
-            <div class="nav-collapse collapse navbar-responsive-collapse">
-                <div class="navbar-form pull-left col-3">
-                    <input id="tag" type="text" class="form-control" placeholder="поиск по тегам">
+            <div href="/admin" class="navbar-header">
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="/admin" class="navbar-brand">Админка</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <div class="navbar-form navbar-left" role="search">
+                    <input id="tag" type="text" class="form-control" placeholder="поиск по тегам" size="30">
                 </div>
-                <p id="loading" class="navbar-text pull-left"></p>
+                <div class="nav navbar-nav navbar-left">
+                    <p id="loading" class="navbar-text"></p>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <button class="btn btn-primary navbar-btn" onclick="location.href = '/new_problem'">
+                            Новая задача
+                        </button>
+                    </li>
+                    <li>
+                        <a href="/problems">
+                            <%= user.getFirstName() + " " + user.getLastName() %>
+                        </a>
+                    </li>
+                    <li class="divider-vertical"></li>
+                    <li>
 
-                <div class="navbar-form pull-right">
-                    |
-                    <a class="btn" href="/logout">
-                        Выйти
-                    </a>
-                </div>
-                <div class="navbar-text pull-right" href="">
-                    <%= user.getFirstName() + " " + user.getLastName() %>
-                </div>
-                <div class="navbar-form pull-right">
-                    <a class="btn btn-primary" href="/new_problem">
-                        Новая задача
-                    </a>
-                </div>
+                        <a href="/logout">
+                            Выйти
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
 
     <div class="container">
-        <form id="left-part" class="left-part col-4">
-        </form>
-        <form id="right-part" class="right-part col-8">
-        </form>
+        <div id="left-part" class="left-part col-lg-4">
+        </div>
+        <div id="right-part" class="right-part col-lg-8">
+        </div>
     </div>
 
-
     <script>
-
         $(document).ready(function() {
             var existTags = new Array();
         <%
