@@ -63,6 +63,22 @@ public class UserProblemDepot {
         return false;
     }
 
+    public UserProblem getByIds(int userId, int problemId) {
+        List<UserProblem> userProblems = simpleJdbcTemplate.query(
+                "select problem_id, attempts from user_problem where user_id = ? and problem_id = ?",
+                getRowMapper(),
+                userId,
+                problemId
+        );
+
+        if (userProblems.isEmpty()) {
+            return null;
+        }
+
+        return userProblems.get(0);
+    }
+
+
  /*   public boolean setStatus(User user, Problem problem, Status status) {
         List<UserProblem> problemList = jdbcTemplate.query(
                 "select * from user_problem where user_id = ? and problem_id = ?",

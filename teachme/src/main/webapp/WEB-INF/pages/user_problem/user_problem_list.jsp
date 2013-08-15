@@ -1,4 +1,3 @@
-<%@ page import="com.kk.teachme.model.Problem" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.kk.teachme.model.UserProblem" %>
 
@@ -19,8 +18,11 @@
         <%
             for (UserProblem userProblem : (List<UserProblem>)object) {
                 request.setAttribute("userProblem", userProblem);
+                int id = userProblem.getProblem().getId();
         %>
-                <jsp:include page="user_problem_item.jsp"></jsp:include>
+                <a id="<%= id %>" name="<%= id %>" class="list-group-item" style="cursor: pointer;">
+                    <jsp:include page="user_problem_item.jsp"></jsp:include>
+                </a>
         <%
             }
         %>

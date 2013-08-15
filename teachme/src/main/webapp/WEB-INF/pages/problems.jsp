@@ -124,7 +124,6 @@
                     $('#solution').focus();
                     $('#solution').keypress(function(e) {
                         if (e.which == 13) {
-                            //$('#submit').attr('checked', 'checked');
                             submit();
                         }
                     });
@@ -135,14 +134,10 @@
                 url: '/read',
                 data: 'problem_id=' + problemId,
                 success: function(data) {
-                    setItemClass(problemId, data);
+                    $('#' + problemId).html(data);
+
                 }
             });
-        }
-
-        function setItemClass(problemId, className) {
-            $('#name' + problemId).removeClass();
-            $('#name' + problemId).addClass(className);
         }
 
         function showProblemList() {
@@ -176,7 +171,14 @@
                 success: function(data) {
                     $('#solveStatus').html(data);
                     $('#solution').select();
-                    setItemClass(problemId, $('#itemClass').val());
+
+                    $.ajax({
+                        url: '/user_problem_item',
+                        data: 'problem_id=' + problemId,
+                        success: function(data) {
+                            $('#' + problemId).html(data);
+                        }
+                    });
                 }
             });
         }
