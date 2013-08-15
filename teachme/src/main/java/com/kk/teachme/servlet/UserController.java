@@ -139,6 +139,10 @@ public class UserController {
             userProblems.retainAll(userProblemDepot.getUnsolvedProblems(user.getId()));
         } else if (filter.equals("read")) {
             userProblems.retainAll(userProblemDepot.getReadProblems(user.getId()));
+        } else if (filter.equals("solved"))  {
+            userProblems.retainAll(userProblemDepot.getSolvedProblems(user.getId()));
+        } else if (filter.equals("attempted")) {
+            userProblems.retainAll(userProblemDepot.getAttemptedProblems(user.getId()));
         }
 
         model.addAttribute("userProblemList", userProblems);

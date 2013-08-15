@@ -39,8 +39,10 @@
                 <div class="navbar-form pull-left">
                     <select id="filter" class="selectpicker" data-style="btn-primary">
                         <option value="">Без фильтра</option>
-                        <option value="unsolved">Не решенные</option>
+                        <option value="unsolved">Нерешенные</option>
                         <option value="read">Прочитанные</option>
+                        <option value="solved">Решенные</option>
+                        <option value="attempted">Есть попытки</option>
                     </select>
                 </div>
 
