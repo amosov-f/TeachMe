@@ -36,7 +36,7 @@ public class SimpleSignInAdapter implements SignInAdapter {
         final VKontakte vkontakte = (VKontakte) connection.getApi();
         final VKontakteProfile profile = vkontakte.usersOperations().getProfile();
 
-        User user = new User(profile.getScreenName(), profile.getFirstName(), profile.getLastName());
+        User user = new User(profile.getUid(), profile.getFirstName(), profile.getLastName());
 
         if (!userDepot.contains(user.getUsername())) {
 

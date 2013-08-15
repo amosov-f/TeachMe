@@ -26,13 +26,6 @@
 
 <body style="padding-top: 60px;">
 <%
-    if (request.getSession().getAttribute("user") == null) {
-%>
-        <jsp:forward page="login.jsp"/>
-<%
-
-    }
-
     User user = (User)request.getSession().getAttribute("user");
 %>
     <div class="navbar navbar-fixed-top" >

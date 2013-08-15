@@ -1,6 +1,7 @@
 <%@ page import="com.kk.teachme.model.Problem" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.kk.teachme.model.Tag" %>
+<%@ page import="com.kk.teachme.model.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <head>
@@ -20,16 +21,30 @@
     <link rel="stylesheet" type="text/css" href="/resources/utility/css/styles.css"/>
 </head>
 
-<body style="padding-top: 60px;">
+<body style="padding-top: 50px;">
+
+<%
+    User user = (User)request.getSession().getAttribute("user");
+%>
 
     <div class="navbar navbar-fixed-top" >
         <div class="container">
             <a href="/admin" class="navbar-brand">Админка</a>
             <div class="nav-collapse collapse navbar-responsive-collapse">
-                <div class="navbar-form pull-left">
-                    <input id="tag" type="text" class="form-control col-lg-8" placeholder="поиск по тегам" size="31">
+                <div class="navbar-form pull-left col-3">
+                    <input id="tag" type="text" class="form-control" placeholder="поиск по тегам">
                 </div>
                 <p id="loading" class="navbar-text pull-left"></p>
+
+                <div class="navbar-form pull-right">
+                    |
+                    <a class="btn" href="/logout">
+                        Выйти
+                    </a>
+                </div>
+                <div class="navbar-text pull-right" href="">
+                    <%= user.getFirstName() + " " + user.getLastName() %>
+                </div>
                 <div class="navbar-form pull-right">
                     <a class="btn btn-primary" href="/new_problem">
                         Новая задача

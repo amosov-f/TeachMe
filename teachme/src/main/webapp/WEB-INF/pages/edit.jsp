@@ -132,6 +132,8 @@
             }
         %>
             existTags.sort();
+            $('#problemId').val(-1);
+
         <%
             if (request.getAttribute("problem") != null) {
                 Problem problem = (Problem)request.getAttribute("problem");
