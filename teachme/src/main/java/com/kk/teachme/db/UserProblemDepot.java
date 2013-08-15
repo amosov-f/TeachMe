@@ -189,7 +189,7 @@ public class UserProblemDepot {
 
     public List<UserProblem> getReadProblems(int userId) {
         return simpleJdbcTemplate.query("select problem_id, attempts " +
-                "from user_problem where user_id = ? and attempts = 0",
+                "from user_problem where user_id = ? and attempts <= 0",
                 getRowMapper(),
                 userId
         );
