@@ -16,8 +16,6 @@ import org.springframework.web.context.request.WebRequest;
 
 @Controller
 public class SignupController {
-    @Autowired
-    UserDepot userDepot;
 
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
     public String signUp(WebRequest request) {
@@ -33,7 +31,6 @@ public class SignupController {
 
         SignInUtils.signIn(user.getUsername());
         ProviderSignInUtils.handlePostSignUp(user.getUsername(), request);
-
-        return "user";
+        return "redirect:/";
     }
 }

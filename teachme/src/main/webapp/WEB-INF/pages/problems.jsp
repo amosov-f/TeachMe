@@ -37,14 +37,14 @@
 %>
     <div class="navbar navbar-fixed-top" >
         <div class="container">
-            <a href="/user" class="navbar-brand">TeachMe</a>
+            <a href="/problems" class="navbar-brand">TeachMe</a>
             <div class="nav-collapse collapse navbar-responsive-collapse">
                 <div class="navbar-form pull-left col-3">
                     <input id="tag" type="text" class="form-control" placeholder="поиск по тегам">
                 </div>
 
                 <div class="navbar-form pull-left">
-                    <select id="filter" class="selectpicker show-tick" data-style="btn-info">
+                    <select id="filter" class="selectpicker" data-style="btn-primary">
                         <option value="">Без фильтра</option>
                         <option value="unsolved">Не решенные</option>
                         <option value="read">Прочитанные</option>
@@ -54,7 +54,7 @@
                 <p id="loading" class="navbar-text pull-left"></p>
                 <div class="navbar-form pull-right">
                     |
-                    <a class="btn" href="/logout_user">
+                    <a class="btn" href="/logout">
                         Выйти
                     </a>
                 </div>
@@ -112,7 +112,7 @@
 
         function showProblem(problemId) {
             $.ajax({
-                url: '/user_problem',
+                url: '/user_problem_panel',
                 data: 'problem_id=' + problemId,
                 success: function(data) {
                     $('#right-part').html(data);
@@ -146,9 +146,8 @@
                 return;
             }
             $.ajax({
-                url: '/user_problems',
-                data: 'user_id=' +
-                        <%=user.getId()%> + '&tags=' + concat($('#tag').tags('chosenTags')) + '&filter=' + $('#filter').val(),
+                url: '/user_problem_list',
+                data: 'tags=' + concat($('#tag').tags('chosenTags')) + '&filter=' + $('#filter').val(),
                 beforeSend: function() {
                     $('#loading').text('Загрузка...');
                 },

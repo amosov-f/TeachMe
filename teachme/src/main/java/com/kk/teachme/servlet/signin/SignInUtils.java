@@ -14,9 +14,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class SignInUtils {
 
     public static void signIn(final String username) {
-        SecurityContextHolder.getContext()
-                .setAuthentication(new UsernamePasswordAuthenticationToken(username, null, null));
-
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(username, null, null)
+        );
     }
 
 }

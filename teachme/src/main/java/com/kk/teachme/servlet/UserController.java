@@ -43,14 +43,21 @@ public class UserController {
     @Autowired
     UserProblemDepot userProblemDepot;
 
-    @RequestMapping(value = "/user_problem")
-    public String getProblem(@RequestParam int problem_id, Model model) {
+    @RequestMapping(value = "/user_problem_panel")
+    public String getProblem(@RequestParam int problem_id, HttpServletRequest request, Model model) {
+        if (request.getSession().getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         model.addAttribute("problem", problemDepot.getById(problem_id));
         return "user_problem/user_problem_panel";
     }
 
-    @RequestMapping(value = "/user")
+    @RequestMapping(value = "/problems")
     public String user(HttpServletRequest request, Model model) {
+        if (request.getSession().getAttribute("user") == null) {
+            return "redirect:/login";
+        }
         User user = (User)request.getSession().getAttribute("user");
 
         List<UserProblem> userProblems;
@@ -59,13 +66,13 @@ public class UserController {
         model.addAttribute("userProblemList", userProblems);
         model.addAttribute("tagList", tagDepot.getAllTags());
 
-        return "user";
+        return "problems";
     }
 
     @RequestMapping(value = "/submit")
     public String submit(@RequestParam int problem_id, @RequestParam String solution_text, HttpServletRequest request, Model model) {
         if (request.getSession().getAttribute("user") == null) {
-            return "login";
+            return "redirect:/login";
         }
 
         User user = (User)request.getSession().getAttribute("user");
@@ -91,6 +98,9 @@ public class UserController {
     @RequestMapping(value = "/read")
     @ResponseBody
     public String read(@RequestParam int problem_id, HttpServletRequest request, Model model) throws JSONException {
+        if (request.getSession().getAttribute("user") == null) {
+            return "redirect:/login";
+        }
         User user = (User)request.getSession().getAttribute("user");
 
         Status status = userProblemDepot.getStatus(user.getId(), problem_id);
@@ -102,12 +112,17 @@ public class UserController {
         return "user-problem-" + userProblemDepot.getStatus(user.getId(), problem_id).toString().toLowerCase();
     }
 
-    @RequestMapping(value = "/user_problems")
-    public String getByTagList(@RequestParam int user_id, @RequestParam String tags, @RequestParam String filter, Model model) throws UnsupportedEncodingException {
+    @RequestMapping(value = "/user_problem_list")
+    public String getByFilters(@RequestParam String tags, @RequestParam String filter, HttpServletRequest request, Model model) throws UnsupportedEncodingException {
+        if (request.getSession().getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+        User user = (User)request.getSession().getAttribute("user");
+
         List<UserProblem> userProblems;
 
         if (tags == null || tags.isEmpty()) {
-            userProblems = userProblemDepot.getAllUserProblems(user_id);
+            userProblems = userProblemDepot.getAllUserProblems(user.getId());
         } else {
             List<Tag> tagList = new ArrayList<Tag>();
             for (String tag : URLDecoder.decode(tags, "UTF-8").split(",")) {
@@ -115,15 +130,15 @@ public class UserController {
                     tagList.add(tagDepot.getByName(tag));
                 }
             }
-            userProblems = userProblemDepot.getByTagList(user_id, tagList);
+            userProblems = userProblemDepot.getByTagList(user.getId(), tagList);
         }
 
         if (filter == null || filter.isEmpty()) {
-            userProblems.retainAll(userProblemDepot.getAllUserProblems(user_id));
+            userProblems.retainAll(userProblemDepot.getAllUserProblems(user.getId()));
         } else if (filter.equals("unsolved")) {
-            userProblems.retainAll(userProblemDepot.getUnsolvedProblems(user_id));
+            userProblems.retainAll(userProblemDepot.getUnsolvedProblems(user.getId()));
         } else if (filter.equals("read")) {
-            userProblems.retainAll(userProblemDepot.getReadProblems(user_id));
+            userProblems.retainAll(userProblemDepot.getReadProblems(user.getId()));
         }
 
         model.addAttribute("userProblemList", userProblems);
@@ -131,90 +146,26 @@ public class UserController {
         return "user_problem/user_problem_list";
     }
 
+    @RequestMapping(value = "/")
+    public String home(HttpServletRequest request) {
+        if (request.getSession().getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+        return "redirect:/problems";
+    }
+
     @RequestMapping(value = "/login")
-    public String loginForm(Model model) {
-        return "login";
-    }
-
-    @RequestMapping(value = "/login_user")
-    public String loginUser(@RequestParam String login, HttpServletRequest request, Model model) {
-        if (!userDepot.contains(login)) {
-            model.addAttribute("result", "Error! This user does not exist!");
-            return "result";
+    public String logIn(HttpServletRequest request) {
+        if (request.getSession().getAttribute("user") == null) {
+            return "login";
         }
-
-        HttpSession session = request.getSession(true);
-        session.setAttribute("user", userDepot.getByUsername(login));
-
-        return user(request, model);
+        return "redirect:/problems";
     }
 
-    @RequestMapping(value = "/reg_user")
-    public String regUser(@RequestParam String login, Model model) {
-        login = login.trim();
-
-        if (userDepot.contains(login)) {
-            model.addAttribute("result", "Error! User already exists!");
-            return "result";
-        }
-
-        userDepot.addObject(new User(login));
-
-        model.addAttribute("login", login);
-
-        return "login";
-    }
-
-    @RequestMapping(value = "/logout_user")
-    public String logoutUser(HttpServletRequest request) {
+    @RequestMapping(value = "/logout")
+    public String logOut(HttpServletRequest request) {
         request.getSession().setAttribute("user", null);
-        return "login";
-    }
-
-    @RequestMapping(value = "/user_{user_id:\\d+}", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String getUser(@PathVariable int user_id) throws JSONException {
-        User user = userDepot.getById(user_id);
-
-        if (user == null) {
-            return JSONCreator.errorJSON("Incorrect id").toString();
-        }
-
-        JSONObject result = new JSONObject();
-        result.put("user", JSONCreator.valueOf(user));
-
-        JSONArray array = new JSONArray();
-        for (Problem problem : problemDepot.getSolvedProblems(user)) {
-            array.put(JSONCreator.valueOf(problem));
-        }
-
-        result.put("solved", array);
-
-        return JSONCreator.resultJSON(result).toString();
-    }
-
-    @RequestMapping(value = "/status", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String getStatus(@RequestParam int user_id, @RequestParam int problem_id) throws JSONException {
-        User user = userDepot.getById(user_id);
-        if (user == null) {
-            return JSONCreator.errorJSON("Incorrect user id").toString();
-        }
-
-        Problem problem = problemDepot.getById(problem_id);
-        if (problem == null) {
-            return JSONCreator.errorJSON("Incorrect problem id").toString();
-        }
-
-        Status status = statusDepot.getStatus(user, problem);
-        if (status == null) {
-            status = Status.NEW;
-        }
-
-        JSONObject result = new JSONObject();
-        result.put("status", status);
-
-        return JSONCreator.resultJSON(result).toString();
+        return "redirect:/login";
     }
 
 }
