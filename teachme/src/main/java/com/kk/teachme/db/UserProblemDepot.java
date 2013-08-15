@@ -195,6 +195,14 @@ public class UserProblemDepot {
         );
     }
 
+    public List<UserProblem> getAttemptedProblems(int userId) {
+        return simpleJdbcTemplate.query("select problem_id, attempts " +
+                "from user_problem where user_id = ? and attempts < 0",
+                getRowMapper(),
+                userId
+        );
+    }
+
     public List<UserProblem> getByTag(int userId, Tag tag) {
 
         List<UserProblem> userProblems = simpleJdbcTemplate.query("select up.problem_id, up.attempts " +
