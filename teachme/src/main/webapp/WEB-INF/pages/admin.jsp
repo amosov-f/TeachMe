@@ -67,6 +67,7 @@
     <script>
 
         var curProblemId = -1;
+        var curChosenTags = null;
 
         $(document).ready(function() {
             var existTags = new Array();
@@ -117,7 +118,11 @@
             if ($('#tag').tags('newTags').length != 0) {
                 return;
             }
+            if (curChosenTags != null && $('#tag').tags('chosenTags').toString() === curChosenTags.toString()) {
+                return;
+            }
 
+            curChosenTags = $('#tag').tags('chosenTags');
             $.ajax({
                 url: '/by_tag_list',
                 data: 'tags=' + concat($('#tag').tags('chosenTags')),

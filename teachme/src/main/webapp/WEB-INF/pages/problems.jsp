@@ -70,6 +70,7 @@
     <script>
 
         var curProblemId = -1;
+        var curChosenTags = null;
 
         $(document).ready(function() {
             var existTags = new Array();
@@ -140,9 +141,14 @@
             if ($('#tag').tags('newTags').length != 0) {
                 return;
             }
+            if (curChosenTags != null && $('#tag').tags('chosenTags').toString() === curChosenTags.toString()) {
+                return;
+            }
+
+            curChosenTags = $('#tag').tags('chosenTags');
             $.ajax({
                 url: '/user_problem_list',
-                data: 'tags=' + concat($('#tag').tags('chosenTags')) + '&filter=' + $('#filter').val(),
+                data: 'tags=' + concat(curChosenTags) + '&filter=' + $('#filter').val(),
                 beforeSend: function() {
                     $('#loading').text('Загрузка...');
                 },

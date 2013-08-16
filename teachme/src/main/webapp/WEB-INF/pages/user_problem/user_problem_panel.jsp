@@ -19,6 +19,7 @@
                 <%
                     if (!problem.getFigures().isEmpty()) {
                 %>
+                        <br><br>
                         <div align="center">
                         <%
                             for (String figure : problem.getFigures()) {

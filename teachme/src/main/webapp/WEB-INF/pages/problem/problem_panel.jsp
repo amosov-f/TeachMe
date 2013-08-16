@@ -19,21 +19,22 @@
             <div class="panel-body">
                 <div class="well">
                     <%= problem.getStatement().replaceAll("\n", "<br>") %>
-
-                    <div align="center">
-                    <%
-                        if (!problem.getFigures().isEmpty()) {
-                    %>
-                            <br><br>
-                    <%
+                <%
+                    if (!problem.getFigures().isEmpty()) {
+                %>
+                        <br><br>
+                        <div align="center">
+                        <%
                             for (String figure : problem.getFigures()) {
-                    %>
+                        %>
                                 <img src="/files/<%= figure %>" style="height: 30%; max-width: 90%;"/>
-                    <%
+                        <%
                             }
-                        }
-                    %>
-                    </div>
+                        %>
+                        </div>
+                <%
+                    }
+                %>
                 </div>
 
             <%
