@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -178,7 +179,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/user_{user_id:\\d+}")
-    public String user(@RequestParam int user_id, Model model) {
+    public String user(@PathVariable int user_id, Model model) {
         model.addAttribute("user", userDepot.getById(user_id));
         model.addAttribute("solved", userProblemDepot.getSolvedProblems(user_id).size());
         model.addAttribute("all", userProblemDepot.getAllUserProblems(user_id).size());

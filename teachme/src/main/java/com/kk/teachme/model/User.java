@@ -64,6 +64,8 @@ public class User {
         return lastName;
     }
 
-
+    public String getName() {
+        return firstName + " " + lastName;
+    }
 
 }

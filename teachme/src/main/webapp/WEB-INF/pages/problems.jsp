@@ -24,7 +24,7 @@
     <link rel="stylesheet" type="text/css" href="/resources/utility/css/styles.css"/>
 </head>
 
-<body style="padding-top: 50px;">
+<body class="under-navbar">
 <%
     User user = (User)request.getSession().getAttribute("user");
 %>
@@ -55,19 +55,7 @@
                 <div class="nav navbar-nav navbar-left">
                     <p id="loading" class="navbar-text"></p>
                 </div>
-                <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a href="/problems">
-                            <%= user.getFirstName() + " " + user.getLastName() %>
-                        </a>
-                    </li>
-                    <li class="divider-vertical"></li>
-                    <li>
-                        <a href="/logout">
-                            Выйти
-                        </a>
-                    </li>
-                </ul>
+                <jsp:include page="user/user_sign.jsp"></jsp:include>
             </div>
         </div>
     </div>

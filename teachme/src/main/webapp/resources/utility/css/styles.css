@@ -67,3 +67,7 @@
 .item-active {
     background-color: #f5f5f5;
 }
+
+.under-navbar {
+    padding-top: 50px;
+}

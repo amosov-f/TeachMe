@@ -15,7 +15,7 @@
             <div class="panel-heading"><%= problem.getName()%></div>
             <div class="panel-body">
                 <div class="well">
-                    <p><%= problem.getStatement().replaceAll("\n", "<br>") %></p>
+                    <%= problem.getStatement().replaceAll("\n", "<br>") %>
                 <%
                     if (!problem.getFigures().isEmpty()) {
                 %>

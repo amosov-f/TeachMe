@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="/resources/utility/css/styles.css"/>
 </head>
 
-<body style="padding-top: 50px;">
+<body class="under-navbar">
 <%
     User user = (User)request.getSession().getAttribute("user");
 %>
@@ -43,23 +43,14 @@
                 <div class="nav navbar-nav navbar-left">
                     <p id="loading" class="navbar-text"></p>
                 </div>
+
+                <jsp:include page="user/user_sign.jsp"></jsp:include>
+
                 <ul class="nav navbar-nav navbar-right">
                     <li>
                         <button class="btn btn-primary navbar-btn" onclick="location.href = '/new_problem'">
                             Новая задача
                         </button>
-                    </li>
-                    <li>
-                        <a href="/problems">
-                            <%= user.getFirstName() + " " + user.getLastName() %>
-                        </a>
-                    </li>
-                    <li class="divider-vertical"></li>
-                    <li>
-
-                        <a href="/logout">
-                            Выйти
-                        </a>
                     </li>
                 </ul>
             </div>
