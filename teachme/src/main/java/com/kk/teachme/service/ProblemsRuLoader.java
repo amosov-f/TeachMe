@@ -47,7 +47,7 @@ public class ProblemsRuLoader {
         if (block == null || block.length() == 0){
             return false;
         }
-        String statement = tagTrim(extractSection(block, "Условие"));
+        String statement = deleteAuthors(tagTrim(extractSection(block, "Условие")));
         if (statement == null || statement.length() == 0) {
             return false;
         }
@@ -127,6 +127,10 @@ public class ProblemsRuLoader {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private String deleteAuthors(String statement) {
+        return statement.split("< *div +class *= *\"catalogueproblemauthor[^\"]*\" *>.*< */ *div *>")[1];
     }
 
     Integer getInt(String answer) {
