@@ -57,9 +57,13 @@
     font-weight: bold;
 }
 
-.divider-vertical{
+.divider-vertical {
     height: 50px;
     margin: 0 9px;
     border-left:1px solid #dcdcdc;
     border-right:1px solid #ffffff;
+}
+
+.item-active {
+    background-color: #f5f5f5;
 }

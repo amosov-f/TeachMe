@@ -177,4 +177,12 @@ public class UserController {
         return "redirect:/login";
     }
 
+    @RequestMapping(value = "/user_{user_id:\\d+}")
+    public String user(@RequestParam int user_id, Model model) {
+        model.addAttribute("user", userDepot.getById(user_id));
+        model.addAttribute("solved", userProblemDepot.getSolvedProblems(user_id).size());
+        model.addAttribute("all", userProblemDepot.getAllUserProblems(user_id).size());
+        return "user";
+    }
+
 }

@@ -80,6 +80,9 @@
     </div>
 
     <script>
+
+        var curProblemId = -1;
+
         $(document).ready(function() {
             var existTags = new Array();
         <%
@@ -118,6 +121,11 @@
             $.ajax({
                 url: '/user_problem_panel',
                 data: 'problem_id=' + problemId,
+                beforeSend: function() {
+                    $('#' + curProblemId).removeClass('item-active');
+                    $('#' + problemId).addClass('item-active');
+                    curProblemId = problemId;
+                },
                 success: function(data) {
                     $('#right-part').html(data);
                     $('#submit').click(submit);
@@ -152,6 +160,7 @@
                 },
                 success: function(data) {
                     $('#left-part').html(data);
+                    $('#' + curProblemId).addClass('item-active');
                     $('#loading').text('');
                     $('.list-group-item').click(function() {
                         showProblem($(this).attr('name'));

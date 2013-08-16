@@ -153,7 +153,7 @@ public class AdminController {
         }
 
         model.addAttribute("problem", problemDepot.getById(problem_id));
-        model.addAttribute("solution", solutionDepot.getSolution(problem_id).getSolutionText());
+        model.addAttribute("solutionText", solutionDepot.getSolution(problem_id).getSolutionText());
         model.addAttribute("checkerId", solutionDepot.getCheckerId(problem_id));
         model.addAttribute("checkerMap", checkerDepot.getAllCheckers());
         model.addAttribute("tagList", tagDepot.getAllTags());

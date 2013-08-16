@@ -74,6 +74,9 @@
     </div>
 
     <script>
+
+        var curProblemId = -1;
+
         $(document).ready(function() {
             var existTags = new Array();
         <%
@@ -89,6 +92,9 @@
 
             $('#tag').bind('change keyup', showProblemList);
 
+
+            showProblemList();
+
         <%
             if (request.getAttribute("problemId") != null) {
                 for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {
@@ -100,13 +106,16 @@
                 }
             }
         %>
-
-            showProblemList();
         });
 
         function showProblem(problemId) {
             $.ajax({
                 url: '/problem_' + problemId,
+                beforeSend: function() {
+                    $('#' + curProblemId).removeClass('item-active');
+                    $('#' + problemId).addClass('item-active');
+                    curProblemId = problemId;
+                },
                 success: function(data) {
                     $('#right-part').html(data);
                 }
@@ -126,6 +135,7 @@
                 },
                 success: function(data) {
                     $('#left-part').html(data);
+                    $('#' + curProblemId).addClass('item-active');
                     $('#loading').text('');
                     $('.list-group-item').click(function() {
                         showProblem($(this).attr('name'));

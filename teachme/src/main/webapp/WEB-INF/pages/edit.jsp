@@ -5,7 +5,6 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="com.kk.teachme.model.Tag" %>
 <%@ page import="com.kk.teachme.model.Problem" %>
-<%@ page import="java.net.URLEncoder" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
@@ -39,6 +38,16 @@
 
 <body style="height: 100%;">
 
+<%
+    Problem problem = new Problem("", "");
+    String solutionText = "";
+    if (request.getAttribute("problem") != null) {
+        problem = (Problem)request.getAttribute("problem");
+        solutionText = (String)request.getAttribute("solutionText");
+    }
+%>
+
+
     <div align="center" style="height: 8%;">
         <h2 id="title"></h2>
     </div>
@@ -46,20 +55,20 @@
     <div class="container" style="height: 80%;">
 
         <form class="form-inline col-lg-6" id="problem" method="post" action="/add_problem" style="height: 100%;">
-            <input type="hidden" id="problemId" name="problem_id"/>
+            <input type="hidden" id="problemId" name="problem_id" value="<%=problem.getId() %>"/>
 
             <legend>Название</legend>
-            <input type="text" id="name" class="form-control" name="name"/>
+            <input type="text" id="name" class="form-control" name="name" value="<%= problem.getName() %>"/>
 
             <legend>Условие</legend>
-            <textarea id="statement" class="form-control" name="statement" style="height: 30%;"></textarea>
+            <textarea id="statement" class="form-control" name="statement" style="height: 30%;"><%= problem.getStatement() %></textarea>
 
-            <input type="hidden" id="figures" name="figures"/>
-            <input type="hidden" id="tags" name="tags"/>
+            <input type="hidden" id="figures" name="figures" value="<%= problem.getFiguresString() %>"/>
+            <input type="hidden" id="tags" name="tags" value="<%= problem.getTagsString(false) %>"/>
 
 
             <legend>Ответ</legend>
-            <input id="solution" name="solution" type="text" class="form-control" name="name"/>
+            <input id="solution" name="solution" type="text" class="form-control" name="name" value="<%= solutionText %>"/>
 
             <legend>Тип ответа</legend>
             <select id="checkerId" name="checker_id">
@@ -85,7 +94,6 @@
                         accept="image/*"
                         onchange="return uploadFigure();"
                 />
-
             </form>
 
             <div class="media" id="figureView" style="max-height: 35%; position: relative;"></div>
@@ -100,6 +108,7 @@
                         class="form-control"
                         placeholder="введите теги через запятую..."
                         style="width: 100%"
+                        value="<%= problem.getTagsString(true) %>"
                 />
             </div>
 
@@ -117,7 +126,6 @@
     </div>
 
 
-
     <script>
 
         var figureId;
@@ -132,41 +140,28 @@
             }
         %>
             existTags.sort();
-            $('#problemId').val(-1);
+
+            $('#title').html('<h2>Новая задача</h2>');
 
         <%
             if (request.getAttribute("problem") != null) {
-                Problem problem = (Problem)request.getAttribute("problem");
+
+                problem = (Problem)request.getAttribute("problem");
         %>
                 $('#title').html(
-                        'Задача #<%=problem.getId()%>' +
+                        'Задача #<%= problem.getId() %>' +
                         '<button class="btn btn-delete" onclick="deleteProblem()">&#10006</button>'
                 );
-
-                $('#problemId').val(<%=problem.getId()%>);
-                $('#name').val('<%=problem.getName()%>');
-
-                $('#statement').val(decodeURIComponent('<%=URLEncoder.encode(problem.getStatement(), "UTF-8")%>').replace(/\+/g, ' '));
-
 
             <%
                 if (!problem.getFigures().isEmpty()) {
             %>
-                    figureId = "<%=problem.getFigures().get(0)%>";
+                    figureId = "<%= problem.getFigures().get(0) %>";
                     updateFigure();
             <%
                 }
             %>
-
-                $('#tags').val("<%=problem.getTagsString(false)%>");
-                $('#tagsEdit').val('<%=problem.getTagsString(true)%>');
-
-                $('#solution').val("<%=(String)request.getAttribute("solution")%>");
                 $('#checkerId').val("<%=(Integer)request.getAttribute("checkerId")%>");
-            <%
-                } else {
-            %>
-                    $('#title').append('<h2>Новая задача</h2>');
         <%
             }
         %>
