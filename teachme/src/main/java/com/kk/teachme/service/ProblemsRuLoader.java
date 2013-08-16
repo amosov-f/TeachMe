@@ -26,9 +26,9 @@ public class ProblemsRuLoader {
     SolutionDepot solutionDepot;
 
     public void fill() {
-      /*  for (int i = 109651; i < 109652; i++) {
+        for (int i = 109651; i < 109652; i++) {
             load(i);
-        }*/
+        }
     }
 
     public boolean load(int id) {

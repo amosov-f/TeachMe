@@ -51,10 +51,10 @@
     int all = (Integer)request.getAttribute("all");
 %>
     <div class="container">
-        <h1>
+        <h2>
             <%= user.getFirstName() + " " + user.getLastName() %>
-            <button id="admin" type="hidden" class="btn btn-primary" onclick="location.href = '/admin'">Админка</button>
-        </h1>
+            <button id="admin" class="btn btn-primary" onclick="location.href = '/admin'">Админка</button>
+        </h2>
     <%
 
     %>
@@ -70,8 +70,8 @@
             $.ajax({
                 url: '/is_admin',
                 success: function(data) {
-                    if (data == true) {
-                        $('#admin').attr('type', 'button');
+                    if (data == false) {
+                        $('#admin').remove();
                     }
                 }
             });
