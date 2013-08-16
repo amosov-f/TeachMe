@@ -35,8 +35,8 @@ public class TCTLoader {
 
     public void fill(int cards) {
 
-        if (cards > 40 || cards < 1) {
-            cards = 1;
+        if (cards > 40 || cards < 0) {
+            cards = 0;
         }
 
         Integer tct = configDepot.getValue("tct");

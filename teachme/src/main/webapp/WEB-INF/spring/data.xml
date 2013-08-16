@@ -79,6 +79,14 @@
         <property name="maxUploadSize" value="1000000"/>
     </bean>
 
+    <bean id="problemsRuLoader" class="com.kk.teachme.service.ProblemsRuLoader" init-method="fill">
+        <property name="configDepot" ref="configDepot"/>
+        <property name="tagDepot" ref="tagDepot"/>
+        <property name="problemDepot" ref="problemDepot"/>
+        <property name="solutionDepot" ref="solutionDepot"/>
+        <property name="fileDepot" ref="fileDepot"/>
+    </bean>
+
     <bean id="tctLoader" class="com.kk.teachme.service.TCTLoader" init-method="fill">
         <property name="configDepot" ref="configDepot"/>
         <property name="tagDepot" ref="tagDepot"/>
