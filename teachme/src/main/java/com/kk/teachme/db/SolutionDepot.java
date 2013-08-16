@@ -54,9 +54,9 @@ public class SolutionDepot {
                 },
                 problemId
         );
-        if (solutions.size() != 1) {
+       /* if (solutions.size() != 1) {
             throw new IllegalStateException();
-        }
+        }*/
         return solutions.get(0);
     }
 
