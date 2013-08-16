@@ -26,16 +26,17 @@ public class ProblemsRuLoader {
     SolutionDepot solutionDepot;
 
     public void fill() {
-    /*    for (int i = 101870; i < 109953; i++) {
+      /*  for (int i = 109651; i < 109652; i++) {
             load(i);
-        }    */
+        }*/
     }
 
     public boolean load(int id) {
 
+        String URLString = "http://problems.ru/view_problem_details_new.php?id=" + id;
         Document doc;
         try {
-            doc = Jsoup.connect("http://problems.ru/view_problem_details_new.php?id=" + id).get();
+            doc = Jsoup.connect(URLString).get();
         } catch (IOException e) {
             return false;
         }
@@ -59,6 +60,7 @@ public class ProblemsRuLoader {
             return false;
         }
 
+        statement += "\n<p align=\"right\"><small>Источник: <a href=\"http://problems.ru/\" target=\"_blank\">problems.ru</a> #" + id + ".</small></p>";
         List<String> figures = new ArrayList<String>();
         figures.add("");
         List<Tag> tags = new ArrayList<Tag>();
@@ -95,8 +97,11 @@ public class ProblemsRuLoader {
                 .split("<small>")[0]
                 .trim()
                 .replaceAll("show_document.php", "http://problems.ru/show_document.php")
-                .replaceAll("\n", " ")
-                .replaceAll(" {2,}", " ");
+                .replaceAll("\n *", "")
+                .replaceAll(" {2,}", " ")
+            ;
+            System.out.println("extractSection:");
+            System.out.println(string);
             return string;
         } catch (Exception e) {
             return null;
@@ -105,7 +110,8 @@ public class ProblemsRuLoader {
 
     private String tagTrim(String string) {
         try {
-            String regex = "<[ |\\|/]{0,2}[p|br][ |\\|/]{0,2}>";
+            String regex = "< */* *[pP] */* *>|" +
+                    "< */* *[bB][rR] */* *>";
             String[] parts = string.split(regex);
             string = "";
             for (String part : parts) {
@@ -114,6 +120,9 @@ public class ProblemsRuLoader {
                     string += " " + part;
                 }
             }
+            string = string.trim();
+            System.out.println("tagTrim:");
+            System.out.println(string);
             return string;
         } catch (Exception e) {
             return null;
