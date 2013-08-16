@@ -1,4 +1,3 @@
-<%@ page import="com.kk.teachme.model.Problem" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.kk.teachme.model.UserProblem" %>
 
@@ -9,7 +8,9 @@
     Object object = request.getAttribute("userProblemList");
     if (object == null || ((List<UserProblem>)object).isEmpty()) {
 %>
-        <div align="center">Задачи не найдены</div>
+        <div align="center">
+            <h5>Задачи не найдены</h5>
+        </div>
 <%
     } else {
 %>
@@ -17,8 +18,11 @@
         <%
             for (UserProblem userProblem : (List<UserProblem>)object) {
                 request.setAttribute("userProblem", userProblem);
+                int id = userProblem.getProblem().getId();
         %>
-                <jsp:include page="user_problem_item.jsp"></jsp:include>
+                <a id="<%= id %>" name="<%= id %>" class="list-group-item" style="cursor: pointer;">
+                    <jsp:include page="user_problem_item.jsp"></jsp:include>
+                </a>
         <%
             }
         %>

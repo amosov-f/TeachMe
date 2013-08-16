@@ -7,17 +7,24 @@
 <%
     UserProblem userProblem = (UserProblem)request.getAttribute("userProblem");
 %>
-    <a name="<%= userProblem.getProblem().getId() %>" class="list-group-item" style="cursor: pointer;">
-        <p id="name<%= userProblem.getProblem().getId() %>" class="user-problem-<%= userProblem.getStatus().toString().toLowerCase() %>">
-            <%= userProblem.getProblem().getName() %>
-        </p>
+    <p class="user-problem-<%= userProblem.getStatus().toString().toLowerCase() %>">
+        <%= userProblem.getProblem().getName() %>
     <%
-        for (Tag tag : userProblem.getProblem().getTags()) {
+        if (userProblem.getAttempts() != 0) {
     %>
-            <span class="label label-info"><%= tag.getName() %></span>&nbsp
+            <span id="attempts<%= userProblem.getProblem().getId() %>" class="badge pull-right">
+                <%= userProblem.getAttempts()%>
+            </span>
     <%
         }
     %>
-</a>
+    </p>
+<%
+    for (Tag tag : userProblem.getProblem().getTags()) {
+%>
+        <span class="label label-info"><%= tag.getName() %></span>&nbsp
+<%
+    }
+%>
 
 </body>

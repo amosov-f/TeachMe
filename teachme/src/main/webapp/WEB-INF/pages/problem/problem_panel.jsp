@@ -16,38 +16,41 @@
 %>
         <div id="problemPanel" class="panel panel-info panel-edit margin-top" value="<%=problem.getId()%>">
             <div class="panel-heading"><%= problem.getName()%></div>
-            <div class="well">
-                <%= problem.getStatement().replaceAll("\n", "<br>") %>
+            <div class="panel-body">
+                <div class="well">
+                    <%= problem.getStatement().replaceAll("\n", "<br>") %>
 
-                <div align="center">
-                <%
-                    if (!problem.getFigures().isEmpty()) {
-                %>
-                        <br><br>
-                <%
-                        for (String figure : problem.getFigures()) {
-                %>
-                            <img src="/files/<%= figure %>" style="height: 30%; max-width: 90%;"/>
-                <%
+                    <div align="center">
+                    <%
+                        if (!problem.getFigures().isEmpty()) {
+                    %>
+                            <br><br>
+                    <%
+                            for (String figure : problem.getFigures()) {
+                    %>
+                                <img src="/files/<%= figure %>" style="height: 30%; max-width: 90%;"/>
+                    <%
+                            }
                         }
+                    %>
+                    </div>
+                </div>
+
+            <%
+                if (!problem.getTags().isEmpty()) {
+                    for (Tag tag : problem.getTags()) {
+            %>
+                        <span class="label label-info"><%= tag.getName() %></span>&nbsp
+                <%
                     }
                 %>
-                </div>
-            </div>
-        <%
-            if (!problem.getTags().isEmpty()) {
-                for (Tag tag : problem.getTags()) {
-        %>
-                    <span class="label label-info"><%= tag.getName() %></span>&nbsp
+                    <br><br>
             <%
                 }
             %>
-                <br><br>
-        <%
-            }
-        %>
-            <span class="label"><%= solution.getChecker().getName() %></span>
-            <span class="label label-success"><%= solution.getSolutionText() %></span>
+                <div class="label label-default"><%= solution.getChecker().getName() %></div>
+                <div class="label label-success"><%= solution.getSolutionText() %></div>
+            </div>
         </div>
 
         <script>

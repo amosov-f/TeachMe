@@ -3,20 +3,14 @@ package com.kk.teachme.servlet;
 import com.kk.teachme.checker.SolveStatus;
 import com.kk.teachme.db.*;
 import com.kk.teachme.model.*;
-import com.kk.teachme.support.JSONCreator;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -96,7 +90,6 @@ public class UserController {
     }
 
     @RequestMapping(value = "/read")
-    @ResponseBody
     public String read(@RequestParam int problem_id, HttpServletRequest request, Model model) throws JSONException {
         if (request.getSession().getAttribute("user") == null) {
             return "redirect:/login";
@@ -109,7 +102,19 @@ public class UserController {
             userProblemDepot.addUserProblem(user.getId(), problem_id);
         }
 
-        return "user-problem-" + userProblemDepot.getStatus(user.getId(), problem_id).toString().toLowerCase();
+        return getItem(problem_id, request, model);
+    }
+
+    @RequestMapping(value = "/user_problem_item")
+    public String getItem(@RequestParam int problem_id, HttpServletRequest request, Model model) throws JSONException {
+        if (request.getSession().getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+        User user = (User)request.getSession().getAttribute("user");
+
+        model.addAttribute("userProblem", userProblemDepot.getByIds(user.getId(), problem_id));
+
+        return "user_problem/user_problem_item";
     }
 
     @RequestMapping(value = "/user_problem_list")

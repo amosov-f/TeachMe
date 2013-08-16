@@ -45,7 +45,7 @@
 
     <div class="container" style="height: 80%;">
 
-        <form class="form-inline col-6" id="problem" method="post" action="/add_problem" style="height: 100%;">
+        <form class="form-inline col-lg-6" id="problem" method="post" action="/add_problem" style="height: 100%;">
             <input type="hidden" id="problemId" name="problem_id"/>
 
             <legend>Название</legend>
@@ -59,10 +59,10 @@
 
 
             <legend>Ответ</legend>
-            <textarea id="solution" name="solution" class="form-control" ></textarea>
+            <input id="solution" name="solution" type="text" class="form-control" name="name"/>
 
             <legend>Тип ответа</legend>
-            <select id="checkerId" name="checker_id" class="selectpicker">
+            <select id="checkerId" name="checker_id">
     <%          Map<Integer, Checker> checkers = (Map<Integer, Checker>)request.getAttribute("checkerMap"); %>
     <%          for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
                     <option value="<%=checker.getKey()%>"><%=checker.getValue().getName()%></option>
@@ -74,7 +74,7 @@
         </form>
 
 
-        <div class="col-6" style="height: 100%;">
+        <div class="col-lg-6" style="height: 100%;">
 
             <form class="form-group" id="figure" method="post" action="/files/upload" enctype="multipart/form-data" style="width:100%; height: 15%;">
                 <legend>Рисунок</legend>
@@ -108,7 +108,7 @@
     </div>
 
     <div align="center" style="height: 7%;">
-        <button class="btn btn-default" type="button" onclick="return submitProblem();" style="width: 30%; height: 90%">
+        <button class="btn btn-primary" type="button" onclick="return submitProblem();" style="width: 30%; height: 90%">
             Сохранить
         </button>
         <button class="btn" type="button" onclick="cancel()" style="width: 10%; height: 90%">
@@ -172,13 +172,13 @@
         %>
 
             $('#tagsEdit').tags({tags: existTags, newTagsOutput: $('#newTagsView')});
-            $('#file').filestyle({input: false, classButton: 'btn btn-default', buttonText: 'Загрузить'});
+            $('#file').filestyle({input: false, classButton: 'btn btn-primary', buttonText: 'Загрузить'});
 
             connectByEnter('#name', '#statement');
             connectByEnter('#solution', '#tagsEdit');
             connectByEnter('#tagsEdit', '#name');
 
-            $('.selectpicker').selectpicker();
+            $('#checkerId').selectpicker();
         });
 
         function submitProblem() {
