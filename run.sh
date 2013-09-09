@@ -7,6 +7,6 @@ JAVA_TOOL_OPTION="-Dfile.encoding=UTF-8  -XX:MaxPermSize=50m -XX:PermSize=50m -X
 echo $JAVA_TOOL_OPTION
 export JAVA_TOOL_OPTION
 
-mvn clean install exec:java teachme >>log.log 2>&1 &
+mvn clean install exec:java -pl teachme >>log.log 2>&1 &
 
 echo $! > process.pid
