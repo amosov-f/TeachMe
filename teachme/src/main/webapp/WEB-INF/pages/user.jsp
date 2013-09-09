@@ -21,7 +21,7 @@
 
 <body class="under-navbar">
 
-    <div class="navbar navbar-fixed-top" role="navigation">
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container">
             <div href="/admin" class="navbar-header">
                 <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
