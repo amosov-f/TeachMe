@@ -18,12 +18,11 @@ public class Main {
             jettyServer = new Server();
 
             SocketConnector conn = new SocketConnector();
-            conn.setPort(8080);
+            conn.setPort(8083);
             jettyServer.setConnectors(new Connector[]{conn});
 
             WebAppContext context = new WebAppContext();
 
-            //           setJDBCmanager(jettyServer, context);
             context.setContextPath("/");
             context.setWar("teachme/src/main/webapp");
 
@@ -40,18 +39,6 @@ public class Main {
             }
             ignore.printStackTrace();
         }
-    }
-
-    private static void setJDBCmanager(Server server, WebAppContext ctx) {
-        JDBCSessionIdManager idMgr = new JDBCSessionIdManager(server);
-        idMgr.setDriverInfo("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/vkrent?user=root");
-        idMgr.setWorkerName("fred");
-        idMgr.setScavengeInterval(60);
-        server.setSessionIdManager(idMgr);
-
-        JDBCSessionManager jdbcMgr = new JDBCSessionManager();
-        jdbcMgr.setSessionIdManager(server.getSessionIdManager());
-        ctx.setSessionHandler(new SessionHandler(jdbcMgr));
     }
 }
 
