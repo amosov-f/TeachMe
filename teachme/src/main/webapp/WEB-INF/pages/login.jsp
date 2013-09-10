@@ -22,7 +22,7 @@
 <body>
     <div align="center">
         <h2>
-            Войти в TeachMe
+            Войти в TeachMe. Test.
             <form name="vk_signin" id="vk_signin" action="<c:url value="/signin/vkontakte"/>" method="post">
                 <input type="image" src="/resources/icons/vk.jpg"/>
             </form>
