@@ -250,7 +250,7 @@ public class UserController {
     private String getCurrentAddress() {
         String userName = System.getProperty("user.name");
         if ("teachme".equals(userName)) {
-            return "5.178.83.226:8083";
+            return "friendrent.ru:8083";
         }
         return "localhost:8083";
     }
