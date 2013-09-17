@@ -231,7 +231,7 @@
             $('#file').val(null);
             if (figureId != null && figureId != '') {
                 $('#figureView').append(
-                        '<img src="http://localhost:8080/files/' + figureId + '" style="max-height: 30%; max-width: 90%;"/>'
+                        '<img src="/files/' + figureId + '" style="max-height: 30%; max-width: 90%;"/>'
                 );
 
                 $('#figureView').append(

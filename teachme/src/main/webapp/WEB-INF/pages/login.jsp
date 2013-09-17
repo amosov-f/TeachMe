@@ -22,12 +22,11 @@
 <body>
     <div align="center">
         <h2>
-            Войти в TeachMe. Test.
-            <form name="vk_signin" id="vk_signin" action="<c:url value="/signin/vkontakte"/>" method="post">
-                <input type="image" src="/resources/icons/vk.jpg"/>
-            </form>
-
+            Войти в TeachMe
         </h2>
+        <a href="http://oauth.vk.com/authorize?client_id=3810701&redirect_uri=http://<%=(String)request.getAttribute("adress")%>/vklogin&response_type=code">
+            <input type="image" src="/resources/icons/vk.jpg"/>
+        </a>
     </div>
 
     <%--<form class="container">--%>

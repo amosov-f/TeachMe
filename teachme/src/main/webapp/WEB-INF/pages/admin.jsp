@@ -44,9 +44,8 @@
                     <p id="loading" class="navbar-text"></p>
                 </div>
 
-                <jsp:include page="user/user_sign.jsp"></jsp:include>
-
                 <ul class="nav navbar-nav navbar-right">
+                    <jsp:include page="user/user_sign.jsp"></jsp:include>
                     <li>
                         <button class="btn btn-primary navbar-btn" onclick="location.href = '/new_problem'">
                             Новая задача

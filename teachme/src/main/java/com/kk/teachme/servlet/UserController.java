@@ -1,9 +1,18 @@
 package com.kk.teachme.servlet;
 
+import com.google.api.client.json.*;
 import com.kk.teachme.checker.SolveStatus;
 import com.kk.teachme.db.*;
 import com.kk.teachme.model.*;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -165,10 +176,60 @@ public class UserController {
     }
 
     @RequestMapping(value = "/login")
-    public String logIn(HttpServletRequest request) {
+    public String logIn(Model model, HttpServletRequest request) {
         if (request.getSession().getAttribute("user") == null) {
+            model.addAttribute("adress", getCurrentAddress());
             return "login";
         }
+        return "redirect:/problems";
+    }
+
+    @RequestMapping(value = "/vklogin")
+    public String vkLogIn(@RequestParam("code") String code, HttpServletRequest request) {
+        if (request.getSession().getAttribute("user") != null) {
+            return "redirect:/problems";
+        }
+
+        DefaultHttpClient httpСlient = new DefaultHttpClient();
+        HttpParams httpParams = new BasicHttpParams();
+        httpParams.setIntParameter("http.socket.timeout", 30000);
+        httpСlient.setParams(httpParams);
+
+        String authorizeQuery =
+                "https://oauth.vk.com/access_token?client_id=3810701&client_secret=4FcroEDLVwMkKYpoRBBV&code=" +
+                code + "&redirect_uri=http://" + getCurrentAddress() + "/vklogin";
+
+        try {
+            HttpEntity en = httpСlient.execute(new HttpGet(authorizeQuery)).getEntity();
+            String response = EntityUtils.toString(en);
+            en.consumeContent();
+
+            JSONObject jUser = new JSONObject(response);
+
+            String username = jUser.get("user_id").toString();
+
+            String userInfoGet = "https://api.vk.com/method/users.get?user_ids=" + username;
+
+            en = httpСlient.execute(new HttpGet(userInfoGet)).getEntity();
+            response = EntityUtils.toString(en);
+            en.consumeContent();
+
+            jUser = (JSONObject)((JSONArray)(new JSONObject(response).get("response"))).get(0);
+
+            User user = new User(username, (String)jUser.get("first_name"), (String)jUser.get("last_name"));
+
+            if (!userDepot.contains(user.getUsername())) {
+                user.setId(userDepot.addObject(user));
+            } else {
+                user = userDepot.getByUsername(user.getUsername());
+            }
+
+            request.getSession(true).setAttribute("user", user);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return "redirect:/problems";
     }
 
@@ -184,6 +245,14 @@ public class UserController {
         model.addAttribute("solved", userProblemDepot.getSolvedProblems(user_id).size());
         model.addAttribute("all", userProblemDepot.getAllUserProblems(user_id).size());
         return "user";
+    }
+
+    private String getCurrentAddress() {
+        String userName = System.getProperty("user.name");
+        if ("teachme".equals(userName)) {
+            return "5.178.83.226:8083";
+        }
+        return "localhost:8083";
     }
 
 }
