@@ -71,6 +71,7 @@
 
         var curProblemId = -1;
         var curChosenTags = null;
+        var curFilter = '';
 
         $(document).ready(function() {
             var existTags = new Array();
@@ -141,11 +142,17 @@
             if ($('#tag').tags('newTags').length != 0) {
                 return;
             }
-            if (curChosenTags != null && $('#tag').tags('chosenTags').toString() === curChosenTags.toString()) {
+            if (
+                    curChosenTags != null &&
+                    $('#tag').tags('chosenTags').toString() === curChosenTags.toString() &&
+                    curFilter === $('#filter').val()
+            ) {
                 return;
             }
 
             curChosenTags = $('#tag').tags('chosenTags');
+            curFilter = $('#filter').val();
+
             $.ajax({
                 url: '/user_problem_list',
                 data: 'tags=' + concat(curChosenTags) + '&filter=' + $('#filter').val(),

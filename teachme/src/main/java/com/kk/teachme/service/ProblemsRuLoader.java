@@ -25,8 +25,8 @@ public class ProblemsRuLoader {
 
     SolutionDepot solutionDepot;
 
-    public void fill() {
-        for (int i = 109651; i < 109652; i++) {
+    public void fill() {           //i = 101870; i < 109953
+        for (int i = 109850; i < 109953; i++) {     //c 109850 по 109952 добавлены на сервер
             load(i);
         }
     }
@@ -47,7 +47,7 @@ public class ProblemsRuLoader {
         if (block == null || block.length() == 0){
             return false;
         }
-        String statement = deleteAuthors(tagTrim(extractSection(block, "Условие")));
+        String statement = /*deleteAuthors(*/tagTrim(extractSection(block, "Условие"))/*)*/;
         if (statement == null || statement.length() == 0) {
             return false;
         }
@@ -130,7 +130,7 @@ public class ProblemsRuLoader {
     }
 
     private String deleteAuthors(String statement) {
-        return statement.split("< *div +class *= *\"catalogueproblemauthor[^\"]*\" *>.*< */ *div *>")[1];
+        return statement.split("< *div +class *= *\"catalogueproblemauthor[^\"]*\" *>.*< */ *div *>")[0];
     }
 
     Integer getInt(String answer) {

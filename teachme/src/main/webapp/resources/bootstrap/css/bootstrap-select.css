@@ -1,5 +1,5 @@
 /*!
- * bootstrap-select v1.1.1
+ * bootstrap-select v1.3.1
  * http://silviomoreto.github.io/bootstrap-select/
  *
  * Copyright 2013 bootstrap-select
@@ -39,7 +39,7 @@
 
 .bootstrap-select {
     /*width: 220px\9; IE8 and below*/
-    width: 220px \0/; /*IE9 and below*/
+    width: 220px\0; /*IE9 and below*/
 }
 
 .bootstrap-select > .btn {
@@ -50,8 +50,13 @@
     border: 1px solid #b94a48;
 }
 
+
+.dropdown-menu {
+  z-index: 2000;
+}
+
 .bootstrap-select.show-menu-arrow.open > .btn {
-    z-index: 1001;
+    z-index: 2051;
 }
 
 .bootstrap-select .btn:focus {
@@ -73,6 +78,7 @@
     top: 50%;
     right: 12px;
     margin-top: -2px;
+    vertical-align: middle;
 }
 
 .bootstrap-select.btn-group > .disabled,
@@ -123,6 +129,7 @@
 }
 
 .bootstrap-select.btn-group .dropdown-menu li > a.opt {
+    position: relative;
     padding-left: 35px;
 }
 
@@ -225,4 +232,26 @@
     width: 100%;
     height: 100% !important;
     opacity: 0;
+}
+
+.bootstrap-select.fit-width {
+    width: auto !important;
+}
+
+.bootstrap-select.btn-group.fit-width .btn .filter-option {
+    position: static;
+}
+
+.bootstrap-select.btn-group.fit-width .btn .caret {
+    position: static;
+    top: auto;
+    margin-top: -1px;
+}
+
+.control-group.error .bootstrap-select .dropdown-toggle{
+    border-color: #b94a48;
+}
+
+.bootstrap-select-searchbox {
+    padding: 4px 8px;
 }
