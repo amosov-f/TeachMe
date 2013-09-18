@@ -25,9 +25,6 @@
 </head>
 
 <body class="under-navbar">
-<%
-    User user = (User)request.getSession().getAttribute("user");
-%>
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container">
             <div href="/admin" class="navbar-header">
@@ -62,6 +59,8 @@
 
     <div class="container">
         <div id="left-part" class="left-part col-lg-4">
+            <div id="user-problem-list" class="list-group margin-top">
+            </div>
         </div>
         <div id="right-part" class="right-part col-lg-8">
         </div>
@@ -72,6 +71,12 @@
         var curProblemId = -1;
         var curChosenTags = null;
         var curFilter = '';
+
+        var onPage = 20;
+        var curPages;
+        var uploaded = false;
+        var uploading = false;
+
 
         $(document).ready(function() {
             var existTags = new Array();
@@ -85,7 +90,7 @@
             existTags.sort();
 
             $('#tag').tags({tags: existTags});
-            $('#tag').bind('change keyup', showProblemList);
+            $('#tag').bind('change keyup', createProblemList);
 
         <%
             if (request.getAttribute("problemId") != null) {
@@ -99,12 +104,21 @@
             }
         %>
             $('#filter').change(function() {
-                showProblemList();
+                createProblemList();
             });
 
             $('#filter').selectpicker();
 
-            showProblemList();
+            createProblemList();
+
+            $('#left-part').scroll(function() {
+                if (uploading || uploaded) {
+                    return;
+                }
+                if ($(this).prop('scrollHeight') - $(this).height() <= $(this).scrollTop() + 300) {
+                    uploadProblemList(false);
+                }
+            });
         });
 
         function showProblem(problemId) {
@@ -138,7 +152,8 @@
             });
         }
 
-        function showProblemList() {
+        function createProblemList() {
+
             if ($('#tag').tags('newTags').length != 0) {
                 return;
             }
@@ -150,24 +165,53 @@
                 return;
             }
 
+            curPages = 0;
+            uploaded = false;
+
+            uploadProblemList(true);
+        }
+
+        function uploadProblemList(create) {
+
             curChosenTags = $('#tag').tags('chosenTags');
             curFilter = $('#filter').val();
 
+            var from = curPages * onPage;
+            var to = from + onPage;
+
             $.ajax({
                 url: '/user_problem_list',
-                data: 'tags=' + concat(curChosenTags) + '&filter=' + $('#filter').val(),
+                data: 'tags=' + concat(curChosenTags) + '&filter=' + $('#filter').val() + '&from=' + from + '&to=' + to,
                 beforeSend: function() {
+                    uploading = true;
                     $('#loading').text('Загрузка...');
                 },
                 success: function(data) {
-                    $('#left-part').html(data);
-                    $('#' + curProblemId).addClass('item-active');
                     $('#loading').text('');
+                    if (data.trim() === '') {
+                        uploaded = true;
+                    }
+
+                    if (create) {
+                        if (data.trim() === '') {
+                            $('#user-problem-list').html('<h5>Задачи не найдены</h5>');
+                        } else {
+                            $('#user-problem-list').html(data);
+                        }
+                    } else {
+                        $('#user-problem-list').append(data);
+                    }
+
+                    $('#' + curProblemId).addClass('item-active');
                     $('.list-group-item').click(function() {
                         showProblem($(this).attr('name'));
                     });
+                    ++curPages;
+                    uploading = false;
                 }
             });
+
+
         }
 
         function submit() {

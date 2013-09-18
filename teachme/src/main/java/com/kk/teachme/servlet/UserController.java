@@ -130,7 +130,14 @@ public class UserController {
     }
 
     @RequestMapping(value = "/user_problem_list")
-    public String getByFilters(@RequestParam String tags, @RequestParam String filter, HttpServletRequest request, Model model) throws UnsupportedEncodingException {
+    public String getByFilters(
+            @RequestParam String tags,
+            @RequestParam String filter,
+            @RequestParam int from,
+            @RequestParam int to,
+            HttpServletRequest request,
+            Model model
+    ) throws UnsupportedEncodingException {
         if (request.getSession().getAttribute("user") == null) {
             return "redirect:/login";
         }
@@ -160,6 +167,12 @@ public class UserController {
             userProblems.retainAll(userProblemDepot.getSolvedProblems(user.getId()));
         } else if (filter.equals("attempted")) {
             userProblems.retainAll(userProblemDepot.getAttemptedProblems(user.getId()));
+        }
+
+        if (from >= userProblems.size()) {
+            userProblems = null;
+        } else {
+            userProblems = userProblems.subList(from, Math.min(to, userProblems.size()));
         }
 
         model.addAttribute("userProblemList", userProblems);
