@@ -24,7 +24,9 @@ CREATE TABLE problem (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   name text,
   statement text,
-  figures text
+  figures text,
+  complexity INTEGER,
+  in_mind, boolean
 );
 
 CREATE TABLE problem_tag (

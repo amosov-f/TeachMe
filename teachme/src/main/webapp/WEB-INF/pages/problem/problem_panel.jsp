@@ -49,15 +49,30 @@
             <%
                 }
             %>
-                <div class="label label-default"><%= solution.getChecker().getName() %></div>
-                <div class="label label-success"><%= solution.getSolutionText() %></div>
+                <div>
+                    Сложность
+                    <div class="label label-default"><%= problem.getComplexity() %></div>
+                <%
+                    if (problem.isInMind()) {
+                %>
+                        , решается в уме
+                <%
+                    }
+                %>
+                </div>
+                <div>
+                    Ответом является
+                    <div class="label label-default"><%= solution.getChecker().getName() %></div>
+                    <div class="label label-success"><%= solution.getSolutionText() %></div>
+                </div>
+
             </div>
         </div>
 
         <script>
             $(document).ready(function() {
                 $('#problemPanel').click(function() {
-                    document.location.href = '/edit_problem?problem_id=<%=problem.getId()%>'
+                    document.location = '/edit_problem?problem_id=<%=problem.getId()%>'
                 });
             });
         </script>

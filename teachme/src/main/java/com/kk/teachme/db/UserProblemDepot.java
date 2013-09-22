@@ -168,10 +168,11 @@ public class UserProblemDepot {
 
 
     public List<UserProblem> getUnsolvedProblems(int userId) {
-        List<UserProblem> userProblems = simpleJdbcTemplate.query("select problem_id, attempts " +
-                "from user_problem where user_id = ?",
+        List<UserProblem> userProblems = simpleJdbcTemplate.query(
+                "select problem_id, attempts from user_problem where user_id = ?",
                 getRowMapper(),
-                userId);
+                userId
+        );
         List<Problem> allProblems = problemDepot.getAllProblems();
 
         List<UserProblem> unsolvedUserProblems = new ArrayList<UserProblem>();

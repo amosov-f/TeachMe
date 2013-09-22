@@ -11,7 +11,7 @@
 <!DOCTYPE html>
 
 
-<html style="height: 100%;">
+<html lang="en">
 <head>
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -36,10 +36,10 @@
 
 </head>
 
-<body style="height: 100%;">
+<body>
 
 <%
-    Problem problem = new Problem("", "");
+    Problem problem = new Problem();
     String solutionText = "";
     if (request.getAttribute("problem") != null) {
         problem = (Problem)request.getAttribute("problem");
@@ -48,44 +48,61 @@
 %>
 
 
-    <div align="center" style="height: 8%;">
+    <div align="center">
         <h2 id="title"></h2>
     </div>
 
-    <div class="container" style="height: 80%;">
+    <div class="container">
 
-        <form class="form-inline col-lg-6" id="problem" method="post" action="/add_problem" style="height: 100%;">
+        <form class="form-inline col-lg-6" id="problem" method="post" action="/add_problem">
             <input type="hidden" id="problemId" name="problem_id" value="<%=problem.getId() %>"/>
 
             <legend>Название</legend>
             <input type="text" id="name" class="form-control" name="name" value="<%= problem.getName() %>"/>
 
             <legend>Условие</legend>
-            <textarea id="statement" class="form-control" name="statement" style="height: 30%;"><%= problem.getStatement() %></textarea>
+            <textarea id="statement" class="form-control" name="statement" rows="11"><%= problem.getStatement() %></textarea>
 
             <input type="hidden" id="figures" name="figures" value="<%= problem.getFiguresString() %>"/>
+
+
             <input type="hidden" id="tags" name="tags" value="<%= problem.getTagsString(false) %>"/>
 
 
             <legend>Ответ</legend>
-            <input id="solution" name="solution" type="text" class="form-control" name="name" value="<%= solutionText %>"/>
+            <input id="solution" name="solution" type="text" class="form-control" value="<%= solutionText %>"/>
 
-            <legend>Тип ответа</legend>
-            <select id="checkerId" name="checker_id">
-    <%          Map<Integer, Checker> checkers = (Map<Integer, Checker>)request.getAttribute("checkerMap"); %>
-    <%          for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
-                    <option value="<%=checker.getKey()%>"><%=checker.getValue().getName()%></option>
-    <%          }   %>
-            </select>
+                <div class="col-lg-6" style="padding-left: 0px; padding-right: 0px;">
+                    <legend>Тип ответа</legend>
+                    <select id="checkerId" name="checker_id">
+            <%          Map<Integer, Checker> checkers = (Map<Integer, Checker>)request.getAttribute("checkerMap"); %>
+            <%          for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
+                            <option value="<%=checker.getKey()%>"><%=checker.getValue().getName()%></option>
+            <%          }   %>
+                    </select>
+                </div>
 
-            <input type="hidden" id="newTags" name="newTags" />
+                <div class="col-lg-6" style="padding-left: 0px; padding-right: 0px;">
+                    <legend>Сложность</legend>
+                    <div class="col-lg-4 col-xs-4" style="padding-left: 0px;">
+                        <input type="number" class="form-control" id="complexity" name="complexity" min="1" max="10" value="<%= problem.getComplexity() %>" autocomplete="off" />
+                    </div>
+                    <div class="checkbox col-lg-8 col-xs-8">
+                        <label>
+                            <input type="checkbox" id="inMind" name="in_mind" value="true" /> Решается в уме
+                        </label>
+                    </div>
+                </div>
+
+
+            <input type="hidden" id="newTags" name="new_tags" />
 
         </form>
 
 
-        <div class="col-lg-6" style="height: 100%;">
+        <div class="col-lg-6">
 
-            <form class="form-group" id="figure" method="post" action="/files/upload" enctype="multipart/form-data" style="width:100%; height: 15%;">
+            <form class="form-group" id="figure" method="post" action="/files/upload" enctype="multipart/form-data">
                 <legend>Рисунок</legend>
                 <input
                         name="file"
@@ -96,18 +113,17 @@
                 />
             </form>
 
-            <div class="media" id="figureView" style="max-height: 35%; position: relative;"></div>
+            <div class="media" id="figureView" style=" position: relative;"></div>
 
-            <div style="height: 50%;">
+            <div>
                 <legend>Теги</legend>
-                <input id="newTagsView" class="form-control" readonly="true" style="width: 100%" placeholder="новые теги"/>
+                <input id="newTagsView" class="form-control" readonly="true" placeholder="новые теги"/>
                 <br>
                 <input
                         id="tagsEdit"
                         type="text"
                         class="form-control"
                         placeholder="введите теги через запятую..."
-                        style="width: 100%"
                         value="<%= problem.getTagsString(true) %>"
                 />
             </div>
@@ -116,13 +132,17 @@
 
     </div>
 
-    <div align="center" style="height: 7%;">
-        <button class="btn btn-primary" type="button" onclick="return submitProblem();" style="width: 30%; height: 90%">
-            Сохранить
-        </button>
-        <button class="btn" type="button" onclick="cancel()" style="width: 10%; height: 90%">
-            Отмена
-        </button>
+    <div class="container col-lg-12 col-xs-12" style="margin-top: 15px;">
+        <div class="col-lg-7 col-xs-7">
+            <button class="btn btn-primary btn-lg col-lg-6 col-xs-12 col-lg-offset-6" type="button" onclick="return submitProblem();">
+                Сохранить
+            </button>
+        </div>
+        <div class="col-lg-5 col-xs-5">
+            <button class="btn btn-lg" type="button" onclick="cancel()">
+                Отмена
+            </button>
+        </div>
     </div>
 
 
@@ -166,6 +186,14 @@
             }
         %>
 
+        <%
+            if (problem.isInMind()) {
+        %>
+                $('#inMind').attr('checked', true);
+        <%
+            }
+        %>
+
             $('#tagsEdit').tags({tags: existTags, newTagsOutput: $('#newTagsView')});
             $('#file').filestyle({input: false, classButton: 'btn btn-primary', buttonText: 'Загрузить'});
 
@@ -194,11 +222,11 @@
         <%
             if (request.getAttribute("problem") == null) {
         %>
-                document.location.href = '/admin'
+                document.location = '/admin'
         <%
             } else {
         %>
-                document.location.href = '/admin?problem_id=<%=((Problem)request.getAttribute("problem")).getId()%>'
+                document.location = '/admin?problem_id=<%=((Problem)request.getAttribute("problem")).getId()%>'
         <%
             }
         %>
@@ -206,7 +234,7 @@
 
         function deleteProblem() {
             if (confirm("Вы точно хотите удалить задачу?")) {
-                document.location.href = 'delete_problem?problem_id=' + $('#problemId').val();
+                document.location = 'delete_problem?problem_id=' + $('#problemId').val();
             }
         }
 

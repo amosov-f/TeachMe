@@ -13,7 +13,9 @@
                         <%= user.getName() %>
                     </a>
                 </li>
-                <li class="divider-vertical"></li>
+                <li class="hidden-xs divider-vertical"></li>
+                <li class="visible-xs divider" />
+
                 <li>
                     <a href="/logout">
                         Выйти

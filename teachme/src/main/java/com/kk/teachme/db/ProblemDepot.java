@@ -26,12 +26,15 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         final int update = simpleJdbcTemplate.getJdbcOperations().update(
                 new PreparedStatementCreator() {
                     public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
-                        PreparedStatement preparedStatement =
-                                conn.prepareStatement("insert into problem (name,statement,figures) values(?,?,?)"
-                                        , Statement.RETURN_GENERATED_KEYS);
+                        PreparedStatement preparedStatement = conn.prepareStatement(
+                                "insert into problem (name, statement, figures, complexity, in_mind) values(?,?,?,?,?)",
+                                Statement.RETURN_GENERATED_KEYS
+                        );
                         preparedStatement.setString(1, problem.getName());
                         preparedStatement.setString(2, problem.getStatement());
                         preparedStatement.setString(3, problem.getFiguresString());
+                        preparedStatement.setInt(4, problem.getComplexity());
+                        preparedStatement.setBoolean(5, problem.isInMind());
 
                         return preparedStatement;
                     }
@@ -53,12 +56,16 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     public Problem getById(int id) {
         final Problem byId = super.getById(id);
         if (byId != null) {
-            final List<Integer> query = simpleJdbcTemplate.query("select tag_id from problem_tag where problem_id = ?", new ParameterizedRowMapper<Integer>() {
-                @Override
-                public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
-                    return resultSet.getInt(1);
-                }
-            }, byId.getId());
+            final List<Integer> query = simpleJdbcTemplate.query(
+                    "select tag_id from problem_tag where problem_id = ?",
+                    new ParameterizedRowMapper<Integer>() {
+                        @Override
+                        public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
+                            return resultSet.getInt(1);
+                        }
+                    },
+                    byId.getId()
+            );
 
             final List<Tag> tags = new ArrayList<Tag>();
             for (Integer integer : query) {
@@ -100,12 +107,8 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return problemList;
     }
 
-    public List<Problem> getSolvedProblems(User user) {
-        return simpleJdbcTemplate.query("select problem_id from user_problem where user_id = ? and status_id = ?",
-                getProblemIdRowMapper("problem_id"),
-                user.getId(),
-                statusDepot.getStatusId(Status.SOLVED)
-        );
+    public  List<Problem> getInMindProblems() {
+        return simpleJdbcTemplate.query("select * from problem where in_mind = ?", getProblemIdRowMapper("id"), true);
     }
 
     public List<Problem> getAllProblems() {
@@ -118,10 +121,12 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         simpleJdbcTemplate.update("delete from problem_tag where problem_id = ?", id);
 
         simpleJdbcTemplate.update(
-                "update problem set name = ?, statement = ?, figures = ? where id = ?",
+                "update problem set name = ?, statement = ?, figures = ?, complexity = ?, in_mind = ? where id = ?",
                 problem.getName(),
                 problem.getStatement(),
                 problem.getFiguresString(),
+                problem.getComplexity(),
+                problem.isInMind(),
                 id
         );
 
@@ -184,7 +189,9 @@ public class ProblemDepot extends AbstractDepot<Problem> {
                         resultSet.getInt("id"),
                         resultSet.getString("name"),
                         resultSet.getString("statement"),
-                        Problem.parseFiguresString(resultSet.getString("figures"))
+                        Problem.parseFiguresString(resultSet.getString("figures")),
+                        resultSet.getInt("complexity"),
+                        resultSet.getBoolean("in_mind")
                 );
             }
         };

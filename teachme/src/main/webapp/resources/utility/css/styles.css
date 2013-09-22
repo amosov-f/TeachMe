@@ -3,6 +3,11 @@
     overflow-y: scroll;
 }
 
+.scroll {
+    height: 100%;
+    overflow-y: scroll;
+}
+
 .right-part {
     height: 100%;
     overflow-y: scroll;

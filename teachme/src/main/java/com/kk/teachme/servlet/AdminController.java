@@ -91,17 +91,21 @@ public class AdminController {
             @RequestParam String name,
             @RequestParam String statement,
             @RequestParam(required = false) String figures,
+            @RequestParam int complexity,
+            @RequestParam(required = false) Boolean in_mind,
             @RequestParam(required = false) String tags,
             @RequestParam String solution,
             @RequestParam int checker_id,
-            @RequestParam(required = false) String newTags
+            @RequestParam(required = false) String new_tags
     ) throws IOException {
+        System.out.println(in_mind);
+
         name = name.trim();
         statement = statement.trim();
         solution = solution.trim();
 
-        if (newTags != null && !newTags.isEmpty()) {
-            for (String tagName : URLDecoder.decode(newTags, "UTF-8").split(",")) {
+        if (new_tags != null && !new_tags.isEmpty()) {
+            for (String tagName : URLDecoder.decode(new_tags, "UTF-8").split(",")) {
                 tagDepot.createIfNotExist(tagName);
             }
         }
@@ -113,7 +117,11 @@ public class AdminController {
             }
         }
 
-        Problem problem = new Problem(name, statement, Problem.parseFiguresString(figures), tagList);
+        boolean isInMind = (in_mind == null) ? false : true;
+
+        System.out.println(isInMind);
+
+        Problem problem = new Problem(name, statement, Problem.parseFiguresString(figures), complexity, isInMind, tagList);
 
         if (problem_id == -1) {
             problem_id = problemDepot.addObject(problem);

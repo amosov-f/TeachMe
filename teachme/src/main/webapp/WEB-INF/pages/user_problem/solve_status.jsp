@@ -29,7 +29,7 @@
 <%
     if (solveStatus.equals(SolveStatus.INVALID)) {
 %>
-        <div class="alert">
+        <div class="alert alert-warning">
             Неверный формат ответа.
         </div>
 <%

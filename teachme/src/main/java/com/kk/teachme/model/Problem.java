@@ -8,34 +8,58 @@ import java.util.List;
  * @author akonst
  */
 public class Problem {
-    private int id;
-    private String name;
-    private String statement;
+    private int id = -1;
+    private String name = "";
+    private String statement = "";
     private List<String> figures = new ArrayList<String>();
     private List<Tag> tags = new ArrayList<Tag>();
+    private int complexity = 1;
+    private boolean isInMind = false;
 
-    public Problem(String name, String statement) {
-        this(-1, name, statement, new ArrayList<String>(), new ArrayList<Tag>());
+    public Problem() {
+        this(-1, "", "", new ArrayList<String>(), 1, false, new ArrayList<Tag>());
     }
 
-    public Problem(int id, String name, String statement, List<String> figures) {
-        this(id, name, statement, figures, new ArrayList<Tag>());
+    //public Problem(int id, String name, String statement, List<String> figures) {
+    //    this(id, name, statement, figures, 1, false, new ArrayList<Tag>());
+    //}
+
+    //public Problem(int id, String name, String statement) {
+    //    this(id, name, statement, new ArrayList<String>(), 1, false, new ArrayList<Tag>());
+    //}
+
+    //public Problem(String name, String statement, List<String> figures, List<Tag> tags) {
+    //    this(-1, name, statement, figures, 1, false, tags);
+    //}
+
+    public Problem(int id, String name, String statement, List<String> figures, int complexity, boolean isInMind) {
+        this(id, name, statement, figures, complexity, isInMind, new ArrayList<Tag>());
     }
 
-    public Problem(int id, String name, String statement) {
-        this(id, name, statement, new ArrayList<String>(), new ArrayList<Tag>());
+    public Problem(String name, String statement, List<String> figures, int complexity, boolean isInMind) {
+        this(-1, name, statement, figures, complexity, isInMind);
     }
 
-    public Problem(String name, String statement, List<String> figures, List<Tag> tags) {
-        this(-1, name, statement, figures, tags);
+    public Problem(String name, String statement, List<String> figures, int complexity, boolean isInMind, List<Tag> tags) {
+        this(-1, name, statement, figures, complexity, isInMind, tags);
     }
 
-    public Problem(int id, String name, String statement, List<String> figures, List<Tag> tags) {
+    public Problem(
+            int id,
+            String name,
+            String statement,
+            List<String> figures,
+            int complexity,
+            boolean isInMind,
+            List<Tag> tags
+    ) {
         this.id = id;
         this.name = name;
         this.statement = statement;
         this.figures = figures;
         this.tags = tags;
+        this.complexity = complexity;
+        this.isInMind = isInMind;
     }
 
     public int getId() {
@@ -95,6 +119,14 @@ public class Problem {
         return result;
     }
 
+    public int getComplexity() {
+        return complexity;
+    }
+
+    public boolean isInMind() {
+        return isInMind;
+    }
+
     public static List<String> parseFiguresString(String figures) {
         if (figures == null || figures.isEmpty()) {
             return new ArrayList<String>();
@@ -114,6 +146,8 @@ public class Problem {
                 ", statement='" + statement + '\'' +
                 ", figures=" + figures +
                 ", tags=" + tags +
+                ", complexity=" + complexity +
+                ", isInMind=" + isInMind +
                 '}';
     }
 
@@ -133,4 +167,5 @@ public class Problem {
     public int hashCode() {
         return id;
     }
+
 }

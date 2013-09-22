@@ -35,17 +35,17 @@
                 </div>
 
                 <div class="container">
-                    <div class="col-lg-4">
-                        <div class="form-group col-lg-12">
-                            <input id="solution" name="solution" class="form-control col-lg-12" type="text" placeholder="Ваш ответ" />
+                    <div class="col-lg-4 col-md-4 col-sm-5 col-xs-7">
+                        <div class="form-group">
+                            <input id="solution" name="solution" class="form-control col-lg-12 col-xs-12" type="text" placeholder="Ваш ответ" />
                         </div>
-                        <div class="form-group col-lg-12">
-                            <button id="submit" class="btn btn-primary col-lg-12">
+                        <div class="form-group">
+                            <button id="submit" class="btn btn-primary btn-lg col-lg-12 col-xs-12">
                                 Отправить
                             </button>
                         </div>
                     </div>
-                    <div class="col-lg-8">
+                    <div class="col-lg-8 col-md-8 col-sm-7 col-xs-5">
                         <div id="solveStatus"></div>
                     </div>
 
@@ -55,5 +55,48 @@
 <%
     }
 %>
+
+    <script>
+
+        $(document).ready(function() {
+
+            $('#submit').click(submit);
+            $('#solution').focus();
+            $('#solution').keypress(function(e) {
+                if (e.which == 13) {
+                    submit();
+                }
+            });
+
+            $.ajax({
+                url: '/read',
+                data: 'problem_id=' + <%= ((Problem)request.getAttribute("problem")).getId() %>
+            });
+        });
+
+        function submit() {
+            var problemId =  $('#userProblemPanel').attr('name');
+            $.ajax({
+                url: '/submit',
+                data: 'problem_id=' + problemId + '&solution_text=' + $('#solution').val(),
+                beforeSend: function() {
+                    $('#solveStatus').html('');
+                },
+                success: function(data) {
+                    $('#solveStatus').html(data);
+                    $('#solution').select();
+
+                    $.ajax({
+                        url: '/user_problem_item',
+                        data: 'problem_id=' + problemId,
+                        success: function(data) {
+                            $('#' + problemId).html(data);
+                        }
+                    });
+                }
+            });
+        }
+
+    </script>
 
 </body>

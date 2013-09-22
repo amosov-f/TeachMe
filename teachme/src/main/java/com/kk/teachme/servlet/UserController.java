@@ -26,6 +26,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Controller
@@ -50,7 +52,7 @@ public class UserController {
     UserProblemDepot userProblemDepot;
 
     @RequestMapping(value = "/user_problem_panel")
-    public String getProblem(@RequestParam int problem_id, HttpServletRequest request, Model model) {
+    public String getProblemPanel(@RequestParam int problem_id, HttpServletRequest request, Model model) {
         if (request.getSession().getAttribute("user") == null) {
             return "redirect:/login";
         }
@@ -59,8 +61,34 @@ public class UserController {
         return "user_problem/user_problem_panel";
     }
 
+    @RequestMapping(value = "/user_problem_{problem_id:\\d+}")
+    public String getUserProblem(
+            @PathVariable int problem_id,
+            @RequestParam(required = false) String tags,
+            @RequestParam(required = false) Boolean in_mind,
+            HttpServletRequest request,
+            Model model
+    ) throws UnsupportedEncodingException {
+        if (request.getSession().getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("problem", problemDepot.getById(problem_id));
+        model.addAttribute("tags", tags);
+        model.addAttribute("inMind", in_mind);
+        model.addAttribute("tagList", parseTagsString(tags));
+
+        return "problem";
+    }
+
     @RequestMapping(value = "/problems")
-    public String user(HttpServletRequest request, Model model) {
+    public String getProblems(
+            @RequestParam(required = false) Integer problem_id,
+            @RequestParam(required = false) String tags,
+            @RequestParam(required = false) Boolean in_mind,
+            HttpServletRequest request,
+            Model model
+    ) throws UnsupportedEncodingException {
         if (request.getSession().getAttribute("user") == null) {
             return "redirect:/login";
         }
@@ -71,6 +99,15 @@ public class UserController {
 
         model.addAttribute("userProblemList", userProblems);
         model.addAttribute("tagList", tagDepot.getAllTags());
+        if (problem_id != null) {
+            model.addAttribute("problemId", problem_id);
+        }
+        if (tags != null && !tags.isEmpty()) {
+            model.addAttribute("tags", tags);
+        }
+        if (in_mind != null) {
+            model.addAttribute("inMind", in_mind);
+        }
 
         return "problems";
     }
@@ -133,6 +170,7 @@ public class UserController {
     public String getByFilters(
             @RequestParam String tags,
             @RequestParam String filter,
+            @RequestParam boolean in_mind,
             @RequestParam int from,
             @RequestParam int to,
             HttpServletRequest request,
@@ -143,18 +181,11 @@ public class UserController {
         }
         User user = (User)request.getSession().getAttribute("user");
 
-        List<UserProblem> userProblems;
-
-        if (tags == null || tags.isEmpty()) {
-            userProblems = userProblemDepot.getAllUserProblems(user.getId());
-        } else {
-            List<Tag> tagList = new ArrayList<Tag>();
-            for (String tag : URLDecoder.decode(tags, "UTF-8").split(",")) {
-                if (tagDepot.getByName(tag) != null) {
-                    tagList.add(tagDepot.getByName(tag));
-                }
+        List<UserProblem> userProblems = new ArrayList<UserProblem>();
+        for (UserProblem userProblem : getUserProblemsByTags(tags, request)) {
+            if (userProblem.getProblem().isInMind() || !in_mind) {
+                userProblems.add(userProblem);
             }
-            userProblems = userProblemDepot.getByTagList(user.getId(), tagList);
         }
 
         if (filter == null || filter.isEmpty()) {
@@ -178,6 +209,118 @@ public class UserController {
         model.addAttribute("userProblemList", userProblems);
 
         return "user_problem/user_problem_list";
+    }
+
+    @RequestMapping(value = "/prev_user_problem")
+    public String getPrevUserProblem(
+            @RequestParam int problem_id,
+            @RequestParam String tags,
+            @RequestParam boolean in_mind,
+            HttpServletRequest request,
+            Model model
+    ) throws UnsupportedEncodingException {
+        List<UserProblem> userProblems = new ArrayList<UserProblem>();
+        for (UserProblem userProblem : getUserProblemsByTags(tags, request)) {
+            if (userProblem.getProblem().isInMind() || !in_mind) {
+                userProblems.add(userProblem);
+            }
+        }
+
+        Collections.sort(userProblems, new Comparator<UserProblem>() {
+            @Override
+            public int compare(UserProblem o1, UserProblem o2) {
+                if (o1.getProblem().getComplexity() < o2.getProblem().getComplexity()) {
+                    return -1;
+                }
+                if (o1.getProblem().getComplexity() > o2.getProblem().getComplexity()) {
+                    return 1;
+                }
+
+                return 0;
+            }
+        });
+
+        for (int i = userProblems.size() - 1; i >= 0; --i) {
+            if (userProblems.get(i).getProblem().getId() == problem_id) {
+                for (int j = i - 1; j >= 0; --j) {
+                    if (!userProblems.get(j).getStatus().equals(Status.SOLVED)) {
+                        model.addAttribute("problem", userProblems.get(j).getProblem());
+                        return "user_problem/user_problem_panel";
+                    }
+                }
+
+            }
+        }
+
+        return "null";
+    }
+
+    @RequestMapping(value = "/next_user_problem")
+    public String getNextUserProblem(
+            @RequestParam int problem_id,
+            @RequestParam String tags,
+            @RequestParam boolean in_mind,
+            HttpServletRequest request,
+            Model model
+    ) throws UnsupportedEncodingException {
+        List<UserProblem> userProblems = new ArrayList<UserProblem>();
+        for (UserProblem userProblem : getUserProblemsByTags(tags, request)) {
+            if (userProblem.getProblem().isInMind() || !in_mind) {
+                userProblems.add(userProblem);
+            }
+        }
+
+        Collections.sort(userProblems, new Comparator<UserProblem>() {
+            @Override
+            public int compare(UserProblem o1, UserProblem o2) {
+                if (o1.getProblem().getComplexity() < o2.getProblem().getComplexity()) {
+                    return -1;
+                }
+                if (o1.getProblem().getComplexity() > o2.getProblem().getComplexity()) {
+                    return 1;
+                }
+
+                return 0;
+            }
+        });
+
+        for (int i = 0; i < userProblems.size(); ++i) {
+            if (userProblems.get(i).getProblem().getId() == problem_id) {
+                for (int j = i + 1; j < userProblems.size(); ++j) {
+                    if (!userProblems.get(j).getStatus().equals(Status.SOLVED)) {
+                        model.addAttribute("problem", userProblems.get(j).getProblem());
+                        return "user_problem/user_problem_panel";
+                    }
+                }
+
+            }
+        }
+
+        return "null";
+    }
+
+    private List<UserProblem> getUserProblemsByTags(String tags, HttpServletRequest request) throws UnsupportedEncodingException {
+        User user = (User)request.getSession().getAttribute("user");
+
+        if (tags == null || tags.isEmpty()) {
+            return userProblemDepot.getAllUserProblems(user.getId());
+        }
+
+        return userProblemDepot.getByTagList(user.getId(), parseTagsString(tags));
+    }
+
+    private List<Tag> parseTagsString(String tags) throws UnsupportedEncodingException {
+        if (tags == null || tags.isEmpty()) {
+            return new ArrayList<Tag>();
+        }
+
+        List<Tag> tagList = new ArrayList<Tag>();
+        for (String tag : URLDecoder.decode(tags, "UTF-8").split(",")) {
+            if (tagDepot.getByName(tag) != null) {
+                tagList.add(tagDepot.getByName(tag));
+            }
+        }
+        return tagList;
     }
 
     @RequestMapping(value = "/")

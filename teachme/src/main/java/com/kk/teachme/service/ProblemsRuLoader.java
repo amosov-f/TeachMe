@@ -26,7 +26,7 @@ public class ProblemsRuLoader {
     SolutionDepot solutionDepot;
 
     public void fill() {           //i = 101870; i < 109953
-        //for (int i = 101870; i < 109953; i++) {     //c 109850 по 109952 добавлены на сервер
+        //for (int i = 109850; i < 109952; i++) {     //c 109850 по 109952 добавлены на сервер
         //    load(i);
         //}
     }
@@ -64,9 +64,11 @@ public class ProblemsRuLoader {
         List<String> figures = new ArrayList<String>();
         figures.add("");
         List<Tag> tags = new ArrayList<Tag>();
-        solutionDepot.addSolution
-                (problemDepot.addObject
-                        (new Problem("Задача с problems.ru #" + id, statement, figures, tags)), intAnswer.toString(), 1);
+        solutionDepot.addSolution(
+                problemDepot.addObject(new Problem("Задача с problems.ru #" + id, statement, figures, 2, false, tags)),
+                intAnswer.toString(),
+                1
+        );
         System.out.println("Success at " + id);
 
         return true;

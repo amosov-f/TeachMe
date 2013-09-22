@@ -1,3 +1,4 @@
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page import="com.kk.teachme.model.Problem" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.kk.teachme.model.Tag" %>
@@ -38,7 +39,7 @@
             </div>
             <div class="collapse navbar-collapse">
                 <div class="navbar-form navbar-left" role="search">
-                    <input id="tag" type="text" class="form-control" placeholder="поиск по тегам" size="30">
+                    <input id="tag" type="text" class="form-control" placeholder="поиск по тегам" size="30"/>
                 </div>
                 <div class="navbar-form pull-left">
                     <select id="filter">
@@ -49,6 +50,21 @@
                         <option value="attempted">Есть попытки</option>
                     </select>
                 </div>
+                <div class="navbar-form navbar-left">
+                    <div class="checkbox form-control">
+                        <label>
+                            <input id="inMind" type="checkbox" style="margin-left: 10px;"
+                            <%
+                                if (request.getAttribute("inMind") != null && (Boolean)request.getAttribute("inMind")) {
+                            %>
+                                    checked="checked"
+                            <%
+                                }
+                            %>
+                            /> В уме
+                        </label>
+                    </div>
+                </div>
                 <div class="nav navbar-nav navbar-left">
                     <p id="loading" class="navbar-text"></p>
                 </div>
@@ -57,12 +73,8 @@
         </div>
     </div>
 
-    <div class="container">
-        <div id="left-part" class="left-part col-lg-4">
-            <div id="user-problem-list" class="list-group margin-top">
-            </div>
-        </div>
-        <div id="right-part" class="right-part col-lg-8">
+    <div id="container" class="container scroll">
+        <div id="user-problem-list" class="list-group margin-top">
         </div>
     </div>
 
@@ -71,6 +83,7 @@
         var curProblemId = -1;
         var curChosenTags = null;
         var curFilter = '';
+        var curInMind = false;
 
         var onPage = 20;
         var curPages;
@@ -90,17 +103,25 @@
             existTags.sort();
 
             $('#tag').tags({tags: existTags});
+
+
             $('#tag').bind('change keyup', createProblemList);
+        <%
+            if (request.getAttribute("tags") != null && !((String)request.getAttribute("tags")).isEmpty()) {
+        %>
+
+                $('#tag').val('<%= (String)request.getAttribute("tags") %>'.replace(/,\s*/g, ', ') + ', ');
+        <%
+            }
+        %>
+
+
 
         <%
             if (request.getAttribute("problemId") != null) {
-                for (Problem problem : (List<Problem>)request.getAttribute("userProblemList")) {
-                    if (problem.getId() == (Integer)request.getAttribute("problemId")) {
         %>
-                        showProblem(<%= problem.getId() %>);
+                curProblemId = <%= (Integer)request.getAttribute("problemId") %>
         <%
-                    }
-                }
             }
         %>
             $('#filter').change(function() {
@@ -109,9 +130,13 @@
 
             $('#filter').selectpicker();
 
+            $('#inMind').change(function() {
+                createProblemList();
+            });
+
             createProblemList();
 
-            $('#left-part').scroll(function() {
+            $('#container').scroll(function() {
                 if (uploading || uploaded) {
                     return;
                 }
@@ -122,34 +147,9 @@
         });
 
         function showProblem(problemId) {
-            $.ajax({
-                url: '/user_problem_panel',
-                data: 'problem_id=' + problemId,
-                beforeSend: function() {
-                    $('#' + curProblemId).removeClass('item-active');
-                    $('#' + problemId).addClass('item-active');
-                    curProblemId = problemId;
-                },
-                success: function(data) {
-                    $('#right-part').html(data);
-                    $('#submit').click(submit);
-                    $('#solution').focus();
-                    $('#solution').keypress(function(e) {
-                        if (e.which == 13) {
-                            submit();
-                        }
-                    });
-                }
-            });
-
-            $.ajax({
-                url: '/read',
-                data: 'problem_id=' + problemId,
-                success: function(data) {
-                    $('#' + problemId).html(data);
-
-                }
-            });
+            document.location = '/user_problem_' + problemId +
+                    '?tags=' + concat(curChosenTags) +
+                    '&in_mind=' + $('#inMind').is(':checked');
         }
 
         function createProblemList() {
@@ -160,7 +160,8 @@
             if (
                     curChosenTags != null &&
                     $('#tag').tags('chosenTags').toString() === curChosenTags.toString() &&
-                    curFilter === $('#filter').val()
+                    curFilter === $('#filter').val() &&
+                    curInMind == $('#inMind').is(':checked')
             ) {
                 return;
             }
@@ -181,7 +182,10 @@
 
             $.ajax({
                 url: '/user_problem_list',
-                data: 'tags=' + concat(curChosenTags) + '&filter=' + $('#filter').val() + '&from=' + from + '&to=' + to,
+                data: 'tags=' + concat(curChosenTags) +
+                      '&filter=' + $('#filter').val() +
+                      '&in_mind=' + $('#inMind').is(':checked') +
+                      '&from=' + from + '&to=' + to,
                 beforeSend: function() {
                     uploading = true;
                     $('#loading').text('Загрузка...');
@@ -212,29 +216,6 @@
             });
 
 
-        }
-
-        function submit() {
-            var problemId =  $('#userProblemPanel').attr('name');
-            $.ajax({
-                url: '/submit',
-                data: 'problem_id=' + problemId + '&solution_text=' + $('#solution').val(),
-                beforeSend: function() {
-                    $('#solveStatus').html('');
-                },
-                success: function(data) {
-                    $('#solveStatus').html(data);
-                    $('#solution').select();
-
-                    $.ajax({
-                        url: '/user_problem_item',
-                        data: 'problem_id=' + problemId,
-                        success: function(data) {
-                            $('#' + problemId).html(data);
-                        }
-                    });
-                }
-            });
         }
 
     </script>

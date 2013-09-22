@@ -118,9 +118,11 @@ public class TCTLoader {
                 ArrayList<Tag> TCT = new ArrayList<Tag>();
                 TCT.add(tagDepot.getByName("пдд"));
 
-                solutionDepot.addSolution
-                    (problemDepot.addObject
-                        (new Problem(name, statement, figures, TCT)), solutionText, 1);
+                solutionDepot.addSolution(
+                        problemDepot.addObject(new Problem(name, statement, figures, 1, true, TCT)),
+                        solutionText,
+                        1
+                );
 
             }
 
