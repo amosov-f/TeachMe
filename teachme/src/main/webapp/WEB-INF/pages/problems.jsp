@@ -130,7 +130,7 @@
 
             $('#filter').selectpicker();
 
-            $('#inMind').change(function() {
+            $('#inMind').mousedown(function() {
                 createProblemList();
             });
 

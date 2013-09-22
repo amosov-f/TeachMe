@@ -20,18 +20,6 @@ public class Problem {
         this(-1, "", "", new ArrayList<String>(), 1, false, new ArrayList<Tag>());
     }
 
-    //public Problem(int id, String name, String statement, List<String> figures) {
-    //    this(id, name, statement, figures, 1, false, new ArrayList<Tag>());
-    //}
-
-    //public Problem(int id, String name, String statement) {
-    //    this(id, name, statement, new ArrayList<String>(), 1, false, new ArrayList<Tag>());
-    //}
-
-    //public Problem(String name, String statement, List<String> figures, List<Tag> tags) {
-    //    this(-1, name, statement, figures, 1, false, tags);
-    //}
-
     public Problem(int id, String name, String statement, List<String> figures, int complexity, boolean isInMind) {
         this(id, name, statement, figures, complexity, isInMind, new ArrayList<Tag>());
     }
