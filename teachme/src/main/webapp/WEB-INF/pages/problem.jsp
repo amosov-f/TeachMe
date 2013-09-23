@@ -1,7 +1,5 @@
-<%@ page import="com.kk.teachme.model.Problem" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.kk.teachme.model.Tag" %>
-<%@ page import="com.kk.teachme.model.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <head>
@@ -37,9 +35,6 @@
                 <a href="/problems" class="navbar-brand">TeachMe</a>
             </div>
             <nav class="collapse navbar-collapse  bs-navbar-collapse" role="navigation" >
-                <div class="nav navbar-nav navbar-left">
-                    <p id="loading" class="navbar-text"></p>
-                </div>
                 <jsp:include page="user/user_sign.jsp"></jsp:include>
             </nav>
         </div>
@@ -111,11 +106,12 @@
                 beforeSend: function() {
                     $('#loading').html('Загрузка...');
                     $('#notFound').html('');
+                    $('#status').html('');
                 },
 
                 success: function(data) {
                     if (data.trim() === '') {
-                        $('#solveStatus').html('<div class="alert alert-warning">Задача не найдена</div>');
+                        $('#status').html('<div class="alert alert-warning">Задача не найдена</div>');
                     } else {
                         $('#panel').html(data);
                     }
@@ -133,11 +129,12 @@
                 beforeSend: function() {
                     $('#loading').html('Загрузка...');
                     $('#notFound').html('');
+                    $('#status').html('');
                 },
 
                 success: function(data) {
                     if (data.trim() === '') {
-                        $('#solveStatus').html('<div class="alert alert-warning">Задача не найдена</div>');
+                        $('#status').html('<div class="alert alert-warning">Задача не найдена</div>');
                     } else {
                         $('#panel').html(data);
                     }

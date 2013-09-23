@@ -35,7 +35,7 @@
                 </div>
 
                 <div class="container">
-                    <div class="col-lg-4 col-md-4 col-sm-5 col-xs-7">
+                    <div class="col-lg-4 col-md-4 col-sm-5 col-xs-12">
                         <div class="form-group">
                             <input id="solution" name="solution" class="form-control col-lg-12 col-xs-12" type="text" placeholder="Ваш ответ" />
                         </div>
@@ -45,8 +45,8 @@
                             </button>
                         </div>
                     </div>
-                    <div class="col-lg-8 col-md-8 col-sm-7 col-xs-5">
-                        <div id="solveStatus"></div>
+                    <div class="col-lg-8 col-md-8 col-sm-7 col-xs-12">
+                        <div id="status"></div>
                     </div>
 
                 </div>
@@ -80,10 +80,12 @@
                 url: '/submit',
                 data: 'problem_id=' + problemId + '&solution_text=' + $('#solution').val(),
                 beforeSend: function() {
-                    $('#solveStatus').html('');
+                    $('#status').html('');
+                    //$('#status').visible(false);
                 },
                 success: function(data) {
-                    $('#solveStatus').html(data);
+
+                    $('#status').html(data);
                     $('#solution').select();
 
                     $.ajax({

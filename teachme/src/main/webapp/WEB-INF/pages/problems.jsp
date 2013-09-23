@@ -37,39 +37,45 @@
                 </button>
                 <a href="/problems" class="navbar-brand">TeachMe</a>
             </div>
-            <div class="collapse navbar-collapse">
+            <nav class="collapse navbar-collapse bs-navbar-collapse">
                 <div class="navbar-form navbar-left" role="search">
-                    <input id="tag" type="text" class="form-control" placeholder="поиск по тегам" size="30"/>
-                </div>
-                <div class="navbar-form pull-left">
-                    <select id="filter">
-                        <option value="">Без фильтра</option>
-                        <option value="unsolved">Нерешенные</option>
-                        <option value="read">Прочитанные</option>
-                        <option value="solved">Решенные</option>
-                        <option value="attempted">Есть попытки</option>
-                    </select>
-                </div>
-                <div class="navbar-form navbar-left">
-                    <div class="checkbox form-control">
-                        <label>
-                            <input id="inMind" type="checkbox" style="margin-left: 10px;"
-                            <%
-                                if (request.getAttribute("inMind") != null && (Boolean)request.getAttribute("inMind")) {
-                            %>
-                                    checked="checked"
-                            <%
-                                }
-                            %>
-                            /> В уме
-                        </label>
+                    <div class="form-group">
+                        <input id="tag" type="text" class="form-control" placeholder="поиск по тегам"/>
                     </div>
-                </div>
-                <div class="nav navbar-nav navbar-left">
+                <!--/div>
+                <div class="navbar-form pull-left"-->
+                    <div class="form-group">
+                        <select id="filter">
+                            <option value="">Без фильтра</option>
+                            <option value="unsolved">Нерешенные</option>
+                            <option value="read">Прочитанные</option>
+                            <option value="solved">Решенные</option>
+                            <option value="attempted">Есть попытки</option>
+                        </select>
+                    </div>
+                <!--/div>
+                <div class="navbar-form navbar-left" -->
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input id="inMind" type="checkbox" style="margin-left: 10px;"
+                                <%
+                                    if (request.getAttribute("inMind") != null && (Boolean)request.getAttribute("inMind")) {
+                                %>
+                                        checked="checked"
+                                <%
+                                    }
+                                %>
+                                /> В уме
+                            </label>
+                        </div>
+                    </div>
+
                     <p id="loading" class="navbar-text"></p>
+
                 </div>
                 <jsp:include page="user/user_sign.jsp"></jsp:include>
-            </div>
+            </nav>
         </div>
     </div>
 
@@ -130,7 +136,7 @@
 
             $('#filter').selectpicker();
 
-            $('#inMind').mousedown(function() {
+            $('#inMind').change(function() {
                 createProblemList();
             });
 
@@ -176,6 +182,7 @@
 
             curChosenTags = $('#tag').tags('chosenTags');
             curFilter = $('#filter').val();
+            curInMind = $('#inMind').is(':checked');
 
             var from = curPages * onPage;
             var to = from + onPage;

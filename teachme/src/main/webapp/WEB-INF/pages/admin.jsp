@@ -36,7 +36,7 @@
                 </button>
                 <a href="/admin" class="navbar-brand">Админка</a>
             </div>
-            <div class="collapse navbar-collapse">
+            <nav class="collapse navbar-collapse bs-navbar-collapse">
                 <div class="navbar-form navbar-left" role="search">
                     <input id="tag" type="text" class="form-control" placeholder="поиск по тегам" size="30">
                 </div>
@@ -47,12 +47,12 @@
                 <ul class="nav navbar-nav navbar-right">
                     <jsp:include page="user/user_sign.jsp"></jsp:include>
                     <li>
-                        <button class="btn btn-primary navbar-btn" onclick="location.href = '/new_problem'">
+                        <button class="btn btn-primary navbar-btn" onclick="location = '/new_problem'">
                             Новая задача
                         </button>
                     </li>
                 </ul>
-            </div>
+            </nav>
         </div>
     </div>
 
