@@ -67,10 +67,6 @@
                         </div>
 
                     </div>
-
-
-
-
                 </div>
                 <p id="loading" class="hidden-xs navbar-text"></p>
                 <jsp:include page="user/user_sign.jsp"></jsp:include>
@@ -119,8 +115,6 @@
         <%
             }
         %>
-
-
 
         <%
             if (request.getAttribute("problemId") != null) {

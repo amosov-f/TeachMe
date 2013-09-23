@@ -19,12 +19,11 @@
                 <%
                     if (!problem.getFigures().isEmpty()) {
                 %>
-                        <br><br>
                         <div align="center">
                         <%
                             for (String figure : problem.getFigures()) {
                         %>
-                                <img src="/files/<%= figure %>" style="height: 30%; max-width: 90%;"/>
+                                <img src="/files/<%= figure %>" class="img-rounded img-panel" />
                         <%
                             }
                         %>

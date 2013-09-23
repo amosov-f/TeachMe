@@ -1,6 +1,5 @@
 package com.kk.teachme.servlet;
 
-import com.google.api.client.json.*;
 import com.kk.teachme.checker.SolveStatus;
 import com.kk.teachme.db.*;
 import com.kk.teachme.model.*;
@@ -21,9 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -167,7 +164,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/user_problem_list")
-    public String getByFilters(
+    public String getUserProblemList(
             @RequestParam String tags,
             @RequestParam String filter,
             @RequestParam boolean in_mind,
@@ -176,28 +173,10 @@ public class UserController {
             HttpServletRequest request,
             Model model
     ) throws UnsupportedEncodingException {
-        if (request.getSession().getAttribute("user") == null) {
+        List<UserProblem> userProblems = getByFilters(tags, filter, in_mind, request);
+
+        if (userProblems == null) {
             return "redirect:/login";
-        }
-        User user = (User)request.getSession().getAttribute("user");
-
-        List<UserProblem> userProblems = new ArrayList<UserProblem>();
-        for (UserProblem userProblem : getUserProblemsByTags(tags, request)) {
-            if (userProblem.getProblem().isInMind() || !in_mind) {
-                userProblems.add(userProblem);
-            }
-        }
-
-        if (filter == null || filter.isEmpty()) {
-            userProblems.retainAll(userProblemDepot.getAllUserProblems(user.getId()));
-        } else if (filter.equals("unsolved")) {
-            userProblems.retainAll(userProblemDepot.getUnsolvedProblems(user.getId()));
-        } else if (filter.equals("read")) {
-            userProblems.retainAll(userProblemDepot.getReadProblems(user.getId()));
-        } else if (filter.equals("solved"))  {
-            userProblems.retainAll(userProblemDepot.getSolvedProblems(user.getId()));
-        } else if (filter.equals("attempted")) {
-            userProblems.retainAll(userProblemDepot.getAttemptedProblems(user.getId()));
         }
 
         if (from >= userProblems.size()) {
@@ -219,36 +198,19 @@ public class UserController {
             HttpServletRequest request,
             Model model
     ) throws UnsupportedEncodingException {
-        List<UserProblem> userProblems = new ArrayList<UserProblem>();
-        for (UserProblem userProblem : getUserProblemsByTags(tags, request)) {
-            if (userProblem.getProblem().isInMind() || !in_mind) {
-                userProblems.add(userProblem);
-            }
+        List<UserProblem> userProblems = getByFilters(tags, "unsolved", in_mind, request);
+        if (userProblems.isEmpty()) {
+            return "null";
         }
+        userProblems.add(getById(problem_id, request));
 
-        Collections.sort(userProblems, new Comparator<UserProblem>() {
-            @Override
-            public int compare(UserProblem o1, UserProblem o2) {
-                if (o1.getProblem().getComplexity() < o2.getProblem().getComplexity()) {
-                    return -1;
-                }
-                if (o1.getProblem().getComplexity() > o2.getProblem().getComplexity()) {
-                    return 1;
-                }
+        Collections.sort(userProblems, getUserProblemComparator());
 
-                return 0;
-            }
-        });
-
-        for (int i = userProblems.size() - 1; i >= 0; --i) {
+        int n = userProblems.size();
+        for (int i = n - 1; i > 0; --i) {
             if (userProblems.get(i).getProblem().getId() == problem_id) {
-                for (int j = i - 1; j >= 0; --j) {
-                    if (!userProblems.get(j).getStatus().equals(Status.SOLVED)) {
-                        model.addAttribute("problem", userProblems.get(j).getProblem());
-                        return "user_problem/user_problem_panel";
-                    }
-                }
-
+                model.addAttribute("problem", userProblems.get((i - 1 + n) % n).getProblem());
+                return "user_problem/user_problem_panel";
             }
         }
 
@@ -256,50 +218,74 @@ public class UserController {
     }
 
     @RequestMapping(value = "/next_user_problem")
-    public String getNextUserProblem(
+    public String getNext(
             @RequestParam int problem_id,
             @RequestParam String tags,
             @RequestParam boolean in_mind,
             HttpServletRequest request,
             Model model
     ) throws UnsupportedEncodingException {
-        List<UserProblem> userProblems = new ArrayList<UserProblem>();
-        for (UserProblem userProblem : getUserProblemsByTags(tags, request)) {
-            if (userProblem.getProblem().isInMind() || !in_mind) {
-                userProblems.add(userProblem);
-            }
+        List<UserProblem> userProblems = getByFilters(tags, "unsolved", in_mind, request);
+        if (userProblems.isEmpty()) {
+            return "null";
         }
 
-        Collections.sort(userProblems, new Comparator<UserProblem>() {
-            @Override
-            public int compare(UserProblem o1, UserProblem o2) {
-                if (o1.getProblem().getComplexity() < o2.getProblem().getComplexity()) {
-                    return -1;
-                }
-                if (o1.getProblem().getComplexity() > o2.getProblem().getComplexity()) {
-                    return 1;
-                }
+        userProblems.add(getById(problem_id, request));
 
-                return 0;
-            }
-        });
+        Collections.sort(userProblems, getUserProblemComparator());
 
         for (int i = 0; i < userProblems.size(); ++i) {
             if (userProblems.get(i).getProblem().getId() == problem_id) {
-                for (int j = i + 1; j < userProblems.size(); ++j) {
-                    if (!userProblems.get(j).getStatus().equals(Status.SOLVED)) {
-                        model.addAttribute("problem", userProblems.get(j).getProblem());
-                        return "user_problem/user_problem_panel";
-                    }
-                }
-
+                model.addAttribute("problem", userProblems.get((i + 1) % userProblems.size()).getProblem());
+                return "user_problem/user_problem_panel";
             }
         }
 
         return "null";
     }
 
-    private List<UserProblem> getUserProblemsByTags(String tags, HttpServletRequest request) throws UnsupportedEncodingException {
+    private UserProblem getById(int problemId, HttpServletRequest request) {
+        if (request.getSession().getAttribute("user") == null) {
+            return null;
+        }
+
+        return userProblemDepot.getByIds(((User)request.getSession().getAttribute("user")).getId(), problemId);
+    }
+
+    private List<UserProblem> getByFilters(
+            String tags,
+            String filter,
+            boolean inMind,
+            HttpServletRequest request
+    ) throws UnsupportedEncodingException {
+        if (request.getSession().getAttribute("user") == null) {
+            return null;
+        }
+        User user = (User)request.getSession().getAttribute("user");
+
+        List<UserProblem> userProblems = new ArrayList<UserProblem>();
+        for (UserProblem userProblem : getByTags(tags, request)) {
+            if (userProblem.getProblem().isInMind() || !inMind) {
+                userProblems.add(userProblem);
+            }
+        }
+
+        if (filter == null || filter.isEmpty()) {
+            userProblems.retainAll(userProblemDepot.getAllUserProblems(user.getId()));
+        } else if (filter.equals("unsolved")) {
+            userProblems.retainAll(userProblemDepot.getUnsolvedProblems(user.getId()));
+        } else if (filter.equals("read")) {
+            userProblems.retainAll(userProblemDepot.getReadProblems(user.getId()));
+        } else if (filter.equals("solved"))  {
+            userProblems.retainAll(userProblemDepot.getSolvedProblems(user.getId()));
+        } else if (filter.equals("attempted")) {
+            userProblems.retainAll(userProblemDepot.getAttemptedProblems(user.getId()));
+        }
+
+        return userProblems;
+    }
+
+    private List<UserProblem> getByTags(String tags, HttpServletRequest request) throws UnsupportedEncodingException {
         User user = (User)request.getSession().getAttribute("user");
 
         if (tags == null || tags.isEmpty()) {
@@ -401,6 +387,22 @@ public class UserController {
         model.addAttribute("solved", userProblemDepot.getSolvedProblems(user_id).size());
         model.addAttribute("all", userProblemDepot.getAllUserProblems(user_id).size());
         return "user";
+    }
+
+    private Comparator<UserProblem> getUserProblemComparator() {
+        return new Comparator<UserProblem>() {
+            @Override
+            public int compare(UserProblem o1, UserProblem o2) {
+                if (o1.getProblem().getComplexity() < o2.getProblem().getComplexity()) {
+                    return -1;
+                }
+                if (o1.getProblem().getComplexity() > o2.getProblem().getComplexity()) {
+                    return 1;
+                }
+
+                return 0;
+            }
+        };
     }
 
     private String getCurrentAddress() {

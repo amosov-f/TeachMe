@@ -76,3 +76,9 @@
 .under-navbar {
     padding-top: 50px;
 }
+
+.img-panel {
+    max-width: 100%;
+    max-height: 40%;
+    margin-top: 15px;
+}

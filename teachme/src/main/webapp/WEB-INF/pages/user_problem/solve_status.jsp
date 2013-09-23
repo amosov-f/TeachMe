@@ -1,5 +1,4 @@
 <%@ page import="com.kk.teachme.checker.SolveStatus" %>
-<%@ page import="com.kk.teachme.model.Status" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 

@@ -76,7 +76,7 @@
     </bean>
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <property name="maxUploadSize" value="1000000"/>
+        <property name="maxUploadSize" value="2000000"/>
     </bean>
 
     <bean id="problemsRuLoader" class="com.kk.teachme.service.ProblemsRuLoader" init-method="fill">

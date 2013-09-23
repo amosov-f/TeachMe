@@ -34,6 +34,7 @@
                 </button>
                 <a href="/problems" class="navbar-brand">TeachMe</a>
             </div>
+            <p id="loading" class="hidden-xs navbar-text"></p>
             <nav class="collapse navbar-collapse  bs-navbar-collapse" role="navigation" >
                 <jsp:include page="user/user_sign.jsp"></jsp:include>
             </nav>
@@ -83,7 +84,6 @@
         <div class="col-xs-6 col-sm-4 col-lg-4" style="padding-bottom: 15px;">
             <button id="next" type="button" class="btn btn-default col-xs-12 col-lg-12" onclick="nextProblem()">Следующая</button>
         </div>
-
     </div>
 
     <script>
@@ -95,11 +95,9 @@
                     '&in_mind=<%= (Boolean)request.getAttribute("inMind") %>';
         }
 
-
-
-        function prevProblem() {
+        function changeProblem(adress) {
             $.ajax({
-                url: '/prev_user_problem',
+                url: '/' + adress + '_user_problem',
                 data: 'problem_id=' + $('#userProblemPanel').attr('name') +
                         '&tags=<%= (String)request.getAttribute("tags") %>' +
                         '&in_mind=' +  <%= (Boolean)request.getAttribute("inMind") %>,
@@ -120,28 +118,14 @@
             });
         }
 
-        function nextProblem() {
-            $.ajax({
-                url: '/next_user_problem',
-                data: 'problem_id=' + $('#userProblemPanel').attr('name') +
-                      '&tags=<%= (String)request.getAttribute("tags") %>' +
-                      '&in_mind=' +  <%= (Boolean)request.getAttribute("inMind") %>,
-                beforeSend: function() {
-                    $('#loading').html('Загрузка...');
-                    $('#notFound').html('');
-                    $('#status').html('');
-                },
-
-                success: function(data) {
-                    if (data.trim() === '') {
-                        $('#status').html('<div class="alert alert-warning">Задача не найдена</div>');
-                    } else {
-                        $('#panel').html(data);
-                    }
-                    $('#loading').html('');
-                }
-            });
+        function prevProblem() {
+            return changeProblem('prev');
         }
+
+        function nextProblem() {
+            return changeProblem('next');
+        }
+
     </script>
 
 </body>
