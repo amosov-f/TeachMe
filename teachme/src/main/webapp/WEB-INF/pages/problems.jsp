@@ -42,8 +42,6 @@
                     <div class="form-group">
                         <input id="tag" type="text" class="form-control" placeholder="поиск по тегам"/>
                     </div>
-                <!--/div>
-                <div class="navbar-form pull-left"-->
                     <div class="form-group">
                         <select id="filter">
                             <option value="">Без фильтра</option>
@@ -53,8 +51,6 @@
                             <option value="attempted">Есть попытки</option>
                         </select>
                     </div>
-                <!--/div>
-                <div class="navbar-form navbar-left" -->
                     <div class="form-group">
                         <div class="checkbox">
                             <label>
@@ -69,11 +65,14 @@
                                 /> В уме
                             </label>
                         </div>
+
                     </div>
 
-                    <p id="loading" class="navbar-text"></p>
+
+
 
                 </div>
+                <p id="loading" class="hidden-xs navbar-text"></p>
                 <jsp:include page="user/user_sign.jsp"></jsp:include>
             </nav>
         </div>

@@ -326,7 +326,7 @@ public class UserController {
     @RequestMapping(value = "/")
     public String home(HttpServletRequest request) {
         if (request.getSession().getAttribute("user") == null) {
-            return "redirect:/login";
+            return "redirect:/vklogin";
         }
         return "redirect:/problems";
     }
@@ -341,7 +341,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/vklogin")
-    public String vkLogIn(@RequestParam("code") String code, HttpServletRequest request) {
+    public String vkLogIn(@RequestParam String code, HttpServletRequest request) {
         if (request.getSession().getAttribute("user") != null) {
             return "redirect:/problems";
         }
