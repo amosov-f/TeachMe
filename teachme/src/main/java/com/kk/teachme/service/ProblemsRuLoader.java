@@ -47,6 +47,7 @@ public class ProblemsRuLoader {
         if (block == null || block.length() == 0){
             return false;
         }
+        Integer dif = getDif(block);
         String statement = deleteAuthors(tagTrim(extractSection(block, "Условие")));
         if (statement == null || statement.length() == 0) {
             return false;
@@ -60,13 +61,12 @@ public class ProblemsRuLoader {
             System.out.println("Not an int");
             return false;
         }
-
         statement += "\n<p align=\"right\"><small>Источник: <a href=\"http://problems.ru/\" target=\"_blank\">problems.ru</a> #" + id + ".</small></p>";
         List<String> figures = new ArrayList<String>();
         figures.add("");
         List<Tag> tags = new ArrayList<Tag>();
         solutionDepot.addSolution(
-                problemDepot.addObject(new Problem("Задача с problems.ru #" + id, statement, figures, 2, false, tags)),
+                problemDepot.addObject(new Problem("Задача с problems.ru #" + id, statement, figures, dif, false, tags)),
                 intAnswer.toString(),
                 1
         );
@@ -89,6 +89,23 @@ public class ProblemsRuLoader {
             return block;
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    private Integer getDif(String statement) {
+        try {
+            Integer dif = getInt(statement
+                    .split("< *td *class *= *\"problemdetailsdifficulty\" *> *")[1]
+                    .split("< *nobr *>")[1]
+                    .split("< */ *nobr *>")[0]
+                    .split("[Сс]ложность *:")[1]
+            );
+            if (dif == null) {
+                dif = 1;
+            }
+            return dif;
+        } catch (Exception e) {
+            return 1;
         }
     }
 
