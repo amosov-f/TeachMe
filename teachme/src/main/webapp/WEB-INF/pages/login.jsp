@@ -1,5 +1,4 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page import="com.kk.teachme.servlet.UserController" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <html>
@@ -20,7 +19,7 @@
 </head>
 
 <body>
-    <div align="center">
+    <div class="container" align="center">
         <h2>
             Войти в TeachMe
         </h2>

@@ -1,8 +1,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ page import="com.kk.teachme.model.Problem" %>
+
 <%@ page import="java.util.List" %>
 <%@ page import="com.kk.teachme.model.Tag" %>
-<%@ page import="com.kk.teachme.model.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <head>
