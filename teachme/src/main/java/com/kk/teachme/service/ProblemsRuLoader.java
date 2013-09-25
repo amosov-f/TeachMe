@@ -26,7 +26,7 @@ public class ProblemsRuLoader {
     SolutionDepot solutionDepot;
 
     public void fill() {           //i = 101870; i < 109953
-        for (int i = 97810; i < 97811; i++) {     //c 109850 по 109952 добавлены на сервер
+        for (int i = 109850; i < 109952; i++) {     //c 109850 по 109952 добавлены на сервер
             load(i);
         }
     }
@@ -150,6 +150,7 @@ public class ProblemsRuLoader {
     }
 
     private String deleteAuthors(String statement) {
+        try {
         String[] split = statement.split("< *div +class *= *\"catalogueproblemauthor[^\"]*\" *>.*< */ *div *>");
         if (split.length == 1) {
             split = split[0].split("< *div +class *= *\"catalogueproblemauthorold[^\"]*\" *>.*< */ *div *>");
@@ -159,6 +160,9 @@ public class ProblemsRuLoader {
             return split[1];
         }
         return split[1];
+        } catch (Exception e) {
+            return statement;
+        }
     }
 
     Integer getInt(String answer) {
