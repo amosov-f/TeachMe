@@ -12,7 +12,12 @@
         Problem problem = (Problem)request.getAttribute("problem");
 %>
         <div id="userProblemPanel" name="<%= problem.getId() %>" class="panel panel-info margin-top" value="<%=problem.getId()%>">
-            <div class="panel-heading"><%= problem.getName()%></div>
+            <div class="panel-heading">
+                <%= problem.getName()%>
+                <div class="pull-right">
+                    Сложность <span class="label label-primary"><%= problem.getComplexity() %></span>
+                </div>
+            </div>
             <div class="panel-body">
                 <div class="well">
                     <%= problem.getStatement().replaceAll("\n", "<br>") %>
@@ -39,7 +44,7 @@
                             <input id="solution" name="solution" class="form-control col-lg-12 col-xs-12" type="text" placeholder="Ваш ответ" />
                         </div>
                         <div class="form-group">
-                            <button id="submit" class="btn btn-primary btn-lg col-lg-12 col-xs-12">
+                            <button id="submit" class="btn btn-primary col-lg-12 col-xs-12">
                                 Отправить
                             </button>
                         </div>

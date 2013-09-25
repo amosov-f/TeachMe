@@ -82,3 +82,9 @@
     max-height: 40%;
     margin-top: 15px;
 }
+
+.clip {
+    white-space: nowrap; /* Запрещаем перенос строк */
+    overflow: hidden; /* Обрезаем все, что не помещается в область */
+    text-overflow: ellipsis; /* Добавляем многоточие */
+}

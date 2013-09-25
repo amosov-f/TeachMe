@@ -17,6 +17,8 @@
 
     <link rel="stylesheet" type="text/css" href="/resources/bootstrap/css/bootstrap.css"/>
     <link rel="stylesheet" type="text/css" href="/resources/bootstrap/css/bootstrap-select.css"/>
+    <link rel="stylesheet" type="text/css" href="/resources/bootstrap/css/bootstrap-theme.css"/>
+
 
     <link rel="stylesheet" type="text/css" href="/resources/jquery/css/jquery.autocomplete.css"/>
     <link rel="stylesheet" type="text/css" href="/resources/utility/css/styles.css"/>
@@ -42,17 +44,28 @@
     </div>
 
     <div id="container" class="container">
-        <blockquote style="margin-top: 15px;">
-            Сейчас Вы решаете задачи
         <%
-            if (request.getAttribute("inMind") != null && (Boolean)request.getAttribute("inMind")) {
+            boolean inMind = request.getAttribute("inMind") != null && (Boolean)request.getAttribute("inMind");
+            boolean tagList = request.getAttribute("tagList") != null && !((List<Tag>)request.getAttribute("tagList")).isEmpty();
+            if (inMind || tagList) {
         %>
-                <b>в уме</b>
+                <blockquote style="margin-top: 15px;">
+                    Сейчас Вы решаете задачи
         <%
             }
+            if (inMind) {
         %>
+                <b>в уме</b>
+
         <%
-            if (request.getAttribute("tagList") != null && !((List<Tag>)request.getAttribute("tagList")).isEmpty()) {
+                if (!tagList) {
+        %>
+                    </blockquote>
+        <%
+                }
+            }
+
+            if (tagList) {
                 List<Tag> tags = (List<Tag>)request.getAttribute("tagList");
                 if (tags.size() == 1) {
         %>
@@ -68,21 +81,38 @@
                     <span class="label label-info"><%= tag.getName() %></span>&nbsp
         <%
                 }
+        %>
+                </blockquote>
+        <%
             }
         %>
-        </blockquote>
+
         <div id="panel">
             <jsp:include page="user_problem/user_problem_panel.jsp"></jsp:include>
         </div>
-        <div class="col-xs-6 col-sm-4 col-lg-4" style="padding-bottom: 15px;">
-            <button id="back" type="button" class="btn btn-default col-xs-12 col-lg-12" onclick="goBack()">К списку</button>
+        <div class="col-xs-6 col-sm-3 col-lg-3" style="padding-bottom: 15px;">
+            <button type="button" class="btn btn-default col-xs-12 col-lg-12" onclick="goBack()">
+                <span class="glyphicon glyphicon-arrow-left"></span>
+                К списку
+            </button>
         </div>
-        <div class="col-xs-6 col-sm-4 col-lg-4" style="padding-bottom: 15px;">
-            <button id="prev" type="button" class="btn btn-default col-xs-12 col-lg-12" onclick="prevProblem()">Предыдущая</button>
+        <div class="col-xs-6 col-sm-3 col-lg-3" style="padding-bottom: 15px;">
+            <button type="button" class="btn btn-default col-xs-12 col-lg-12" onclick="easierProblem()">
+                Проще
+                <span class="glyphicon glyphicon-chevron-down"></span>
+            </button>
         </div>
-
-        <div class="col-xs-6 col-sm-4 col-lg-4" style="padding-bottom: 15px;">
-            <button id="next" type="button" class="btn btn-default col-xs-12 col-lg-12" onclick="nextProblem()">Следующая</button>
+        <div class="col-xs-6 col-sm-3 col-lg-3" style="padding-bottom: 15px;">
+            <button type="button" class="btn btn-default col-xs-12 col-lg-12" onclick="similarProblem()">
+                Так же
+                <span class="glyphicon glyphicon-chevron-right"></span>
+            </button>
+        </div>
+        <div class="col-xs-6 col-sm-3 col-lg-3" style="padding-bottom: 15px;">
+            <button type="button" class="btn btn-default col-xs-12 col-lg-12" onclick="harderProblem()">
+                Сложнее
+                <span class="glyphicon glyphicon-chevron-up"></span>
+            </button>
         </div>
     </div>
 
@@ -118,12 +148,17 @@
             });
         }
 
-        function prevProblem() {
-            return changeProblem('prev');
+        function easierProblem() {
+            return changeProblem('easier');
         }
 
-        function nextProblem() {
-            return changeProblem('next');
+        function similarProblem() {
+            return changeProblem('similar')
+        }
+
+
+        function harderProblem() {
+            return changeProblem('harder');
         }
 
     </script>

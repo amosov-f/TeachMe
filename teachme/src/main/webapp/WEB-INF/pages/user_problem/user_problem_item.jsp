@@ -8,17 +8,29 @@
     UserProblem userProblem = (UserProblem)request.getAttribute("userProblem");
 %>
     <p class="user-problem-<%= userProblem.getStatus().toString().toLowerCase() %>">
-        <%= userProblem.getProblem().getName() %>
+
+
+        <%= userProblem.getProblem().getName() %>&nbsp
+
+        <span class="label label-default"> <%= userProblem.getProblem().getComplexity() %></span>
+
+
     <%
         if (userProblem.getAttempts() != 0) {
     %>
+
             <span id="attempts<%= userProblem.getProblem().getId() %>" class="badge pull-right">
                 <%= userProblem.getAttempts()%>
             </span>
     <%
         }
     %>
+
     </p>
+
+    <!--p class="clip">
+        <nobr><%//userProblem.getProblem().getStatement() %></nobr>
+    </p-->
 <%
     for (Tag tag : userProblem.getProblem().getTags()) {
 %>
