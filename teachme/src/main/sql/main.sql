@@ -26,7 +26,7 @@ CREATE TABLE problem (
   statement text,
   figures text,
   complexity INTEGER,
-  in_mind, boolean
+  in_mind boolean
 );
 
 CREATE TABLE problem_tag (

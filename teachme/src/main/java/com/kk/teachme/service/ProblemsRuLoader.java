@@ -26,9 +26,9 @@ public class ProblemsRuLoader {
     SolutionDepot solutionDepot;
 
     public void fill() {           //i = 101870; i < 109953
-        //for (int i = 109850; i < 109952; i++) {     //c 109850 по 109952 добавлены на сервер
-        //    load(i);
-        //}
+        for (int i = 97810; i < 97811; i++) {     //c 109850 по 109952 добавлены на сервер
+            load(i);
+        }
     }
 
     public boolean load(int id) {
@@ -47,7 +47,7 @@ public class ProblemsRuLoader {
         if (block == null || block.length() == 0){
             return false;
         }
-        String statement = /*deleteAuthors(*/tagTrim(extractSection(block, "Условие"))/*)*/;
+        String statement = deleteAuthors(tagTrim(extractSection(block, "Условие")));
         if (statement == null || statement.length() == 0) {
             return false;
         }
@@ -57,6 +57,7 @@ public class ProblemsRuLoader {
         }
         Integer intAnswer = getInt(answer);
         if (intAnswer == null) {
+            System.out.println("Not an int");
             return false;
         }
 
@@ -132,7 +133,15 @@ public class ProblemsRuLoader {
     }
 
     private String deleteAuthors(String statement) {
-        return statement.split("< *div +class *= *\"catalogueproblemauthor[^\"]*\" *>.*< */ *div *>")[0];
+        String[] split = statement.split("< *div +class *= *\"catalogueproblemauthor[^\"]*\" *>.*< */ *div *>");
+        if (split.length == 1) {
+            split = split[0].split("< *div +class *= *\"catalogueproblemauthorold[^\"]*\" *>.*< */ *div *>");
+            if (split.length == 1) {
+                return split[0];
+            }
+            return split[1];
+        }
+        return split[1];
     }
 
     Integer getInt(String answer) {
