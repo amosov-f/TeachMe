@@ -14,8 +14,11 @@
         <div id="userProblemPanel" name="<%= problem.getId() %>" class="panel panel-info margin-top" value="<%=problem.getId()%>">
             <div class="panel-heading">
                 <%= problem.getName()%>
-                <div class="pull-right">
-                    Сложность <span class="label label-primary"><%= problem.getComplexity() %></span>
+                <div class="pull-right" style="margin-top: 4px;">
+                    <span class="label label-primary"><%= problem.getComplexity() %></span>
+                </div>
+                <div class="hidden-xs pull-right">
+                    Сложность&nbsp
                 </div>
             </div>
             <div class="panel-body">
