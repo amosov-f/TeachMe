@@ -3,6 +3,7 @@ package com.kk.teachme.db;
 import com.kk.teachme.model.*;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,7 +12,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import javax.servlet.http.HttpServletRequest;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UserProblemDepot {
     UserDepot userDepot;
@@ -290,12 +293,84 @@ public class UserProblemDepot {
 
     }
 
+    public List<UserProblem> getByFilters(int userId, List<Tag> tags, String filter, boolean inMind, int from, int to) {
+        String query =
+                "SELECT problem_id, attempts FROM user_problem\n" +
+                "WHERE user_id = " + userId + "\n" +
+                getTagsQuery("problem_id", tags) + "\n" +
+                getStatusQuery(filter) + "\n" +
+                getInMindQuery("problem_id", inMind) + "\n";
+        if (filter == null || filter.isEmpty() || filter.equals("unsolved")) {
+            query +=
+                    "UNION\n" +
+                    "SELECT id, NULL FROM problem\n" +
+                    "WHERE id NOT IN (SELECT problem_id FROM user_problem WHERE user_id = " + userId + ")\n" +
+                    getTagsQuery("id", tags) + "\n" +
+                    getInMindQuery("id", inMind) + "\n";
+        }
+        query += "LIMIT " + (to - from) + " OFFSET " + from;
+
+        final List<Integer> ids = new ArrayList<Integer>();
+        final Map<Integer, UserProblem> id2userProblem = new HashMap<Integer, UserProblem>();
+        simpleJdbcTemplate.getJdbcOperations().query(query, new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet resultSet) throws SQLException {
+                ids.add(resultSet.getInt("problem_id"));
+                id2userProblem.put(
+                        resultSet.getInt("problem_id"),
+                        new UserProblem((Integer)resultSet.getObject("attempts"))
+                );
+            }
+        });
+
+        for (Problem problem : problemDepot.getByIds(ids)) {
+            id2userProblem.get(problem.getId()).setProblem(problem);
+        }
+
+        List<UserProblem> result = new ArrayList<UserProblem>();
+        result.addAll(id2userProblem.values());
+
+        return result;
+    }
+
+    private String getStatusQuery(String filter) {
+        if ("unsolved".equals(filter)) {
+            return "AND attempts <= 0";
+        }
+        if ("solved".equals(filter))  {
+            return "AND attempts > 0";
+        }
+        if ("attempted".equals(filter)) {
+            return "AND attempts < 0";
+        }
+        return "";
+    }
+
+    private String getInMindQuery(String field, boolean inMind) {
+        if (inMind) {
+            return "AND " + field + " IN (SELECT id FROM problem WHERE in_mind = true)";
+        }
+        return "";
+    }
+
+    private String getTagsQuery(String field, List<Tag> tags) {
+        if (tags == null) {
+            return "";
+        }
+        String result = "";
+        for (Tag tag : tags) {
+            result += "AND " + field + " IN (SELECT problem_id FROM problem_tag WHERE tag_id = " + tag.getId() + ")\n";
+        }
+        return result;
+    }
+
     protected ParameterizedRowMapper<UserProblem> getRowMapper() {
         return new ParameterizedRowMapper<UserProblem>() {
             public UserProblem mapRow(ResultSet resultSet, int i) throws SQLException {
                 return new UserProblem(
                         problemDepot.getById(resultSet.getInt("problem_id")),
-                        resultSet.getInt("attempts"));
+                        resultSet.getInt("attempts")
+                );
             }
         };
     }

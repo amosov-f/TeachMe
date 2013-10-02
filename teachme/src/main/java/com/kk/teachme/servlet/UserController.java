@@ -170,17 +170,13 @@ public class UserController {
             HttpServletRequest request,
             Model model
     ) throws UnsupportedEncodingException {
-        List<UserProblem> userProblems = getByFilters(tags, filter, in_mind, request);
-
-        if (userProblems == null) {
-            return "redirect:/login";
+        if (request.getSession().getAttribute("user") == null) {
+            return null;
         }
+        User user = (User)request.getSession().getAttribute("user");
 
-        if (from >= userProblems.size()) {
-            userProblems = null;
-        } else {
-            userProblems = userProblems.subList(from, Math.min(to, userProblems.size()));
-        }
+        List<UserProblem> userProblems =
+                userProblemDepot.getByFilters(user.getId(), parseTagsString(tags), filter, in_mind, from, to);
 
         model.addAttribute("userProblemList", userProblems);
 

@@ -9,6 +9,10 @@ public class UserProblem {
         this(problem, null);
     }
 
+    public UserProblem(Integer attempts) {
+        this(null, attempts);
+    }
+
     public UserProblem(Problem problem, Integer attempts) {
         this.problem = problem;
         this.attempts = attempts;
@@ -49,6 +53,10 @@ public class UserProblem {
                 attempts = Math.abs(attempts);
             }
         }
+    }
+
+    public void setProblem(Problem problem) {
+        this.problem = problem;
     }
 
     @Override

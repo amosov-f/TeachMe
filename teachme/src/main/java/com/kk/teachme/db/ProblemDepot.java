@@ -3,13 +3,16 @@ package com.kk.teachme.db;
 import com.kk.teachme.model.*;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author akonst
@@ -52,6 +55,18 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return -1;
     }
 
+    private Problem addTags(Problem problem, List<Integer> tagIds) {
+        final List<Tag> tags = new ArrayList<Tag>();
+        for (Integer tagId : tagIds) {
+            final Tag tag = tagDepot.getCached(tagId);
+            if (tag != null) {
+                tags.add(tag);
+            }
+        }
+        problem.addTags(tags);
+        return problem;
+    }
+
     @Override
     public Problem getById(int id) {
         final Problem byId = super.getById(id);
@@ -78,6 +93,52 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         }
         return byId;
     }
+
+    private String getIdsQuery(String table, String field, List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return "";
+        }
+
+        String query = "SELECT * FROM " + table + " WHERE " + field + " IN (";
+        for (int i = 0; i < ids.size() - 1; ++i) {
+            query += ids.get(i) + ", ";
+        }
+        query += ids.get(ids.size() - 1) + ")\n";
+
+        return query;
+    }
+
+    public List<Problem> getByIds(List<Integer> ids) {
+        String query = getIdsQuery("problem", "id", ids);
+        if (query == null || query.isEmpty()) {
+            return new ArrayList<Problem>();
+        }
+
+        List<Problem> problems = simpleJdbcTemplate.query(query, getRowMapper());
+
+        final Map<Integer, Problem> id2problem = new HashMap<Integer, Problem>();
+        for (Problem problem : problems) {
+            id2problem.put(problem.getId(), problem);
+        }
+
+        simpleJdbcTemplate.getJdbcOperations().query(
+                getIdsQuery("problem_tag", "problem_id", ids),
+                new RowCallbackHandler() {
+                        @Override
+                        public void processRow(ResultSet resultSet) throws SQLException {
+                            id2problem.get(resultSet.getInt("problem_id")).addTag(tagDepot.getCached(
+                                    resultSet.getInt("tag_id"))
+                            );
+                        }
+                }
+        );
+
+        List<Problem> result = new ArrayList<Problem>();
+        result.addAll(id2problem.values());
+
+        return result;
+    }
+
 
     public List<Problem> getByTag(Tag tag) {
         if (tag == null) {

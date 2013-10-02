@@ -14,22 +14,22 @@ public class Problem {
     private List<String> figures = new ArrayList<String>();
     private List<Tag> tags = new ArrayList<Tag>();
     private int complexity = 1;
-    private boolean isInMind = false;
+    private boolean inMind = false;
 
     public Problem() {
         this(-1, "", "", new ArrayList<String>(), 1, false, new ArrayList<Tag>());
     }
 
-    public Problem(int id, String name, String statement, List<String> figures, int complexity, boolean isInMind) {
-        this(id, name, statement, figures, complexity, isInMind, new ArrayList<Tag>());
+    public Problem(int id, String name, String statement, List<String> figures, int complexity, boolean inMind) {
+        this(id, name, statement, figures, complexity, inMind, new ArrayList<Tag>());
     }
 
-    public Problem(String name, String statement, List<String> figures, int complexity, boolean isInMind) {
-        this(-1, name, statement, figures, complexity, isInMind);
+    public Problem(String name, String statement, List<String> figures, int complexity, boolean inMind) {
+        this(-1, name, statement, figures, complexity, inMind);
     }
 
-    public Problem(String name, String statement, List<String> figures, int complexity, boolean isInMind, List<Tag> tags) {
-        this(-1, name, statement, figures, complexity, isInMind, tags);
+    public Problem(String name, String statement, List<String> figures, int complexity, boolean inMind, List<Tag> tags) {
+        this(-1, name, statement, figures, complexity, inMind, tags);
     }
 
     public Problem(
@@ -47,7 +47,7 @@ public class Problem {
         this.figures = figures;
         this.tags = tags;
         this.complexity = complexity;
-        this.isInMind = isInMind;
+        this.inMind = isInMind;
     }
 
     public int getId() {
@@ -86,6 +86,10 @@ public class Problem {
         this.id = id;
     }
 
+    public void addTag(Tag tag) {
+        tags.add(tag);
+    }
+
     public void addTags(List<Tag> tags) {
         this.tags.addAll(tags);
     }
@@ -112,7 +116,7 @@ public class Problem {
     }
 
     public boolean isInMind() {
-        return isInMind;
+        return inMind;
     }
 
     public static List<String> parseFiguresString(String figures) {
@@ -135,7 +139,7 @@ public class Problem {
                 ", figures=" + figures +
                 ", tags=" + tags +
                 ", complexity=" + complexity +
-                ", isInMind=" + isInMind +
+                ", inMind=" + inMind +
                 '}';
     }
 
