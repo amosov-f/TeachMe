@@ -23,12 +23,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * User: akonst
- * Time: 07.06.13 23:08
- */
 @Controller
-@RequestMapping("/")
 public class ProblemController {
     @Autowired
     StatusDepot statusDepot;

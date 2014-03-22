@@ -118,7 +118,7 @@ public class AdminController {
             }
         }
 
-        boolean isInMind = (in_mind == null) ? false : true;
+        boolean isInMind = (in_mind != null);
 
         System.out.println(isInMind);
 

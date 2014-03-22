@@ -55,7 +55,7 @@
                             <label>
                                 <input id="inMind" type="checkbox" style="margin-left: 10px;"
                                 <%
-                                    if (request.getAttribute("inMind") != null && (Boolean)request.getAttribute("inMind")) {
+                                    if (request.getAttribute("inMind") != null && (Boolean) request.getAttribute("inMind")) {
                                 %>
                                         checked="checked"
                                 <%

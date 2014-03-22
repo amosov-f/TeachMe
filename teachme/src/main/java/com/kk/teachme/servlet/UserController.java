@@ -335,6 +335,7 @@ public class UserController {
 
     @RequestMapping(value = "/")
     public String home(HttpServletRequest request) {
+
         if (request.getSession().getAttribute("user") == null) {
             return "redirect:/login";
         }
@@ -343,6 +344,7 @@ public class UserController {
 
     @RequestMapping(value = "/login")
     public String logIn(Model model, HttpServletRequest request) {
+
         if (request.getSession().getAttribute("user") == null) {
             model.addAttribute("adress", getCurrentAddress());
             return "login";
