@@ -1,5 +1,4 @@
-1Hello!
-12223
+Hello!
 
 alias mysql=/usr/local/mysql/bin/mysql
 
