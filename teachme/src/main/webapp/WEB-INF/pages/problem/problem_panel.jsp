@@ -11,8 +11,8 @@
 <body>
 <%
     if (request.getAttribute("problem") != null) {
-        Problem problem = (Problem)request.getAttribute("problem");
-        Solution solution = (Solution)request.getAttribute("solution");
+        Problem problem = (Problem) request.getAttribute("problem");
+        Solution solution = (Solution) request.getAttribute("solution");
 %>
         <div id="problemPanel" class="panel panel-info panel-edit margin-top" value="<%=problem.getId()%>">
             <div class="panel-heading"><%= problem.getName()%></div>

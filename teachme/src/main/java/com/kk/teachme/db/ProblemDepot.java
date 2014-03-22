@@ -14,10 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author akonst
- */
-
 public class ProblemDepot extends AbstractDepot<Problem> {
 
     private TagDepot tagDepot;
