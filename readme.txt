@@ -8,3 +8,7 @@ alias mysql=/usr/local/mysql/bin/mysql
 Наводим на commit
 Делаем commit and push
 Нажимаем commit -> push
+
+Для вытягивания кода из репозитория нужно сделать pull
+Для этого:
+пкм на любом файле -> git -> repository -> pull -> pull
