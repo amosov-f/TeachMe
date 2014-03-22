@@ -1,3 +1,4 @@
+#!/bin/sh
 git pull
 
 ps aux | grep teachme | grep java | grep -v grep | awk -F " " '{print $2}' | xargs kill -9
