@@ -27,7 +27,8 @@ public class AdminController {
         /*Ekaterina Sosa*/"6053606",
         /*Alexander Konstantinov*/"2745",
         /*Dmitry Kachmar*/"15460",
-        /*Ekaterina Danilova*/"12484189"
+        /*Ekaterina Danilova*/"12484189",
+        /*Michal Krajewski*/"1969317"
     };
 
     @Autowired
