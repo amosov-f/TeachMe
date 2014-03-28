@@ -25,7 +25,6 @@
     <div class="container">
         <div class="header">
            <h3 align="center" class="text-muted">TeachMe</h3>
-            <!-- Здесь будет охуенный логотип -->
         </div>
         <div class="jumbotron">
             <h1>Онлайн-тесты.</h1>
