@@ -75,9 +75,11 @@
                 <div class="col-lg-6" style="padding-left: 0px; padding-right: 0px;">
                     <legend>Тип ответа</legend>
                     <select id="checkerId" name="checker_id">
-            <%          Map<Integer, Checker> checkers = (Map<Integer, Checker>)request.getAttribute("checkerMap"); %>
-            <%          for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
-                            <option value="<%=checker.getKey()%>"><%=checker.getValue().getName()%></option>
+            <%
+                        Map<Integer, Checker> checkers = (Map<Integer, Checker>) request.getAttribute("checkerMap");
+
+                        for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
+                            <option value="<%= checker.getKey() %>"><%= checker.getValue().getName() %></option>
             <%          }   %>
                     </select>
                 </div>

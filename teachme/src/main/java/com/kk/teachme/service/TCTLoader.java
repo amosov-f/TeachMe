@@ -119,7 +119,7 @@ public class TCTLoader {
                 TCT.add(tagDepot.getByName("пдд"));
 
                 solutionDepot.addSolution(
-                        problemDepot.addObject(new Problem(name, statement, figures, 1, true, TCT)),
+                        problemDepot.add(new Problem(name, statement, figures, 1, true, TCT)),
                         solutionText,
                         1
                 );

@@ -25,6 +25,7 @@ import java.util.List;
 
 @Controller
 public class ProblemController {
+
     @Autowired
     StatusDepot statusDepot;
 
@@ -48,14 +49,14 @@ public class ProblemController {
 
     @RequestMapping(value = "/problem_{problem_id:\\d+}")
     public String getProblem(@PathVariable int problem_id, Model model) {
-        model.addAttribute("problem", problemDepot.getById(problem_id));
+        model.addAttribute("problem", problemDepot.get(problem_id));
         model.addAttribute("solution", solutionDepot.getSolution(problem_id));
         return "problem/problem_panel";
     }
 
     @RequestMapping(value = "/edit_{problem_id:\\d+}")
     public String editProblem(@PathVariable int problem_id, Model model) {
-        model.addAttribute("problem", problemDepot.getById(problem_id));
+        model.addAttribute("problem", problemDepot.get(problem_id));
         model.addAttribute("solution", solutionDepot.getSolution(problem_id));
         return "problem/problem_edit";
     }
@@ -114,7 +115,7 @@ public class ProblemController {
     @RequestMapping(value = "/add_tag_to_problem", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String addTagToProblem(@RequestParam int problem_id, @RequestParam int tag_id) throws JSONException {
-        Problem problem = problemDepot.getById(problem_id);
+        Problem problem = problemDepot.get(problem_id);
         if (problem == null) {
             return JSONCreator.errorJSON("Incorrect problem id").toString();
         }
@@ -144,7 +145,7 @@ public class ProblemController {
     @RequestMapping(value = "/change_tag_name", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String changeTagName(@RequestParam int tag_id, String new_name) throws JSONException {
-        Tag tag = tagDepot.getById(tag_id);
+        Tag tag = tagDepot.get(tag_id);
         if (tag == null) {
             return JSONCreator.errorJSON("Incorrect tag id").toString();
         }
@@ -157,7 +158,7 @@ public class ProblemController {
     @RequestMapping(value = "/change_statement", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String changeProblemStatement(@RequestParam int problem_id, @RequestParam String new_text) throws JSONException {
-        Problem problem = problemDepot.getById(problem_id);
+        Problem problem = problemDepot.get(problem_id);
         if (problem == null) {
             return JSONCreator.errorJSON("Incorrect problem id").toString();
         }
@@ -238,7 +239,7 @@ public class ProblemController {
     @ResponseBody
     public String getUserProblemsByTag(@RequestParam int user_id, @RequestParam int tag_id) throws JSONException {
         List<UserProblem> answerList =
-                userProblemDepot.getByTag(user_id, tagDepot.getById(tag_id));
+                userProblemDepot.getByTag(user_id, tagDepot.get(tag_id));
         return JSONCreator.valueOfList(answerList).toString();
     }
 

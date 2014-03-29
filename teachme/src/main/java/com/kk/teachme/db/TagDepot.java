@@ -1,66 +1,57 @@
 package com.kk.teachme.db;
 
 import com.kk.teachme.model.Tag;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import java.sql.*;
-import java.util.*;
-
-import static java.lang.Math.min;
-
-/**
- * User: akonst
- */
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TagDepot extends AbstractDepot<Tag> {
 
-    Map<Integer, Tag> id2tag = new HashMap<Integer, Tag>();
-    Map<String, Tag> name2tag = new HashMap<String, Tag>();
+    private Map<Integer, Tag> id2tag = new HashMap<>();
+    private Map<String, Tag> name2tag = new HashMap<>();
 
     public Tag getCached(int id) {
-        Tag byId = id2tag.get(id);
-        if (byId == null) {
-            byId = getById(id);
-            id2tag.put(id, byId);
+        Tag tag = id2tag.get(id);
+        if (tag == null) {
+            tag = get(id);
+            id2tag.put(id, tag);
         }
-        return byId;
+        return tag;
     }
 
     public void init() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
+        new Thread(() -> {
+            while (!Thread.interrupted()) {
+                try {
+                    List<Tag> tags = getDataBaseTags();
+                    Map<Integer, Tag> id2tag = new HashMap<>();
+                    Map<String, Tag> name2tag = new HashMap<>();
+                    for (Tag tag : tags) {
+                        id2tag.put(tag.getId(), tag);
+                        name2tag.put(tag.getName(), tag);
+                    }
+                    TagDepot.this.id2tag = id2tag;
+                    TagDepot.this.name2tag = name2tag;
+                    System.out.println("Loaded");
+                } catch (Throwable tr) {
+                    tr.printStackTrace();
+                } finally {
                     try {
-                        List<Tag> tags = getDataBaseTags();
-                        Map<Integer, Tag> id2tag = new HashMap<Integer, Tag>();
-                        Map<String, Tag> name2tag = new HashMap<String, Tag>();
-                        for (Tag tag : tags) {
-                            id2tag.put(tag.getId(), tag);
-                            name2tag.put(tag.getName(), tag);
-                        }
-                        TagDepot.this.id2tag = id2tag;
-                        TagDepot.this.name2tag = name2tag;
-                        System.out.println("Loaded");
-                    } catch (Throwable tr) {
-                        tr.printStackTrace();
-                    } finally {
-                        try {
-                            Thread.sleep(60000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        }
+                        Thread.sleep(60000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }
         }).start();
-
-
     }
-
 
     public Tag createIfNotExist(final String name) {
         Tag tag = name2tag.get(name);
@@ -69,16 +60,17 @@ public class TagDepot extends AbstractDepot<Tag> {
             if (tagList.size() == 0) {
                 System.out.println("Adding new tag: " + name);
                 final KeyHolder keyHolder = new GeneratedKeyHolder();
-                final int update = simpleJdbcTemplate.getJdbcOperations().update(
-                        new PreparedStatementCreator() {
-                            public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
-                                PreparedStatement preparedStatement =
-                                        conn.prepareStatement("insert into tag (name)values(?)"
-                                                , Statement.RETURN_GENERATED_KEYS);
-                                preparedStatement.setString(1, name);
-                                return preparedStatement;
-                            }
-                        }, keyHolder);
+                final int update = jdbcTemplate.update(
+                        conn -> {
+                            PreparedStatement preparedStatement = conn.prepareStatement(
+                                    "insert into tag (name) values (?)",
+                                    Statement.RETURN_GENERATED_KEYS
+                            );
+                            preparedStatement.setString(1, name);
+                            return preparedStatement;
+                        },
+                        keyHolder
+                );
                 if (update > 0) {
                     tag = new Tag(keyHolder.getKey().intValue(), name);
                     id2tag.put(tag.getId(), tag);
@@ -93,17 +85,12 @@ public class TagDepot extends AbstractDepot<Tag> {
     }
 
     @Override
-    public int addObject(Tag tag) {
+    public int add(Tag tag) {
         throw new RuntimeException("Miss it");
     }
 
-    public List<Tag> getTagList(int numTags) {
-        final ArrayList<Tag> tags = new ArrayList<Tag>(id2tag.values());
-        return tags.subList(0, min(tags.size(), numTags));
-    }
-
     public List<Tag> getAllTags() {
-        List<Tag> result = new ArrayList<Tag>();
+        List<Tag> result = new ArrayList<>();
         result.addAll(id2tag.values());
         return result;
     }
@@ -121,27 +108,24 @@ public class TagDepot extends AbstractDepot<Tag> {
         id2tag.put(tag.getId(), tag);
         name2tag.put(tag.getName(), tag);
 
-        simpleJdbcTemplate.update("update tag set name = ? where id = ?", tag.getName(), tag.getId());
+        jdbcTemplate.update("update tag set name = ? where id = ?", tag.getName(), tag.getId());
     }
 
     private List<Tag> getByNameFromDB(String name) {
-        return simpleJdbcTemplate.query("select * from tag where name = ?",
+        return jdbcTemplate.query(
+                "select * from tag where name = ?",
                 getRowMapper(),
-                name);
+                name
+        );
     }
 
     private List<Tag> getDataBaseTags() {
-        return new ArrayList<Tag>(simpleJdbcTemplate.query("select * from tag", getRowMapper()));
+        return new ArrayList<>(jdbcTemplate.query("select * from tag", getRowMapper()));
     }
 
     @Override
-    protected ParameterizedRowMapper<Tag> getRowMapper() {
-        return new ParameterizedRowMapper<Tag>() {
-            @Override
-            public Tag mapRow(ResultSet resultSet, int i) throws SQLException {
-                return new Tag(resultSet.getInt("id"), resultSet.getString("name"));
-            }
-        };
+    protected RowMapper<Tag> getRowMapper() {
+        return (resultSet, i) -> new Tag(resultSet.getInt("id"), resultSet.getString("name"));
     }
 
     @Override

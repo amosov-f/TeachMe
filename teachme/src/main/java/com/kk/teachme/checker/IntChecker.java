@@ -7,7 +7,9 @@ public class IntChecker implements Checker {
     public SolveStatus check(String userAnswer, String realAnswer) {
         try {
             int answer = Integer.parseInt(realAnswer);
-            if (answer == Integer.parseInt(userAnswer)) return SolveStatus.CORRECT;
+            if (answer == Integer.parseInt(userAnswer)) {
+                return SolveStatus.CORRECT;
+            }
             return SolveStatus.INCORRECT;
         } catch (NumberFormatException e) {
             return SolveStatus.INVALID;

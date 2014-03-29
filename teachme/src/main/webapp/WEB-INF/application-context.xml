@@ -1,50 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xsi:schemaLocation="
-            http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
-		    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <!--DB-->
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost/teachme?useUnicode=true&amp;characterEncoding=UTF-8"/>
-        <property name="username" value="teachme"/>
-        <property name="password" value="teachmepass"/>
-    </bean>
-
-    <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
-        <constructor-arg ref="dataSource"/>
+        <property name="username" value="root"/>
+        <property name="password" value="12345"/>
     </bean>
 
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
         <constructor-arg ref="dataSource"/>
     </bean>
 
-    <tx:annotation-driven />
-
     <bean id="configDepot" class="com.kk.teachme.db.ConfigDepot">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 
     <bean id="tagDepot" class="com.kk.teachme.db.TagDepot" init-method="init">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 
     <bean id="problemDepot" class="com.kk.teachme.db.ProblemDepot">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="tagDepot" ref="tagDepot"/>
-        <property name="statusDepot" ref="statusDepot"/>
     </bean>
 
     <bean id="checkerDepot" class="com.kk.teachme.db.CheckerDepot" init-method="init">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 
     <bean id="solutionDepot" class="com.kk.teachme.db.SolutionDepot">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="checkerDepot" ref="checkerDepot"/>
     </bean>
 
@@ -55,16 +47,16 @@
     </bean>
 
     <bean id="statusDepot" class="com.kk.teachme.db.StatusDepot" init-method="init">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 
     <bean id="userDepot" class="com.kk.teachme.db.UserDepot">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="problemDepot" ref="problemDepot"/>
     </bean>
 
     <bean id="userProblemDepot" class="com.kk.teachme.db.UserProblemDepot">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="userDepot" ref="userDepot"/>
         <property name="problemDepot" ref="problemDepot"/>
         <property name="statusDepot" ref="statusDepot"/>
@@ -76,15 +68,7 @@
     </bean>
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <property name="maxUploadSize" value="2000000"/>
-    </bean>
-
-    <bean id="problemsRuLoader" class="com.kk.teachme.service.ProblemsRuLoader" init-method="fill">
-        <property name="configDepot" ref="configDepot"/>
-        <property name="tagDepot" ref="tagDepot"/>
-        <property name="problemDepot" ref="problemDepot"/>
-        <property name="solutionDepot" ref="solutionDepot"/>
-        <property name="fileDepot" ref="fileDepot"/>
+        <property name="maxUploadSize" value="1000000"/>
     </bean>
 
     <bean id="tctLoader" class="com.kk.teachme.service.TCTLoader" init-method="fill">
@@ -94,4 +78,5 @@
         <property name="solutionDepot" ref="solutionDepot"/>
         <property name="fileDepot" ref="fileDepot"/>
     </bean>
+
 </beans>

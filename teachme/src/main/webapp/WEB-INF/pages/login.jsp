@@ -23,7 +23,7 @@
         <h2>
             Войти в TeachMe
         </h2>
-        <a href="http://oauth.vk.com/authorize?client_id=3810701&redirect_uri=http://<%=(String)request.getAttribute("adress")%>/vklogin&response_type=code">
+        <a href="http://oauth.vk.com/authorize?client_id=4269266&redirect_uri=http://<%= (String) request.getAttribute("address") %>/vklogin&response_type=code">
             <input type="image" src="/resources/icons/vk.jpg"/>
         </a>
     </div>

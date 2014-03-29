@@ -18,7 +18,6 @@ import java.net.URLDecoder;
 import java.util.*;
 
 @Controller
-@RequestMapping("/")
 public class AdminController {
 
     private String[] ADMINS = {
@@ -53,10 +52,7 @@ public class AdminController {
             return false;
         }
         User user = (User)request.getSession().getAttribute("user");
-        if (!Arrays.asList(ADMINS).contains(user.getUsername())) {
-            return false;
-        }
-        return true;
+        return Arrays.asList(ADMINS).contains(user.getUsername());
     }
 
     @RequestMapping(value = "/admin")
@@ -68,10 +64,10 @@ public class AdminController {
         List<Problem> problems;
         problems = problemDepot.getAllProblems();
         if (problems == null) {
-            problems = new ArrayList<Problem>();
+            problems = new ArrayList<>();
         }
 
-        Map<Integer, Solution> id2solution = new HashMap<Integer, Solution>();
+        Map<Integer, Solution> id2solution = new HashMap<>();
         for (Problem problem : problemDepot.getAllProblems()) {
             id2solution.put(problem.getId(), solutionDepot.getSolution(problem.getId()));
         }
@@ -112,7 +108,7 @@ public class AdminController {
             }
         }
 
-        List<Tag> tagList = new ArrayList<Tag>();
+        List<Tag> tagList = new ArrayList<>();
         if (tags != null && !tags.isEmpty()) {
             for (String tagName : URLDecoder.decode(tags, "UTF-8").split(",")) {
                 tagList.add(tagDepot.getByName(tagName));
@@ -126,7 +122,7 @@ public class AdminController {
         Problem problem = new Problem(name, statement, Problem.parseFiguresString(figures), complexity, isInMind, tagList);
 
         if (problem_id == -1) {
-            problem_id = problemDepot.addObject(problem);
+            problem_id = problemDepot.add(problem);
             solutionDepot.addSolution(problem_id, solution, checker_id);
         } else {
             problemDepot.setById(problem_id, problem);
@@ -137,7 +133,7 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/delete_problem")
-    public String deleteProblem(@RequestParam int problem_id, HttpServletRequest request, Model model) {
+    public String deleteProblem(@RequestParam int problem_id, HttpServletRequest request) {
         if (!isAdmin(request)) {
             return "redirect:/login";
         }
@@ -165,7 +161,7 @@ public class AdminController {
             return "redirect:/login";
         }
 
-        model.addAttribute("problem", problemDepot.getById(problem_id));
+        model.addAttribute("problem", problemDepot.get(problem_id));
         model.addAttribute("solutionText", solutionDepot.getSolution(problem_id).getSolutionText());
         model.addAttribute("checkerId", solutionDepot.getCheckerId(problem_id));
         model.addAttribute("checkerMap", checkerDepot.getAllCheckers());

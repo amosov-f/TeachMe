@@ -5,6 +5,7 @@ import com.kk.teachme.checker.Checker;
 import com.kk.teachme.checker.SolveStatus;
 
 public class Solution {
+
     private String solutionText;
     private Checker checker;
 

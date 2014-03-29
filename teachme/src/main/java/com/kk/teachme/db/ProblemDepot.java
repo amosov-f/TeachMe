@@ -1,14 +1,15 @@
 package com.kk.teachme.db;
 
-import com.kk.teachme.model.*;
+import com.kk.teachme.model.Problem;
+import com.kk.teachme.model.Tag;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,26 +18,23 @@ import java.util.Map;
 public class ProblemDepot extends AbstractDepot<Problem> {
 
     private TagDepot tagDepot;
-    private StatusDepot statusDepot;
 
     @Override
-    public int addObject(final Problem problem) {
+    public int add(final Problem problem) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
-        final int update = simpleJdbcTemplate.getJdbcOperations().update(
-                new PreparedStatementCreator() {
-                    public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
-                        PreparedStatement preparedStatement = conn.prepareStatement(
-                                "insert into problem (name, statement, figures, complexity, in_mind) values(?,?,?,?,?)",
-                                Statement.RETURN_GENERATED_KEYS
-                        );
-                        preparedStatement.setString(1, problem.getName());
-                        preparedStatement.setString(2, problem.getStatement());
-                        preparedStatement.setString(3, problem.getFiguresString());
-                        preparedStatement.setInt(4, problem.getComplexity());
-                        preparedStatement.setBoolean(5, problem.isInMind());
+        final int update = jdbcTemplate.update(
+                conn -> {
+                    PreparedStatement preparedStatement = conn.prepareStatement(
+                            "insert into problem (name, statement, figures, complexity, in_mind) values (?, ?, ?, ?, ?)",
+                            Statement.RETURN_GENERATED_KEYS
+                    );
+                    preparedStatement.setString(1, problem.getName());
+                    preparedStatement.setString(2, problem.getStatement());
+                    preparedStatement.setString(3, problem.getFiguresString());
+                    preparedStatement.setInt(4, problem.getComplexity());
+                    preparedStatement.setBoolean(5, problem.isInMind());
 
-                        return preparedStatement;
-                    }
+                    return preparedStatement;
                 }, keyHolder);
         if (update > 0) {
             int id = keyHolder.getKey().intValue();
@@ -51,34 +49,17 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return -1;
     }
 
-    private Problem addTags(Problem problem, List<Integer> tagIds) {
-        final List<Tag> tags = new ArrayList<Tag>();
-        for (Integer tagId : tagIds) {
-            final Tag tag = tagDepot.getCached(tagId);
-            if (tag != null) {
-                tags.add(tag);
-            }
-        }
-        problem.addTags(tags);
-        return problem;
-    }
-
     @Override
-    public Problem getById(int id) {
-        final Problem byId = super.getById(id);
+    public Problem get(int id) {
+        final Problem byId = super.get(id);
         if (byId != null) {
-            final List<Integer> query = simpleJdbcTemplate.query(
+            final List<Integer> query = jdbcTemplate.query(
                     "select tag_id from problem_tag where problem_id = ?",
-                    new ParameterizedRowMapper<Integer>() {
-                        @Override
-                        public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
-                            return resultSet.getInt(1);
-                        }
-                    },
+                    (resultSet, i) -> resultSet.getInt(1),
                     byId.getId()
             );
 
-            final List<Tag> tags = new ArrayList<Tag>();
+            final List<Tag> tags = new ArrayList<>();
             for (Integer integer : query) {
                 final Tag tag = tagDepot.getCached(integer);
                 if (tag != null) {
@@ -107,29 +88,24 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     public List<Problem> getByIds(List<Integer> ids) {
         String query = getIdsQuery("problem", "id", ids);
         if (query == null || query.isEmpty()) {
-            return new ArrayList<Problem>();
+            return new ArrayList<>();
         }
 
-        List<Problem> problems = simpleJdbcTemplate.query(query, getRowMapper());
+        List<Problem> problems = jdbcTemplate.query(query, getRowMapper());
 
-        final Map<Integer, Problem> id2problem = new HashMap<Integer, Problem>();
+        final Map<Integer, Problem> id2problem = new HashMap<>();
         for (Problem problem : problems) {
             id2problem.put(problem.getId(), problem);
         }
 
-        simpleJdbcTemplate.getJdbcOperations().query(
+        jdbcTemplate.query(
                 getIdsQuery("problem_tag", "problem_id", ids),
-                new RowCallbackHandler() {
-                        @Override
-                        public void processRow(ResultSet resultSet) throws SQLException {
-                            id2problem.get(resultSet.getInt("problem_id")).addTag(tagDepot.getCached(
-                                    resultSet.getInt("tag_id"))
-                            );
-                        }
-                }
+                (RowCallbackHandler) resultSet -> id2problem
+                        .get(resultSet.getInt("problem_id"))
+                        .addTag(tagDepot.getCached(resultSet.getInt("tag_id")))
         );
 
-        List<Problem> result = new ArrayList<Problem>();
+        List<Problem> result = new ArrayList<>();
         result.addAll(id2problem.values());
 
         return result;
@@ -141,7 +117,7 @@ public class ProblemDepot extends AbstractDepot<Problem> {
             return null;
         }
 
-        return simpleJdbcTemplate.query(
+        return jdbcTemplate.query(
                 "select * from problem inner join (select * from problem_tag where tag_id = ?) t on problem.id = t.problem_id",
                 getProblemIdRowMapper("id"),
                 tag.getId()
@@ -153,7 +129,7 @@ public class ProblemDepot extends AbstractDepot<Problem> {
             return null;
         }
 
-        List<Problem> problemList = new ArrayList<Problem>();
+        List<Problem> problemList = new ArrayList<>();
 
         for (Problem problem : getByTag(tagList.get(0))) {
             if (problem.getTags().containsAll(tagList)) {
@@ -164,20 +140,16 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return problemList;
     }
 
-    public  List<Problem> getInMindProblems() {
-        return simpleJdbcTemplate.query("select * from problem where in_mind = ?", getProblemIdRowMapper("id"), true);
-    }
-
     public List<Problem> getAllProblems() {
-        return simpleJdbcTemplate.query("select * from problem", getProblemIdRowMapper("id"));
+        return jdbcTemplate.query("select * from problem", getProblemIdRowMapper("id"));
     }
 
     public void setById(int id, Problem problem) {
-        //if (getById(id) == null) ... suppose, that problem with @id exists
+        //if (get(id) == null) ... suppose, that problem with @id exists
 
-        simpleJdbcTemplate.update("delete from problem_tag where problem_id = ?", id);
+        jdbcTemplate.update("delete from problem_tag where problem_id = ?", id);
 
-        simpleJdbcTemplate.update(
+        jdbcTemplate.update(
                 "update problem set name = ?, statement = ?, figures = ?, complexity = ?, in_mind = ? where id = ?",
                 problem.getName(),
                 problem.getStatement(),
@@ -194,19 +166,15 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     }
 
     public void addTagToProblem(Problem problem, Tag tag) {
-        simpleJdbcTemplate.update("insert ignore into problem_tag values (?, ?)", problem.getId(), tag.getId());
-    }
-
-    public void addFigureToProblem(Problem problem, String figure) {
-        simpleJdbcTemplate.update("insert ignore into problem_figure values (?, ?)", problem.getId(), figure);
+        jdbcTemplate.update("insert ignore into problem_tag values (?, ?)", problem.getId(), tag.getId());
     }
 
     public void changeProblemStatement(Problem problem, String newStatement) {
-        simpleJdbcTemplate.update("update problem set statement = ? where id = ?", newStatement, problem.getId());
+        jdbcTemplate.update("update problem set statement = ? where id = ?", newStatement, problem.getId());
     }
 
     public int getProblemsByTagCount(Tag tag) {
-        return simpleJdbcTemplate.query(
+        return jdbcTemplate.query(
                 "select * from problem_tag where tag_id = ?",
                 getProblemIdRowMapper("problem_id"),
                 tag.getId()
@@ -214,7 +182,7 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     }
 
     public boolean contains(int id) {
-        return getById(id) != null;
+        return get(id) != null;
     }
 
     public boolean deleteById(int id) {
@@ -222,44 +190,36 @@ public class ProblemDepot extends AbstractDepot<Problem> {
             return false;
         }
 
-        simpleJdbcTemplate.update("delete from user_problem where problem_id = ?", id);
-        simpleJdbcTemplate.update("delete from problem_tag where problem_id = ?", id);
-        simpleJdbcTemplate.update("delete from solution where id = ?", id);
-        simpleJdbcTemplate.update("delete from problem where id = ?", id);
+        jdbcTemplate.update("delete from user_problem where problem_id = ?", id);
+        jdbcTemplate.update("delete from problem_tag where problem_id = ?", id);
+        jdbcTemplate.update("delete from solution where id = ?", id);
+        jdbcTemplate.update("delete from problem where id = ?", id);
 
         return true;
     }
 
 
     public void deleteAllProblems() {
-        simpleJdbcTemplate.update("delete from user_problem where problem_id >= 1");
-        simpleJdbcTemplate.update("delete from problem_tag where problem_id >= 1");
-        simpleJdbcTemplate.update("delete from solution where id >= 1");
-        simpleJdbcTemplate.update("delete from problem where id >= 1");
+        jdbcTemplate.update("delete from user_problem where problem_id >= 1");
+        jdbcTemplate.update("delete from problem_tag where problem_id >= 1");
+        jdbcTemplate.update("delete from solution where id >= 1");
+        jdbcTemplate.update("delete from problem where id >= 1");
     }
 
     @Override
-    protected ParameterizedRowMapper<Problem> getRowMapper() {
-        return new ParameterizedRowMapper<Problem>() {
-            public Problem mapRow(ResultSet resultSet, int i) throws SQLException {
-                return new Problem(
-                        resultSet.getInt("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("statement"),
-                        Problem.parseFiguresString(resultSet.getString("figures")),
-                        resultSet.getInt("complexity"),
-                        resultSet.getBoolean("in_mind")
-                );
-            }
-        };
+    protected RowMapper<Problem> getRowMapper() {
+        return (resultSet, i) -> new Problem(
+                resultSet.getInt("id"),
+                resultSet.getString("name"),
+                resultSet.getString("statement"),
+                Problem.parseFiguresString(resultSet.getString("figures")),
+                resultSet.getInt("complexity"),
+                resultSet.getBoolean("in_mind")
+        );
     }
 
-    protected ParameterizedRowMapper<Problem> getProblemIdRowMapper(final String idTitle) {
-        return new ParameterizedRowMapper<Problem>() {
-            public Problem mapRow(ResultSet resultSet, int i) throws SQLException {
-                return getById(resultSet.getInt(idTitle));
-            }
-        };
+    protected RowMapper<Problem> getProblemIdRowMapper(final String idTitle) {
+        return (resultSet, i) -> get(resultSet.getInt(idTitle));
     }
 
     @Override
@@ -270,11 +230,6 @@ public class ProblemDepot extends AbstractDepot<Problem> {
     @Required
     public void setTagDepot(TagDepot tagDepot) {
         this.tagDepot = tagDepot;
-    }
-
-    @Required
-    public void setStatusDepot(StatusDepot statusDepot) {
-        this.statusDepot = statusDepot;
     }
 
 }

@@ -4,24 +4,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author akonst
- */
 public class Problem {
+
     private int id = -1;
     private String name = "";
     private String statement = "";
-    private List<String> figures = new ArrayList<String>();
-    private List<Tag> tags = new ArrayList<Tag>();
+    private List<String> figures = new ArrayList<>();
+    private List<Tag> tags = new ArrayList<>();
     private int complexity = 1;
     private boolean inMind = false;
 
     public Problem() {
-        this(-1, "", "", new ArrayList<String>(), 1, false, new ArrayList<Tag>());
+        this(-1, "", "", new ArrayList<>(), 1, false, new ArrayList<>());
     }
 
     public Problem(int id, String name, String statement, List<String> figures, int complexity, boolean inMind) {
-        this(id, name, statement, figures, complexity, inMind, new ArrayList<Tag>());
+        this(id, name, statement, figures, complexity, inMind, new ArrayList<>());
     }
 
     public Problem(String name, String statement, List<String> figures, int complexity, boolean inMind) {
@@ -121,7 +119,7 @@ public class Problem {
 
     public static List<String> parseFiguresString(String figures) {
         if (figures == null || figures.isEmpty()) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         return Arrays.asList(figures.split(","));
     }
@@ -145,14 +143,16 @@ public class Problem {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Problem problem = (Problem) o;
 
-        if (id != problem.id) return false;
-
-        return true;
+        return id == problem.id;
     }
 
     @Override

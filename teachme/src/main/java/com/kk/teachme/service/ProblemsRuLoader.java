@@ -5,13 +5,11 @@ import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Tag;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Node;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ProblemsRuLoader {
 
@@ -67,7 +65,7 @@ public class ProblemsRuLoader {
         figures.add("");
         List<Tag> tags = new ArrayList<Tag>();
         solutionDepot.addSolution(
-                problemDepot.addObject(new Problem("Задача с problems.ru #" + id, statement, figures, dif, false, tags)),
+                problemDepot.add(new Problem("Задача с problems.ru #" + id, statement, figures, dif, false, tags)),
                 intAnswer.toString(),
                 1
         );

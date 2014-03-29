@@ -3,16 +3,13 @@ package com.kk.teachme.db;
 import com.kk.teachme.checker.SolveStatus;
 import com.kk.teachme.model.Solution;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 public class SolutionDepot {
     CheckerDepot checkerDepot;
-    SimpleJdbcTemplate simpleJdbcTemplate;
+    JdbcTemplate jdbcTemplate;
 
     public SolveStatus check(int problemId, String userAnswer) {
         Solution solution = getSolution(problemId);
@@ -23,7 +20,7 @@ public class SolutionDepot {
     }
 
     public void addSolution(int problemId, String solution, int checkerId) {
-        simpleJdbcTemplate.update(
+        jdbcTemplate.update(
                 "insert into solution (id, solution_text, checker_id) values (?, ?, ?)",
                 problemId,
                 solution,
@@ -32,7 +29,7 @@ public class SolutionDepot {
     }
 
     public void setSolution(int problemId, String solution, int checkerId) {
-        simpleJdbcTemplate.update(
+        jdbcTemplate.update(
                 "update solution set solution_text = ?, checker_id = ? where id = ?",
                 solution,
                 checkerId,
@@ -41,17 +38,12 @@ public class SolutionDepot {
     }
 
     public Solution getSolution(int problemId) {
-        List<Solution> solutions = simpleJdbcTemplate.query(
+        List<Solution> solutions = jdbcTemplate.query(
                 "select * from solution where id = ?",
-                new ParameterizedRowMapper<Solution>() {
-                    @Override
-                    public Solution mapRow(ResultSet resultSet, int i) throws SQLException {
-                        return new Solution(
-                                resultSet.getString("solution_text"),
-                                checkerDepot.getChecker(resultSet.getInt("checker_id"))
-                        );
-                    }
-                },
+                (resultSet, i) -> new Solution(
+                        resultSet.getString("solution_text"),
+                        checkerDepot.getChecker(resultSet.getInt("checker_id"))
+                ),
                 problemId
         );
        /* if (solutions.size() != 1) {
@@ -61,14 +53,9 @@ public class SolutionDepot {
     }
 
     public int getCheckerId(int problemId) {
-        List<Integer> checkerIds = simpleJdbcTemplate.query(
+        List<Integer> checkerIds = jdbcTemplate.query(
                 "select * from solution where id = ?",
-                new ParameterizedRowMapper<Integer>() {
-                    @Override
-                    public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
-                        return resultSet.getInt("checker_id");
-                    }
-                },
+                (resultSet, i) -> resultSet.getInt("checker_id"),
                 problemId
         );
         if (checkerIds.size() != 1) {
@@ -83,7 +70,7 @@ public class SolutionDepot {
     }
 
     @Required
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 }

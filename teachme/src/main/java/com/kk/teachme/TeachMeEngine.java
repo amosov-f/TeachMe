@@ -2,24 +2,25 @@ package com.kk.teachme;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.File;
 
-public class Main {
+public class TeachMeEngine {
+
     public static void main(String[] args) {
         Server jettyServer = null;
         try {
             System.out.println(new File(".").getAbsolutePath());
             jettyServer = new Server();
 
-            SocketConnector conn = new SocketConnector();
+            ServerConnector conn = new ServerConnector(jettyServer);
+
             conn.setPort(8083);
             jettyServer.setConnectors(new Connector[]{conn});
 
             WebAppContext context = new WebAppContext();
-
             context.setContextPath("/");
             context.setWar("teachme/src/main/webapp");
 
@@ -37,5 +38,6 @@ public class Main {
             ignore.printStackTrace();
         }
     }
+
 }
 

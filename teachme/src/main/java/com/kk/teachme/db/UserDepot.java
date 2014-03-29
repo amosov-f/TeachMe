@@ -2,12 +2,12 @@ package com.kk.teachme.db;
 
 import com.kk.teachme.model.User;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 
 public class UserDepot extends AbstractDepot<User> {
@@ -15,22 +15,22 @@ public class UserDepot extends AbstractDepot<User> {
     ProblemDepot problemDepot;
 
     @Override
-    public int addObject(final User user) {
+    public int add(final User user) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
-        final int update = simpleJdbcTemplate.getJdbcOperations().update(
-                new PreparedStatementCreator() {
-                    public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
-                        PreparedStatement preparedStatement = conn.prepareStatement(
-                                "insert into user (username, first_name, last_name) values (?, ?, ?)",
-                                Statement.RETURN_GENERATED_KEYS
-                        );
-                        preparedStatement.setString(1, user.getUsername());
-                        preparedStatement.setString(2, user.getFirstName());
-                        preparedStatement.setString(3, user.getLastName());
+        final int update = jdbcTemplate.update(
+                conn -> {
+                    PreparedStatement preparedStatement = conn.prepareStatement(
+                            "insert into user (username, first_name, last_name) values (?, ?, ?)",
+                            Statement.RETURN_GENERATED_KEYS
+                    );
+                    preparedStatement.setString(1, user.getUsername());
+                    preparedStatement.setString(2, user.getFirstName());
+                    preparedStatement.setString(3, user.getLastName());
 
-                        return preparedStatement;
-                    }
-                }, keyHolder);
+                    return preparedStatement;
+                },
+                keyHolder
+        );
         if (update > 0) {
             int id = keyHolder.getKey().intValue();
             user.setId(id);
@@ -41,11 +41,11 @@ public class UserDepot extends AbstractDepot<User> {
 
     public boolean contains(String username) {
          // check if user with userLogin exists
-         return !simpleJdbcTemplate.query("select * from user where username = ?", getRowMapper(), username).isEmpty();
+         return !jdbcTemplate.query("select * from user where username = ?", getRowMapper(), username).isEmpty();
     }
 
     public User getByUsername(String username) {
-        List<User> userList = simpleJdbcTemplate.query("select * from user where username = ?", getRowMapper(), username);
+        List<User> userList = jdbcTemplate.query("select * from user where username = ?", getRowMapper(), username);
         if (userList.isEmpty()) {
             return null;
         }
@@ -53,17 +53,13 @@ public class UserDepot extends AbstractDepot<User> {
     }
 
     @Override
-    protected ParameterizedRowMapper<User> getRowMapper() {
-        return new ParameterizedRowMapper<User>() {
-            public User mapRow(ResultSet resultSet, int i) throws SQLException {
-                return new User(
-                        resultSet.getInt("id"),
-                        resultSet.getString("username"),
-                        resultSet.getString("first_name"),
-                        resultSet.getString("last_name")
-                );
-            }
-        };
+    protected RowMapper<User> getRowMapper() {
+        return (resultSet, i) -> new User(
+                resultSet.getInt("id"),
+                resultSet.getString("username"),
+                resultSet.getString("first_name"),
+                resultSet.getString("last_name")
+        );
     }
 
     @Override

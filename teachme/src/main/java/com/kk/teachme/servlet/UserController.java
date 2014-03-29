@@ -51,7 +51,7 @@ public class UserController {
             return "redirect:/login";
         }
 
-        model.addAttribute("problem", problemDepot.getById(problem_id));
+        model.addAttribute("problem", problemDepot.get(problem_id));
         return "user_problem/user_problem_panel";
     }
 
@@ -67,7 +67,7 @@ public class UserController {
             return "redirect:/login";
         }
 
-        model.addAttribute("problem", problemDepot.getById(problem_id));
+        model.addAttribute("problem", problemDepot.get(problem_id));
         model.addAttribute("tags", tags);
         model.addAttribute("inMind", in_mind);
         model.addAttribute("tagList", parseTagsString(tags));
@@ -229,7 +229,6 @@ public class UserController {
 
         model.addAttribute("problem", userProblems.get(new Random().nextInt(userProblems.size())).getProblem());
 
-        //System.out.println("!!!");
         return "user_problem/user_problem_panel";
     }
 
@@ -270,7 +269,7 @@ public class UserController {
         }
         User user = (User)request.getSession().getAttribute("user");
 
-        List<UserProblem> userProblems = new ArrayList<UserProblem>();
+        List<UserProblem> userProblems = new ArrayList<>();
         for (UserProblem userProblem : getByTags(tags, request)) {
             if (userProblem.getProblem().isInMind() || !inMind) {
                 userProblems.add(userProblem);
@@ -306,7 +305,7 @@ public class UserController {
         if (userProblems == null) {
             return null;
         }
-        List<UserProblem> result = new ArrayList<UserProblem>();
+        List<UserProblem> result = new ArrayList<>();
 
         for (UserProblem userProblem : userProblems) {
             if (min <= userProblem.getProblem().getComplexity() && userProblem.getProblem().getComplexity() <= max) {
@@ -314,17 +313,20 @@ public class UserController {
             }
         }
 
-        Collections.sort(result, getUserProblemComparator());
+        Collections.sort(
+                result,
+                (o1, o2) -> new Integer(o1.getProblem().getComplexity()).compareTo(o2.getProblem().getComplexity())
+        );
 
         return result;
     }
 
     private List<Tag> parseTagsString(String tags) throws UnsupportedEncodingException {
         if (tags == null || tags.isEmpty()) {
-            return new ArrayList<Tag>();
+            return new ArrayList<>();
         }
 
-        List<Tag> tagList = new ArrayList<Tag>();
+        List<Tag> tagList = new ArrayList<>();
         for (String tag : URLDecoder.decode(tags, "UTF-8").split(",")) {
             if (tagDepot.getByName(tag) != null) {
                 tagList.add(tagDepot.getByName(tag));
@@ -344,9 +346,8 @@ public class UserController {
 
     @RequestMapping(value = "/login")
     public String logIn(Model model, HttpServletRequest request) {
-
         if (request.getSession().getAttribute("user") == null) {
-            model.addAttribute("adress", getCurrentAddress());
+            model.addAttribute("address", getCurrentAddress());
             return "login";
         }
         return "redirect:/problems";
@@ -364,7 +365,7 @@ public class UserController {
         httpСlient.setParams(httpParams);
 
         String authorizeQuery =
-                "https://oauth.vk.com/access_token?client_id=3810701&client_secret=4FcroEDLVwMkKYpoRBBV&code=" +
+                "https://oauth.vk.com/access_token?client_id=4269266&client_secret=BfKJ25hQcSJodd2NSkvQ&code=" +
                 code + "&redirect_uri=http://" + getCurrentAddress() + "/vklogin";
 
         try {
@@ -382,12 +383,12 @@ public class UserController {
             response = EntityUtils.toString(en);
             en.consumeContent();
 
-            jUser = (JSONObject)((JSONArray)(new JSONObject(response).get("response"))).get(0);
+            jUser = (JSONObject) ((JSONArray) (new JSONObject(response).get("response"))).get(0);
 
-            User user = new User(username, (String)jUser.get("first_name"), (String)jUser.get("last_name"));
+            User user = new User(username, (String) jUser.get("first_name"), (String) jUser.get("last_name"));
 
             if (!userDepot.contains(user.getUsername())) {
-                user.setId(userDepot.addObject(user));
+                user.setId(userDepot.add(user));
             } else {
                 user = userDepot.getByUsername(user.getUsername());
             }
@@ -395,7 +396,7 @@ public class UserController {
             request.getSession(true).setAttribute("user", user);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return "redirect:/problems";
@@ -409,34 +410,14 @@ public class UserController {
 
     @RequestMapping(value = "/user_{user_id:\\d+}")
     public String user(@PathVariable int user_id, Model model) {
-        model.addAttribute("user", userDepot.getById(user_id));
+        model.addAttribute("user", userDepot.get(user_id));
         model.addAttribute("solved", userProblemDepot.getSolvedProblems(user_id).size());
         model.addAttribute("all", userProblemDepot.getAllUserProblems(user_id).size());
         return "user";
     }
 
-    private Comparator<UserProblem> getUserProblemComparator() {
-        return new Comparator<UserProblem>() {
-            @Override
-            public int compare(UserProblem o1, UserProblem o2) {
-                if (o1.getProblem().getComplexity() < o2.getProblem().getComplexity()) {
-                    return -1;
-                }
-                if (o1.getProblem().getComplexity() > o2.getProblem().getComplexity()) {
-                    return 1;
-                }
-
-                return 0;
-            }
-        };
-    }
-
     private String getCurrentAddress() {
-        String userName = System.getProperty("user.name");
-        if ("teachme".equals(userName)) {
-            return "friendrent.ru:8083";
-        }
-        return "localhost:8083";
+        return "teachme.ru:8083";
     }
 
 }

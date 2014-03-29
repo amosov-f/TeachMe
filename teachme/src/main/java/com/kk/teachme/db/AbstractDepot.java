@@ -1,23 +1,19 @@
 package com.kk.teachme.db;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import java.util.List;
 
-/**
- * @author akonst
- */
-
 public abstract class AbstractDepot<T> {
 
-    protected SimpleJdbcTemplate simpleJdbcTemplate;
+    protected JdbcTemplate jdbcTemplate;
 
-    public abstract int addObject(T t);
+    public abstract int add(T t);
 
-    public T getById(int id) {
-        final List<T> results = simpleJdbcTemplate.query(getQueryForOne(), getRowMapper(), id);
+    public T get(int id) {
+        final List<T> results = jdbcTemplate.query(getQueryForOne(), getRowMapper(), id);
         if (results.size() == 0) {
             return null;
         } else {
@@ -25,11 +21,11 @@ public abstract class AbstractDepot<T> {
         }
     }
 
-    protected abstract ParameterizedRowMapper<T> getRowMapper();
+    protected abstract RowMapper<T> getRowMapper();
     protected abstract String getQueryForOne();
 
     @Required
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setJdbcTemplate(JdbcTemplate simpleJdbcTemplate) {
+        this.jdbcTemplate = simpleJdbcTemplate;
     }
 }
