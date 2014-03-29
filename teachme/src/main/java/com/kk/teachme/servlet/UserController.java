@@ -417,7 +417,7 @@ public class UserController {
     }
 
     private String getCurrentAddress() {
-        return "teachme.ru:8083";
+        return "teachme.cloudapp.net";
     }
 
 }
