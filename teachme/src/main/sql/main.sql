@@ -53,7 +53,7 @@ CREATE TABLE user_problem (
    attempts INTEGER
 );
 
-//TODO rename table to status
+#TODO rename table to status
 CREATE TABLE problem_status (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   status text

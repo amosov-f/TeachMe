@@ -17,7 +17,7 @@ public class TeachMeEngine {
 
             ServerConnector conn = new ServerConnector(jettyServer);
 
-            conn.setPort(8083);
+            conn.setPort(8080);
             jettyServer.setConnectors(new Connector[]{conn});
 
             WebAppContext context = new WebAppContext();
