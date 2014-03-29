@@ -40,7 +40,6 @@
         <property name="checkerDepot" ref="checkerDepot"/>
     </bean>
 
-
     <bean id="intChecker" class="com.kk.teachme.checker.IntChecker"/>
     <bean id="stringChecker" class="com.kk.teachme.checker.StringChecker">
         <constructor-arg value="EqualsWithCase"/>
@@ -77,6 +76,10 @@
         <property name="problemDepot" ref="problemDepot"/>
         <property name="solutionDepot" ref="solutionDepot"/>
         <property name="fileDepot" ref="fileDepot"/>
+    </bean>
+
+    <bean id="adminDepot" class="com.kk.teachme.db.AdminDepot">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 
 </beans>

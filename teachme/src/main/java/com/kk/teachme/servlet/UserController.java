@@ -417,7 +417,7 @@ public class UserController {
     }
 
     private String getCurrentAddress() {
-        return "teachme.ru:8083";
+        return "127.0.0.1:8083";
     }
 
 }
