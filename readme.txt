@@ -16,5 +16,16 @@ alias mysql=/usr/local/mysql/bin/mysql
 localhost:8083/запрос?аргумент1=значение1&аргумент2=значение2...
 
 
-//TODO
-Приукрасить teachme/src/webapp/WEB-INF/pages/login.jsp
+Зайти в базу данных из консоли
+mysql -u teachme -p
+пароль teachmepass
+
+Потом пишем
+use teachme;
+Для просмотра таблиц
+select * from tag;
+
+Описания таблиц находятся в src/main/sql/main.sql
+
+Таблицы вида a_b хранят связи
+Таблицы вида a хранят сами объекты

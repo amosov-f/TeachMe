@@ -45,6 +45,10 @@ public class AdminController {
     @Autowired
     UserDepot userDepot;
 
+    @Autowired
+    AdminDepot adminDepot;
+
+
     @RequestMapping(value = "/is_admin")
     @ResponseBody
     public boolean isAdmin(HttpServletRequest request) {
@@ -168,6 +172,17 @@ public class AdminController {
         model.addAttribute("tagList", tagDepot.getAllTags());
 
         return "edit";
+    }
+
+    //TODO
+    @RequestMapping(value = "/add_admin")
+    @ResponseBody   //не возвращает jsp-шку
+    public String addAdmin(@RequestParam int admin_id) {
+
+        //напиши добавление юзера
+        //используй adminDepot
+
+        return "admin added";
     }
 
 }
