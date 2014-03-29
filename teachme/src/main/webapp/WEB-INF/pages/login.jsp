@@ -15,10 +15,26 @@
 
     <link href="/resources/jquery/css/jquery.autocomplete.css" rel="stylesheet" type="text/css"/>
     <link href="/resources/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="/resources/bootstrap/css/jumbotron-narrow.css" rel="stylesheet" type="text/css"/>
     <link href="/resources/utility/css/styles.css" rel="stylesheet" type="text/css"/>
+
+    <title>TeachMe</title>
 </head>
 
 <body>
+    <div class="container">
+        <div class="header">
+           <h3 align="center" class="text-muted">TeachMe</h3>
+        </div>
+        <div class="jumbotron">
+            <h1>Онлайн-тесты.</h1>
+            <p class="lead">И это только начало.</p>
+            <p><a class="btn btn-primary btn-lg" href="http://oauth.vk.com/authorize?client_id=3810701&redirect_uri=http://<%=(String)request.getAttribute("adress")%>/vklogin&response_type=code" role="button">Войти через VK</a></p>
+        </div>
+        <div class="footer">
+            <p>&copy; TeachMe 2014</p>
+        </div>
+          </div>
     <div class="container" align="center">
         <h2>
             Войти в TeachMe
