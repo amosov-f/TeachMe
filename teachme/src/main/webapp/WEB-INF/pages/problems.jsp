@@ -68,7 +68,7 @@
                     </div>
                 </div>
                 <p id="loading" class="hidden-xs navbar-text"></p>
-                <jsp:include page="user/user_sign.jsp"></jsp:include>
+                <jsp:include page="user/user_sign.jsp"/>
             </nav>
         </div>
     </div>
@@ -92,9 +92,9 @@
 
 
         $(document).ready(function() {
-            var existTags = new Array();
+            var existTags = [];
         <%
-            for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {
+            for (Tag tag : (List<Tag>) request.getAttribute("tagList")) {
         %>
                 existTags.push('<%=tag.getName()%>');
         <%
@@ -102,15 +102,14 @@
         %>
             existTags.sort();
 
-            $('#tag').tags({tags: existTags});
-
-
-            $('#tag').bind('change keyup', createProblemList);
+            var $tags = $('#tag');
+            $tags.tags({tags: existTags});
+            $tags.bind('change keyup', createProblemList);
         <%
             if (request.getAttribute("tags") != null && !((String)request.getAttribute("tags")).isEmpty()) {
         %>
 
-                $('#tag').val('<%= (String)request.getAttribute("tags") %>'.replace(/,\s*/g, ', ') + ', ');
+                $tags.val('<%= (String)request.getAttribute("tags") %>'.replace(/,\s*/g, ', ') + ', ');
         <%
             }
         %>
@@ -122,11 +121,12 @@
         <%
             }
         %>
-            $('#filter').change(function() {
+            var $filter = $('#filter');
+            $filter.change(function() {
                 createProblemList();
             });
 
-            $('#filter').selectpicker();
+            $filter.selectpicker();
 
             $('#inMind').change(function() {
                 createProblemList();
@@ -151,13 +151,13 @@
         }
 
         function createProblemList() {
-
-            if ($('#tag').tags('newTags').length != 0) {
+            var $tags = $('#tag');
+            if ($tags.tags('newTags').length != 0) {
                 return;
             }
             if (
                     curChosenTags != null &&
-                    $('#tag').tags('chosenTags').toString() === curChosenTags.toString() &&
+                    $tags.tags('chosenTags').toString() === curChosenTags.toString() &&
                     curFilter === $('#filter').val() &&
                     curInMind == $('#inMind').is(':checked')
             ) {
@@ -171,7 +171,6 @@
         }
 
         function uploadProblemList(create) {
-
             curChosenTags = $('#tag').tags('chosenTags');
             curFilter = $('#filter').val();
             curInMind = $('#inMind').is(':checked');
@@ -182,8 +181,8 @@
             $.ajax({
                 url: '/user_problem_list',
                 data: 'tags=' + concat(curChosenTags) +
-                      '&filter=' + $('#filter').val() +
-                      '&in_mind=' + $('#inMind').is(':checked') +
+                      '&filter=' + curFilter +
+                      '&in_mind=' + curInMind +
                       '&from=' + from + '&to=' + to,
                 beforeSend: function() {
                     uploading = true;

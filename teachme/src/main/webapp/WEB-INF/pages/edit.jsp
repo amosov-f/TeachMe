@@ -47,7 +47,6 @@
     }
 %>
 
-
     <div align="center">
         <h2 id="title"></h2>
     </div>
@@ -72,7 +71,7 @@
             <legend>Ответ</legend>
             <input id="solution" name="solution" type="text" class="form-control" value="<%= solutionText %>"/>
 
-                <div class="col-lg-6" style="padding-left: 0px; padding-right: 0px;">
+                <div class="col-lg-6" style="padding-left: 0; padding-right: 0;">
                     <legend>Тип ответа</legend>
                     <select id="checkerId" name="checker_id">
             <%
@@ -84,9 +83,9 @@
                     </select>
                 </div>
 
-                <div class="col-lg-6" style="padding-left: 0px; padding-right: 0px;">
+                <div class="col-lg-6" style="padding-left: 0; padding-right: 0;">
                     <legend>Сложность</legend>
-                    <div class="col-lg-4 col-xs-4" style="padding-left: 0px;">
+                    <div class="col-lg-4 col-xs-4" style="padding-left: 0;">
                         <input type="number" class="form-control" id="complexity" name="complexity" min="1" max="10" value="<%= problem.getComplexity() %>" autocomplete="off" />
                     </div>
                     <div class="checkbox col-lg-8 col-xs-8">
@@ -153,9 +152,9 @@
         var figureId;
 
         $(document).ready(function() {
-            var existTags = new Array();
+            var existTags = [];
         <%
-            for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {
+            for (Tag tag : (List<Tag>) request.getAttribute("tagList")) {
         %>
                 existTags.push("<%=tag.getName()%>");
         <%
@@ -163,14 +162,16 @@
         %>
             existTags.sort();
 
-            $('#title').html('<h2>Новая задача</h2>');
+            var $title = $('#title');
+            $title.html('<h2>Новая задача</h2>');
 
+            var $checker = $('#checkerId');
         <%
             if (request.getAttribute("problem") != null) {
 
                 problem = (Problem)request.getAttribute("problem");
         %>
-                $('#title').html(
+                $title.html(
                         'Задача #<%= problem.getId() %>' +
                         '<button class="btn btn-delete" onclick="deleteProblem()">&#10006</button>'
                 );
@@ -183,12 +184,9 @@
             <%
                 }
             %>
-                $('#checkerId').val("<%=(Integer)request.getAttribute("checkerId")%>");
+                $checker.val('<%= request.getAttribute("checkerId") %>');
         <%
             }
-        %>
-
-        <%
             if (problem.isInMind()) {
         %>
                 $('#inMind').attr('checked', true);
@@ -203,7 +201,7 @@
             connectByEnter('#solution', '#tagsEdit');
             connectByEnter('#tagsEdit', '#name');
 
-            $('#checkerId').selectpicker();
+            $checker.selectpicker();
         });
 
         function submitProblem() {
@@ -212,8 +210,9 @@
                 return false;
             }
 
-            $('#tags').val(concat($('#tagsEdit').tags('chosenTags')));
-            $('#newTags').val(concat($('#tagsEdit').tags('newTags')));
+            var $tagsEdit = $('#tagsEdit');
+            $('#tags').val(concat($tagsEdit.tags('chosenTags')));
+            $('#newTags').val(concat($tagsEdit.tags('newTags')));
 
             $('#problem').submit();
 
@@ -224,11 +223,11 @@
         <%
             if (request.getAttribute("problem") == null) {
         %>
-                document.location = '/admin'
+                document.location = '/admin';
         <%
             } else {
         %>
-                document.location = '/admin?problem_id=<%=((Problem)request.getAttribute("problem")).getId()%>'
+                document.location = '/admin?problem_id=<%=((Problem) request.getAttribute("problem")).getId()%>';
         <%
             }
         %>
@@ -257,14 +256,16 @@
 
         function updateFigure() {
             $('#figures').val(figureId);
-            $('#figureView').html(null);
+
+            var $figureView = $('#figureView');
+            $figureView.html(null);
+
             $('#file').val(null);
             if (figureId != null && figureId != '') {
-                $('#figureView').append(
+                $figureView.append(
                         '<img src="/files/' + figureId + '" class="img-rounded" style="max-width: 100%; max-height: 30%;"/>'
                 );
-
-                $('#figureView').append(
+                $figureView.append(
                         '<button class="btn btn-delete left-top" type="button" onclick="clearFigure()">&#10006</button>'
                 );
             }

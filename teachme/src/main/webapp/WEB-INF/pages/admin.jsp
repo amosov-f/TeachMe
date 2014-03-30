@@ -45,7 +45,7 @@
                 </div>
 
                 <ul class="nav navbar-nav navbar-right">
-                    <jsp:include page="user/user_sign.jsp"></jsp:include>
+                    <jsp:include page="user/user_sign.jsp"/>
                     <li>
                         <button class="btn btn-primary navbar-btn" onclick="location = '/new_problem'">
                             Новая задача
@@ -69,9 +69,9 @@
         var curChosenTags = null;
 
         $(document).ready(function() {
-            var existTags = new Array();
+            var existTags = [];
         <%
-            for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {
+            for (Tag tag : (List<Tag>) request.getAttribute("tagList")) {
         %>
                 existTags.push('<%=tag.getName()%>');
         <%
@@ -79,16 +79,14 @@
         %>
             existTags.sort();
 
-            $('#tag').tags({tags: existTags});
-
-            $('#tag').bind('change keyup', showProblemList);
-
+            var $tags = $('#tag');
+            $tags.tags({tags: existTags});
+            $tags.bind('change keyup', showProblemList);
 
             showProblemList();
-
         <%
             if (request.getAttribute("problemId") != null) {
-                for (Problem problem : (List<Problem>)request.getAttribute("problemList")) {
+                for (Problem problem : (List<Problem>) request.getAttribute("problemList")) {
                     if (problem.getId() == (Integer)request.getAttribute("problemId")) {
         %>
                         showProblem(<%= problem.getId() %>);
@@ -114,17 +112,18 @@
         }
 
         function showProblemList() {
-            if ($('#tag').tags('newTags').length != 0) {
+            var $tags = $('#tag');
+            if ($tags.tags('newTags').length != 0) {
                 return;
             }
-            if (curChosenTags != null && $('#tag').tags('chosenTags').toString() === curChosenTags.toString()) {
+            if (curChosenTags != null && $tags.tags('chosenTags').toString() === curChosenTags.toString()) {
                 return;
             }
 
-            curChosenTags = $('#tag').tags('chosenTags');
+            curChosenTags = $tags.tags('chosenTags');
             $.ajax({
                 url: '/by_tag_list',
-                data: 'tags=' + concat($('#tag').tags('chosenTags')),
+                data: 'tags=' + concat($tags.tags('chosenTags')),
                 beforeSend: function() {
                     $('#loading').text('Загрузка...');
                 },

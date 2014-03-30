@@ -40,7 +40,7 @@
                         </a>
                     </li>
                 </ul>
-                <jsp:include page="user/user_sign.jsp"></jsp:include>
+                <jsp:include page="user/user_sign.jsp"/>
             </div>
         </div>
     </div>

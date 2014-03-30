@@ -38,15 +38,16 @@
             </div>
             <p id="loading" class="hidden-xs navbar-text"></p>
             <nav class="collapse navbar-collapse  bs-navbar-collapse" role="navigation" >
-                <jsp:include page="user/user_sign.jsp"></jsp:include>
+                <jsp:include page="user/user_sign.jsp"/>
             </nav>
         </div>
     </div>
 
     <div id="container" class="container">
         <%
+
             boolean inMind = request.getAttribute("inMind") != null && (Boolean)request.getAttribute("inMind");
-            boolean tagList = request.getAttribute("tagList") != null && !((List<Tag>)request.getAttribute("tagList")).isEmpty();
+            boolean tagList = request.getAttribute("tagList") != null && !((List<Tag>) request.getAttribute("tagList")).isEmpty();
             if (inMind || tagList) {
         %>
                 <blockquote style="margin-top: 15px;">
@@ -66,7 +67,7 @@
             }
 
             if (tagList) {
-                List<Tag> tags = (List<Tag>)request.getAttribute("tagList");
+                List<Tag> tags = (List<Tag>) request.getAttribute("tagList");
                 if (tags.size() == 1) {
         %>
                     по тегу
@@ -76,7 +77,7 @@
                     по тегам
             <%
                 }
-                for (Tag tag : (List<Tag>)request.getAttribute("tagList")) {
+                for (Tag tag : (List<Tag>) request.getAttribute("tagList")) {
             %>
                     <span class="label label-info"><%= tag.getName() %></span>&nbsp
         <%
@@ -88,7 +89,7 @@
         %>
 
         <div id="panel">
-            <jsp:include page="user_problem/user_problem_panel.jsp"></jsp:include>
+            <jsp:include page="user_problem/user_problem_panel.jsp"/>
         </div>
         <div class="col-xs-6 col-sm-3 col-lg-3" style="padding-bottom: 15px;">
             <button type="button" class="btn btn-default col-xs-12 col-lg-12" onclick="goBack()">

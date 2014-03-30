@@ -88,12 +88,7 @@ public class UserController {
         if (request.getSession().getAttribute("user") == null) {
             return "redirect:/login";
         }
-        User user = (User)request.getSession().getAttribute("user");
 
-        List<UserProblem> userProblems;
-        userProblems = userProblemDepot.getAllUserProblems(user.getId());
-
-        model.addAttribute("userProblemList", userProblems);
         model.addAttribute("tagList", tagDepot.getAllTags());
         if (problem_id != null) {
             model.addAttribute("problemId", problem_id);
