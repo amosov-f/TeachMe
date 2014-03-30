@@ -176,7 +176,7 @@ public class AdminController {
 
     //TODO
     @RequestMapping(value = "/add_admin")
-    @ResponseBody   //не возвращает jsp-шку
+    @ResponseBody   //не возвращает jsp-шку. Отображает возвращаемую строку сразу в браузере
     public String addAdmin(@RequestParam int admin_id) {
 
         //напиши добавление юзера
