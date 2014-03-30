@@ -417,11 +417,11 @@ public class UserController {
     }
 
     private String getCurrentAddress() {
-        System.out.println(System.getProperty("user.name"));
-        if (System.getProperty("user.name").equals("monvir")) {
-            return "teachme.cloudapp.net:8080";
+       // System.out.println(System.getProperty("user.name"));
+        if (System.getProperty("user.name").equals("teachme")) {
+            return "teachme.cloudapp.net";
         }
-        return "teachme.cloudapp.net";
+        return "teachme.cloudapp.net:8080";
     }
 
 }
