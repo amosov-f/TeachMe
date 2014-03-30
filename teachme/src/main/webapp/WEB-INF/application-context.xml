@@ -50,8 +50,6 @@
     </bean>
 
     <bean id="userDepot" class="com.kk.teachme.db.UserDepot">
-        <property name="jdbcTemplate" ref="jdbcTemplate"/>
-        <property name="problemDepot" ref="problemDepot"/>
     </bean>
 
     <bean id="userProblemDepot" class="com.kk.teachme.db.UserProblemDepot">

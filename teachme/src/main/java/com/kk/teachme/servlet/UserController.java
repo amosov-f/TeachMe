@@ -9,7 +9,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 @Controller
 public class UserController {
@@ -375,25 +377,9 @@ public class UserController {
 
             JSONObject jUser = new JSONObject(response);
 
-            String username = jUser.get("user_id").toString();
+            int id = jUser.getInt("user_id");
 
-            String userInfoGet = "https://api.vk.com/method/users.get?user_ids=" + username;
-
-            en = httpСlient.execute(new HttpGet(userInfoGet)).getEntity();
-            response = EntityUtils.toString(en);
-            en.consumeContent();
-
-            jUser = (JSONObject) ((JSONArray) (new JSONObject(response).get("response"))).get(0);
-
-            User user = new User(username, (String) jUser.get("first_name"), (String) jUser.get("last_name"));
-
-            if (!userDepot.contains(user.getUsername())) {
-                user.setId(userDepot.add(user));
-            } else {
-                user = userDepot.getByUsername(user.getUsername());
-            }
-
-            request.getSession(true).setAttribute("user", user);
+            request.getSession(true).setAttribute("user", userDepot.get(id));
 
         } catch (Exception e) {
             throw new RuntimeException(e);

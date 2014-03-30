@@ -20,7 +20,7 @@ public class StatusDepot {
                 try {
                     final Map<Integer, Status> map = new HashMap<>();
                     jdbcTemplate.query(
-                            "select * from problem_status",
+                            "select * from status",
                             (ResultSet resultSet) -> {
                                 int id = resultSet.getInt("id");
                                 Status status = Status.valueOf(resultSet.getString("status").toUpperCase());

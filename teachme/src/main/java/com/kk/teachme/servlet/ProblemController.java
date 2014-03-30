@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ public class ProblemController {
     public String editProblem(@PathVariable int problem_id, Model model) {
         model.addAttribute("problem", problemDepot.get(problem_id));
         model.addAttribute("solution", solutionDepot.getSolution(problem_id));
-        return "problem/problem_edit";
+        return "edit";
     }
 
 
@@ -84,7 +83,7 @@ public class ProblemController {
         if (tags == null || tags.isEmpty()) {
             problems = problemDepot.getAllProblems();
         } else {
-            List<Tag> tagList = new ArrayList<Tag>();
+            List<Tag> tagList = new ArrayList<>();
             for (String tag : URLDecoder.decode(tags, "UTF-8").split(",")) {
                 if (tagDepot.getByName(tag) != null) {
                     tagList.add(tagDepot.getByName(tag));
@@ -168,7 +167,7 @@ public class ProblemController {
 
     @RequestMapping(value = "/check_solution", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String checkSolution(@RequestParam int problem_id, @RequestParam String user_answer, HttpServletRequest request) throws JSONException {
+    public String checkSolution(@RequestParam int problem_id, @RequestParam String user_answer) throws JSONException {
         SolveStatus answerStatus = solutionDepot.check(problem_id, user_answer);
         String methodAnswer = null;
         switch (answerStatus) {

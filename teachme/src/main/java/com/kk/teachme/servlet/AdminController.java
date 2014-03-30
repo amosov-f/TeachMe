@@ -20,15 +20,15 @@ import java.util.*;
 @Controller
 public class AdminController {
 
-    private String[] ADMINS = {
-        /*Fedor Amosov*/"98810985",
-        /*Mark Yezhkov*/"1857046",
-        /*Ekaterina Sosa*/"6053606",
-        /*Alexander Konstantinov*/"2745",
-        /*Dmitry Kachmar*/"15460",
-        /*Ekaterina Danilova*/"12484189",
-        /*Michal Krajewski*/"1969317"
-    };
+    private static final List<Integer> admins = Arrays.asList(
+        /*Fedor Amosov*/ 98810985,
+        /*Mark Yezhkov*/ 1857046,
+        /*Ekaterina Sosa*/ 6053606,
+        /*Alexander Konstantinov*/ 2745,
+        /*Dmitry Kachmar*/ 15460,
+        /*Ekaterina Danilova*/ 12484189,
+        /*Michal Krajewski*/ 1969317
+    );
 
     @Autowired
     ProblemDepot problemDepot;
@@ -55,8 +55,8 @@ public class AdminController {
         if (request.getSession().getAttribute("user") == null) {
             return false;
         }
-        User user = (User)request.getSession().getAttribute("user");
-        return Arrays.asList(ADMINS).contains(user.getUsername());
+        User user = (User) request.getSession().getAttribute("user");
+        return admins.contains(user.getId());
     }
 
     @RequestMapping(value = "/admin")

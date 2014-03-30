@@ -49,7 +49,7 @@ public class JSONCreator {
     public static JSONObject valueOf(User user) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("id", user.getId());
-        json.put("login", user.getUsername());
+        json.put("name", user.getName());
         //JSONArray tags = new JSONArray();
         //for (Tag t : problem.getTags()) {
         //    tags.put(t.getName());

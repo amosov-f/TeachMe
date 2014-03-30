@@ -1,74 +1,29 @@
 package com.kk.teachme.db;
 
 import com.kk.teachme.model.User;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.List;
+public class UserDepot {
 
-public class UserDepot extends AbstractDepot<User> {
+    public User get(int id) {
+        try {
+            String userInfoGet = "https://api.vk.com/method/users.get?user_ids=" + id;
 
-    ProblemDepot problemDepot;
+            HttpEntity en = new DefaultHttpClient().execute(new HttpGet(userInfoGet)).getEntity();
+            String response = EntityUtils.toString(en);
+            en.consumeContent();
 
-    @Override
-    public int add(final User user) {
-        final KeyHolder keyHolder = new GeneratedKeyHolder();
-        final int update = jdbcTemplate.update(
-                conn -> {
-                    PreparedStatement preparedStatement = conn.prepareStatement(
-                            "insert into user (username, first_name, last_name) values (?, ?, ?)",
-                            Statement.RETURN_GENERATED_KEYS
-                    );
-                    preparedStatement.setString(1, user.getUsername());
-                    preparedStatement.setString(2, user.getFirstName());
-                    preparedStatement.setString(3, user.getLastName());
+            JSONObject jUser = (JSONObject) ((JSONArray) (new JSONObject(response).get("response"))).get(0);
 
-                    return preparedStatement;
-                },
-                keyHolder
-        );
-        if (update > 0) {
-            int id = keyHolder.getKey().intValue();
-            user.setId(id);
-            return id;
+            return new User(id, (String) jUser.get("first_name"), (String) jUser.get("last_name"));
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
         }
-        return -1;
     }
 
-    public boolean contains(String username) {
-         // check if user with userLogin exists
-         return !jdbcTemplate.query("select * from user where username = ?", getRowMapper(), username).isEmpty();
-    }
-
-    public User getByUsername(String username) {
-        List<User> userList = jdbcTemplate.query("select * from user where username = ?", getRowMapper(), username);
-        if (userList.isEmpty()) {
-            return null;
-        }
-        return userList.get(0);
-    }
-
-    @Override
-    protected RowMapper<User> getRowMapper() {
-        return (resultSet, i) -> new User(
-                resultSet.getInt("id"),
-                resultSet.getString("username"),
-                resultSet.getString("first_name"),
-                resultSet.getString("last_name")
-        );
-    }
-
-    @Override
-    protected String getQueryForOne() {
-        return "select * from user where id = ?";
-    }
-
-    @Required
-    public void setProblemDepot(ProblemDepot problemDepot) {
-        this.problemDepot = problemDepot;
-    }
 }

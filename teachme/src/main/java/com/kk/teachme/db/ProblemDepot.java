@@ -181,10 +181,6 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         ).size();
     }
 
-    public boolean contains(int id) {
-        return get(id) != null;
-    }
-
     public boolean deleteById(int id) {
         if (!contains(id)) {
             return false;
