@@ -1,4 +1,4 @@
-Hella!
+myHella!
 
 alias mysql=/usr/local/mysql/bin/mysql
 
@@ -29,3 +29,7 @@ select * from tag;
 
 Таблицы вида a_b хранят связи
 Таблицы вида a хранят сами объекты
+
+TODO
+1) В adminDepot метод Contains - public boolean (int admin_id)
+2) В методе addAdmin добавть проверку юзер в сети и айдишник содержится в базе админов

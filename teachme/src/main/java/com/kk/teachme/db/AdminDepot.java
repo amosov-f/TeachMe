@@ -10,6 +10,10 @@ public class AdminDepot {
 
     public void addAdmin(int adminId) {
         //see addSolution in SolutionDepot
+        int update = jdbcTemplate.update(
+                "insert into admin (id) values (?)",
+                adminId
+        );
     }
 
     @Required
@@ -18,3 +22,4 @@ public class AdminDepot {
     }
 
 }
+

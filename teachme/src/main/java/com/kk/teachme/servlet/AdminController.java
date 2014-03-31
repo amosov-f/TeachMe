@@ -178,10 +178,9 @@ public class AdminController {
     @RequestMapping(value = "/add_admin")
     @ResponseBody   //не возвращает jsp-шку. Отображает возвращаемую строку сразу в браузере
     public String addAdmin(@RequestParam int admin_id) {
-
         //напиши добавление юзера
         //используй adminDepot
-
+        adminDepot.addAdmin(admin_id);
         return "admin added";
     }
 
