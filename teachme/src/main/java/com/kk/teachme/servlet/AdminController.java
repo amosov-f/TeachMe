@@ -56,7 +56,7 @@ public class AdminController {
             return false;
         }
         User user = (User) request.getSession().getAttribute("user");
-        return admins.contains(user.getId());
+        return adminDepot.contains(user.getId());
     }
 
     @RequestMapping(value = "/admin")
@@ -174,12 +174,12 @@ public class AdminController {
         return "edit";
     }
 
-    //TODO
     @RequestMapping(value = "/add_admin")
     @ResponseBody   //не возвращает jsp-шку. Отображает возвращаемую строку сразу в браузере
-    public String addAdmin(@RequestParam int admin_id) {
-        //напиши добавление юзера
-        //используй adminDepot
+    public String addAdmin(@RequestParam int admin_id, HttpServletRequest request) {
+        if (!isAdmin(request)) {
+            return "You are not admin";
+        }
         adminDepot.addAdmin(admin_id);
         return "admin added";
     }
