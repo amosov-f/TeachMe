@@ -143,6 +143,12 @@
             <version>1.7.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>net.sf.squirrel-sql</groupId>
+            <artifactId>squirrel-sql</artifactId>
+            <version>3.5.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>

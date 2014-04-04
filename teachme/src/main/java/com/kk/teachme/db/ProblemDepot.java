@@ -85,7 +85,7 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return query;
     }
 
-    public List<Problem> getByIds(List<Integer> ids) {
+    public List<Problem> get(List<Integer> ids) {
         String query = getIdsQuery("problem", "id", ids);
         if (query == null || query.isEmpty()) {
             return new ArrayList<>();

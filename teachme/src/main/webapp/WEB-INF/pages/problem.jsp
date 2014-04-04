@@ -122,8 +122,8 @@
         function goBack() {
             document.location = '/problems?' +
                     'problem_id=' + $('#userProblemPanel').attr('name') +
-                    '&tags=<%= (String)request.getAttribute("tags") %>' +
-                    '&in_mind=<%= (Boolean)request.getAttribute("inMind") %>';
+                    '&tags=<%= (String) request.getAttribute("tags") %>' +
+                    '&in_mind=<%= request.getAttribute("inMind") %>';
         }
 
         function changeProblem(adress) {
@@ -131,7 +131,7 @@
                 url: '/' + adress + '_user_problem',
                 data: 'problem_id=' + $('#userProblemPanel').attr('name') +
                         '&tags=<%= (String)request.getAttribute("tags") %>' +
-                        '&in_mind=' +  <%= (Boolean)request.getAttribute("inMind") %>,
+                        '&in_mind=' +  <%= request.getAttribute("inMind") %>,
                 beforeSend: function() {
                     $('#loading').html('Загрузка...');
                     $('#notFound').html('');

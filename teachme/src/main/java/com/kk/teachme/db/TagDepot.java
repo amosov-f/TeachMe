@@ -99,18 +99,6 @@ public class TagDepot extends AbstractDepot<Tag> {
         return name2tag.get(name);
     }
 
-    public void changeTagName(Tag tag, String newName) {
-        id2tag.remove(tag.getId());
-        name2tag.remove(tag.getName());
-
-        tag.setName(newName);
-
-        id2tag.put(tag.getId(), tag);
-        name2tag.put(tag.getName(), tag);
-
-        jdbcTemplate.update("update tag set name = ? where id = ?", tag.getName(), tag.getId());
-    }
-
     private List<Tag> getByNameFromDB(String name) {
         return jdbcTemplate.query(
                 "select * from tag where name = ?",

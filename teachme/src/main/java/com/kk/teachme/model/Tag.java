@@ -4,15 +4,12 @@ package com.kk.teachme.model;
  * @author akonst
  */
 public class Tag {
-    int id;
-    String name;
+
+    private final int id;
+    private final String name;
 
     public Tag(int id, String name) {
         this.id = id;
-        this.name = name;
-    }
-
-    public void setName(String name) {
         this.name = name;
     }
 

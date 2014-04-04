@@ -9,7 +9,7 @@
 <body>
 <%
     if (request.getAttribute("problem") != null) {
-        Problem problem = (Problem)request.getAttribute("problem");
+        Problem problem = (Problem) request.getAttribute("problem");
 %>
         <div id="userProblemPanel" name="<%= problem.getId() %>" class="panel panel-info margin-top" value="<%=problem.getId()%>">
             <div class="panel-heading">

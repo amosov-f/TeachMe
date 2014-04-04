@@ -49,7 +49,7 @@ public class UserProblem {
     public void attempt(boolean solved) {
         if (attempts <= 0) {
             attempts--;
-            if (solved == true) {
+            if (solved) {
                 attempts = Math.abs(attempts);
             }
         }
@@ -62,7 +62,7 @@ public class UserProblem {
     @Override
     public String toString() {
         return "UserProblem{" +
-                "problem=" + problem.getId() +
+                "problem=" + problem +
                 ", status=" + getStatus() +
                 ", attempts=" + getAttempts() +
                 '}';
@@ -75,9 +75,7 @@ public class UserProblem {
 
         UserProblem that = (UserProblem) o;
 
-        if (!problem.equals(that.problem)) return false;
-
-        return true;
+        return problem.equals(that.problem);
     }
 
     @Override

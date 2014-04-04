@@ -59,7 +59,6 @@ public class CheckerDepot implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        System.out.println("!!!");
         this.applicationContext = applicationContext;
     }
 

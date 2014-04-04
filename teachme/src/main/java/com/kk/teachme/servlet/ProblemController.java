@@ -4,7 +4,6 @@ import com.kk.teachme.checker.SolveStatus;
 import com.kk.teachme.db.*;
 import com.kk.teachme.model.Problem;
 import com.kk.teachme.model.Tag;
-import com.kk.teachme.model.UserProblem;
 import com.kk.teachme.support.JSONCreator;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -141,19 +140,6 @@ public class ProblemController {
         return result.toString();
     }
 
-    @RequestMapping(value = "/change_tag_name", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String changeTagName(@RequestParam int tag_id, String new_name) throws JSONException {
-        Tag tag = tagDepot.get(tag_id);
-        if (tag == null) {
-            return JSONCreator.errorJSON("Incorrect tag id").toString();
-        }
-        tagDepot.changeTagName(tag, new_name);
-        JSONObject result = new JSONObject();
-        result.put("result", "ok");
-        return result.toString();
-    }
-
     @RequestMapping(value = "/change_statement", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String changeProblemStatement(@RequestParam int problem_id, @RequestParam String new_text) throws JSONException {
@@ -201,45 +187,6 @@ public class ProblemController {
         problemDepot.deleteAllProblems();
         configDepot.setValue("tct", 0);
         return JSONCreator.okJson().toString();
-    }
-
-    //methods from UserProblemDepot
-
-    @RequestMapping(value = "/add_uproblem", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String addUserProblem(@RequestParam int user_id, @RequestParam int problem_id)
-            throws JSONException {
-        userProblemDepot.addUserProblem(user_id, problem_id);
-        return JSONCreator.okJson().toString();
-    }
-
-    @RequestMapping(value = "/all_uproblems", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String getAllUserProblems(@RequestParam int user_id) throws JSONException {
-        List<UserProblem> answerList = userProblemDepot.getAllUserProblems(user_id);
-        return JSONCreator.valueOfList(answerList).toString();
-    }
-
-    @RequestMapping(value = "/solved_uproblems", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String getSolvedUserProblems(@RequestParam int user_id) throws JSONException {
-        List<UserProblem> answerList = userProblemDepot.getSolvedProblems(user_id);
-        return JSONCreator.valueOfList(answerList).toString();
-    }
-
-    @RequestMapping(value = "/unsolved_uproblems", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String getUnsolvedUserProblems(@RequestParam int user_id) throws JSONException {
-        List<UserProblem> answerList = userProblemDepot.getUnsolvedProblems(user_id);
-        return JSONCreator.valueOfList(answerList).toString();
-    }
-
-    @RequestMapping(value = "/uproblems_tag", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String getUserProblemsByTag(@RequestParam int user_id, @RequestParam int tag_id) throws JSONException {
-        List<UserProblem> answerList =
-                userProblemDepot.getByTag(user_id, tagDepot.get(tag_id));
-        return JSONCreator.valueOfList(answerList).toString();
     }
 
 }

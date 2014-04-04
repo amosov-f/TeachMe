@@ -5,9 +5,10 @@ import com.kk.teachme.model.Status;
 import com.kk.teachme.model.Tag;
 import com.kk.teachme.model.UserProblem;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
@@ -152,35 +153,6 @@ public class UserProblemDepot {
     }
 
 
-    public List<UserProblem> getUnsolvedProblems(int userId) {
-        List<UserProblem> userProblems = jdbcTemplate.query(
-                "select problem_id, attempts from user_problem where user_id = ?",
-                getRowMapper(),
-                userId
-        );
-        List<Problem> allProblems = problemDepot.getAllProblems();
-
-        List<UserProblem> unsolvedUserProblems = new ArrayList<>();
-
-        for (Problem problem : allProblems) {
-            boolean flag = false;
-            for (UserProblem userProblem : userProblems) {
-                if (userProblem.getProblem().getId() == problem.getId()) {
-                    flag = true;
-                    if (userProblem.getStatus() != Status.SOLVED) {
-                        unsolvedUserProblems.add(new UserProblem(problem, userProblem.getRawAttempts()));
-                    }
-                    break;
-                }
-            }
-            if (!flag) {
-                unsolvedUserProblems.add(new UserProblem(problem));
-            }
-        }
-
-        return unsolvedUserProblems;
-    }
-
     public List<UserProblem> getSolvedProblems(int userId) {
         return jdbcTemplate.query("select problem_id, attempts " +
                 "from user_problem where user_id = ? and attempts > 0",
@@ -189,132 +161,25 @@ public class UserProblemDepot {
         );
     }
 
-    public List<UserProblem> getReadProblems(int userId) {
-        return jdbcTemplate.query("select problem_id, attempts " +
-                "from user_problem where user_id = ? and attempts <= 0",
-                getRowMapper(),
-                userId
-        );
-    }
-
-    public List<UserProblem> getAttemptedProblems(int userId) {
-        return jdbcTemplate.query("select problem_id, attempts " +
-                "from user_problem where user_id = ? and attempts < 0",
-                getRowMapper(),
-                userId
-        );
-    }
-
-    public List<UserProblem> getByTag(int userId, Tag tag) {
-
-        List<UserProblem> userProblems = jdbcTemplate.query("select up.problem_id, up.attempts " +
-                "from user_problem up inner join problem_tag pt on pt.problem_id = up.problem_id " +
-                "where up.user_id = ? and pt.tag_id = ?",
-                getRowMapper(),
-                userId,
-                tag.getId());
-        List<Problem> problems = problemDepot.getByTag(tag);
-
-        List<UserProblem> resultUserProblems = new ArrayList<>();
-
-        for (Problem problem : problems) {
-            boolean flag = false;
-            for (UserProblem userProblem : userProblems) {
-                if (userProblem.getProblem().getId() == problem.getId()) {
-                    resultUserProblems.add(new UserProblem(problem, userProblem.getRawAttempts()));
-                    flag = true;
-                    break;
-                }
-            }
-            if (!flag) {
-                resultUserProblems.add(new UserProblem(problem));
-            }
-        }
-
-        return resultUserProblems;
-    }
-
-    public List<UserProblem> getByTagList(int userId, List<Tag> tags) {
-
-        if (tags == null || tags.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<UserProblem> userProblemsBy1 = jdbcTemplate.query(
-                "select up.problem_id, up.attempts " +
-                "from user_problem up inner join problem_tag pt on pt.problem_id = up.problem_id " +
-                "where up.user_id = ? and pt.tag_id = ?",
-                getRowMapper(),
-                userId,
-                tags.get(0).getId()
-        );
-        List<Problem> problems = problemDepot.getByTagList(tags);
-
-        List<UserProblem> userProblems = new ArrayList<>();
-        for (UserProblem userProblem : userProblemsBy1) {
-            if (userProblem.getProblem().getTags().containsAll(tags)) {
-                userProblems.add(userProblem);
-            }
-        }
-
-        List<UserProblem> resultUserProblems = new ArrayList<>();
-
-        for (Problem problem : problems) {
-            boolean flag = false;
-            for (UserProblem userProblem : userProblems) {
-                if (userProblem.getProblem().getId() == problem.getId()) {
-                    resultUserProblems.add(new UserProblem(problem, userProblem.getRawAttempts()));
-                    flag = true;
-                    break;
-                }
-            }
-            if (!flag) {
-                resultUserProblems.add(new UserProblem(problem));
-            }
-        }
-
-        return resultUserProblems;
-
-    }
-
     public List<UserProblem> getByFilters(int userId, List<Tag> tags, String filter, boolean inMind, int from, int to) {
-        String query =
-                "SELECT problem_id, attempts FROM user_problem\n" +
-                "WHERE user_id = " + userId + "\n" +
-                getTagsQuery("problem_id", tags) + "\n" +
-                getStatusQuery(filter) + "\n" +
-                getInMindQuery("problem_id", inMind) + "\n";
-        if (filter == null || filter.isEmpty() || filter.equals("unsolved")) {
-            query +=
-                    "UNION\n" +
-                    "SELECT id, NULL FROM problem\n" +
-                    "WHERE id NOT IN (SELECT problem_id FROM user_problem WHERE user_id = " + userId + ")\n" +
-                    getTagsQuery("id", tags) + "\n" +
-                    getInMindQuery("id", inMind) + "\n";
-        }
-        query += "LIMIT " + (to - from) + " OFFSET " + from;
+        String query = filtersQuery(userId, tags, filter, inMind) + limitQuery(from, to);
 
-        final List<Integer> ids = new ArrayList<>();
-        final Map<Integer, UserProblem> id2userProblem = new HashMap<>();
+        List<Integer> ids = new ArrayList<>();
+        Map<Integer, UserProblem> id2userProblem = new HashMap<>();
         jdbcTemplate.query(query, (RowCallbackHandler) resultSet -> {
-            ids.add(resultSet.getInt("problem_id"));
-            id2userProblem.put(
-                    resultSet.getInt("problem_id"),
-                    new UserProblem((Integer)resultSet.getObject("attempts"))
-            );
+            int problemId = resultSet.getInt("problem_id");
+            ids.add(problemId);
+            id2userProblem.put(problemId, new UserProblem(resultSet.getInt("attempts")));
         });
 
-        for (Problem problem : problemDepot.getByIds(ids)) {
+        for (Problem problem : problemDepot.get(ids)) {
             id2userProblem.get(problem.getId()).setProblem(problem);
         }
 
-        List<UserProblem> result = new ArrayList<>();
-        result.addAll(id2userProblem.values());
-
-        return result;
+        return new ArrayList<>(id2userProblem.values());
     }
 
-    private String getStatusQuery(String filter) {
+    private static String statusQuery(String filter) {
         if ("unsolved".equals(filter)) {
             return "AND attempts <= 0";
         }
@@ -327,14 +192,37 @@ public class UserProblemDepot {
         return "";
     }
 
-    private String getInMindQuery(String field, boolean inMind) {
+    private static String inMindQuery(String field, boolean inMind) {
         if (inMind) {
             return "AND " + field + " IN (SELECT id FROM problem WHERE in_mind = true)";
         }
         return "";
     }
 
-    private String getTagsQuery(String field, List<Tag> tags) {
+    private static String filtersQuery(int userId, List<Tag> tags, String filter, boolean inMind) {
+        String query =
+                "(SELECT problem_id, attempts FROM user_problem\n" +
+                        "WHERE user_id = " + userId + "\n" +
+                        tagsQuery("problem_id", tags) + "\n" +
+                        statusQuery(filter) + "\n" +
+                        inMindQuery("problem_id", inMind) + ")\n";
+        if (filter == null || filter.isEmpty() || filter.equals("unsolved")) {
+            query +=
+                    "UNION\n" +
+                            "(SELECT id, NULL FROM problem\n" +
+                            "WHERE id NOT IN (SELECT problem_id FROM user_problem WHERE user_id = " + userId + ")\n" +
+                            tagsQuery("id", tags) + "\n" +
+                            inMindQuery("id", inMind) + ")\n";
+        }
+        return query;
+    }
+
+    public static String limitQuery(int from, int to) {
+        return "LIMIT " + (to - from) + " OFFSET " + from + "\n";
+    }
+
+
+    private static String tagsQuery(String field, List<Tag> tags) {
         if (tags == null) {
             return "";
         }
@@ -345,7 +233,49 @@ public class UserProblemDepot {
         return result;
     }
 
-    protected ParameterizedRowMapper<UserProblem> getRowMapper() {
+    public UserProblem getEasierProblem(int userId, int problemId, List<Tag> tags, boolean inMind) {
+        int complexity = problemDepot.get(problemId).getComplexity();
+
+        String query = "SELECT * FROM (" + filtersQuery(userId, tags, "unsolved", inMind) + ") AS filter\n";
+        query += "WHERE problem_id IN (SELECT id FROM problem WHERE complexity < " + complexity + ")\n";
+        query += limitQuery(0, 1);
+
+        try {
+            return jdbcTemplate.queryForObject(query, getRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public UserProblem getSimilarProblem(int userId, int problemId, List<Tag> tags, boolean inMind) {
+        int complexity = problemDepot.get(problemId).getComplexity();
+
+        String query = "SELECT * FROM (" + filtersQuery(userId, tags, "unsolved", inMind) + ") AS filter\n";
+        query += "WHERE problem_id IN (SELECT id FROM problem WHERE complexity = " + complexity + " AND id <> " + problemId + ")\n";
+        query += limitQuery(0, 1);
+
+        try {
+            return jdbcTemplate.queryForObject(query, getRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public UserProblem getHarderProblem(int userId, int problemId, List<Tag> tags, boolean inMind) {
+        int complexity = problemDepot.get(problemId).getComplexity();
+
+        String query = "SELECT * FROM (" + filtersQuery(userId, tags, "unsolved", inMind) + ") AS filter\n";
+        query += "WHERE problem_id IN (SELECT id FROM problem WHERE complexity > " + complexity + ")\n";
+        query += limitQuery(0, 1);
+
+        try {
+            return jdbcTemplate.queryForObject(query, getRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    protected RowMapper<UserProblem> getRowMapper() {
         return (resultSet, i) -> new UserProblem(
                 problemDepot.get(resultSet.getInt("problem_id")),
                 resultSet.getInt("attempts")
