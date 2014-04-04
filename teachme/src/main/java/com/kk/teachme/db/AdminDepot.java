@@ -1,7 +1,10 @@
 package com.kk.teachme.db;
 
+import com.sun.xml.internal.bind.v2.TODO;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.util.List;
 
 public class AdminDepot {
 
@@ -19,6 +22,11 @@ public class AdminDepot {
     @Required
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    //TODO
+    public List<Integer> getAllAdmins() {
+        return null;
     }
 
 }

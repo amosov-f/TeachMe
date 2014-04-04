@@ -180,8 +180,19 @@ public class AdminController {
         if (!isAdmin(request)) {
             return "You are not admin";
         }
+        if (adminDepot.contains(admin_id)) {
+            return "Admin already added";
+        }
         adminDepot.addAdmin(admin_id);
-        return "admin added";
+        return "Admin added";
+    }
+
+    @RequestMapping(value = "/admin_control")
+    public String adminControl(HttpServletRequest request) {
+        if (!isAdmin(request)) {
+            return "redirect:/login";
+        }
+        return "admin_control";
     }
 
 }
