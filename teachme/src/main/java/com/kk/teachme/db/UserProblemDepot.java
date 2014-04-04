@@ -124,41 +124,8 @@ public class UserProblemDepot {
         return userProblems.get(0).getStatus();
     }
 
-    public List<UserProblem> getAllUserProblems(int userId) {
-
-        List<UserProblem> userProblems = jdbcTemplate.query(
-                "select problem_id, attempts from user_problem where user_id = ?",
-                getRowMapper(),
-                userId
-        );
-        List<Problem> allProblems = problemDepot.getAllProblems();
-
-        List<UserProblem> allUserProblems = new ArrayList<>();
-
-        for (Problem problem : allProblems) {
-            boolean flag = false;
-            for (UserProblem userProblem : userProblems) {
-                if (userProblem.getProblem().getId() == problem.getId()) {
-                    allUserProblems.add(new UserProblem(problem, userProblem.getRawAttempts()));
-                    flag = true;
-                    break;
-                }
-            }
-            if (!flag) {
-                allUserProblems.add(new UserProblem(problem));
-            }
-        }
-
-        return allUserProblems;
-    }
-
-
-    public List<UserProblem> getSolvedProblems(int userId) {
-        return jdbcTemplate.query("select problem_id, attempts " +
-                "from user_problem where user_id = ? and attempts > 0",
-                getRowMapper(),
-                userId
-        );
+    public int getSolvedProblemsCount(int userId) {
+        return jdbcTemplate.queryForInt("SELECT COUNT(*) FROM user_problem WHERE user_id = ? AND attempts > 0", userId);
     }
 
     public List<UserProblem> getByFilters(int userId, List<Tag> tags, String filter, boolean inMind, int from, int to) {

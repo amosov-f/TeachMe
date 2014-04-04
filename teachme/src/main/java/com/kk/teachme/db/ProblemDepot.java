@@ -144,6 +144,10 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return jdbcTemplate.query("select * from problem", getProblemIdRowMapper("id"));
     }
 
+    public int getProblemsCount() {
+        return jdbcTemplate.queryForInt("SELECT COUNT(*) FROM problem");
+    }
+
     public void setById(int id, Problem problem) {
         //if (get(id) == null) ... suppose, that problem with @id exists
 

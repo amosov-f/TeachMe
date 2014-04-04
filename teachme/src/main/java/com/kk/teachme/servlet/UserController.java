@@ -309,8 +309,8 @@ public class UserController {
     @RequestMapping(value = "/user_{user_id:\\d+}")
     public String user(@PathVariable int user_id, Model model) {
         model.addAttribute("user", userDepot.get(user_id));
-        model.addAttribute("solved", userProblemDepot.getSolvedProblems(user_id).size());
-        model.addAttribute("all", userProblemDepot.getAllUserProblems(user_id).size());
+        model.addAttribute("solved", userProblemDepot.getSolvedProblemsCount(user_id));
+        model.addAttribute("all", problemDepot.getProblemsCount());
         return "user";
     }
 
