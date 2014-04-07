@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Required;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public class TCTLoader {
     ProblemDepot problemDepot;
 
     SolutionDepot solutionDepot;
+
+    CheckerDepot checkerDepot;
 
     public void fill() {
         fill(3);
@@ -49,7 +52,7 @@ public class TCTLoader {
 
         int nailed;
         for (nailed = tct; nailed < cards; nailed++) {
-            String cardURLString = "http://www.pddrussia.com/static/ab/bilet/b" + (nailed+1) + ".json";
+            String cardURLString = "http://www.pddrussia.com/static/ab/bilet/b" + (nailed + 1) + ".json";
             if (!get(cardURLString)) {
                 System.out.println("Failed to load card #" + nailed + 1);
                 break;
@@ -58,7 +61,7 @@ public class TCTLoader {
 
         if (nailed > tct) {
             configDepot.setValue("tct", nailed);
-            System.out.println("Cards from " + (tct+1) + " to " + nailed + " loaded");
+            System.out.println("Cards from " + (tct + 1) + " to " + nailed + " loaded");
         }
 
     }
@@ -91,16 +94,16 @@ public class TCTLoader {
                         if (newOption.equals("null")) {
                             break;
                         }
-                        statement += "\n" + (j+1) + ") " + newOption;
+                        statement += "\n<input type=\"radio\" name=\"radio\" value=\"" + (j + 1) + "\"> " + newOption;
                     } catch (JSONException e) {
                         break;
                     }
 
                 }
 
-                String solutionText = ((Integer)question.getInt("otvet")).toString();
+                String solutionText = ((Integer) question.getInt("otvet")).toString();
 
-                List<String> figures = new ArrayList<String>();
+                List<String> figures = new ArrayList<>();
 
                 try {
                     URL imageURL = new URL(question.getString("realUrl"));
@@ -115,13 +118,13 @@ public class TCTLoader {
                     figures.add("");
                 }
 
-                ArrayList<Tag> TCT = new ArrayList<Tag>();
+                ArrayList<Tag> TCT = new ArrayList<>();
                 TCT.add(tagDepot.getByName("пдд"));
 
                 solutionDepot.addSolution(
                         problemDepot.add(new Problem(name, statement, figures, 1, true, TCT)),
                         solutionText,
-                        1
+                        3
                 );
 
             }
@@ -164,6 +167,11 @@ public class TCTLoader {
     @Required
     public void setFileDepot(FileDepot fileDepot) {
         this.fileDepot = fileDepot;
+    }
+
+    @Required
+    public void setCheckerDepot(CheckerDepot checkerDepot) {
+        this.checkerDepot = checkerDepot;
     }
 
 }

@@ -52,6 +52,7 @@ public class UserController {
         }
 
         model.addAttribute("problem", problemDepot.get(problem_id));
+
         return "user_problem/user_problem_panel";
     }
 
@@ -71,6 +72,7 @@ public class UserController {
         model.addAttribute("tags", tags);
         model.addAttribute("inMind", in_mind);
         model.addAttribute("tagList", parseTagsString(tags));
+        model.addAttribute("checker", solutionDepot.getSolution(problem_id).getChecker());
 
         return "problem";
     }
@@ -107,7 +109,9 @@ public class UserController {
             return "redirect:/login";
         }
 
-        User user = (User)request.getSession().getAttribute("user");
+        System.out.println(solution_text);
+
+        User user = (User) request.getSession().getAttribute("user");
         Solution solution = solutionDepot.getSolution(problem_id);
 
         SolveStatus solveStatus = solution.getChecker().check(solution_text, solution.getSolutionText());
@@ -192,7 +196,9 @@ public class UserController {
         if (problem == null) {
             return "null";
         }
+
         model.addAttribute("problem", problem.getProblem());
+        model.addAttribute("checker", solutionDepot.getSolution(problem.getProblem().getId()).getChecker());
 
         return "user_problem/user_problem_panel";
     }
@@ -211,7 +217,9 @@ public class UserController {
         if (problem == null) {
             return "null";
         }
+
         model.addAttribute("problem", problem.getProblem());
+        model.addAttribute("checker", solutionDepot.getSolution(problem.getProblem().getId()).getChecker());
 
         return "user_problem/user_problem_panel";
     }
@@ -230,7 +238,9 @@ public class UserController {
         if (problem == null) {
             return "null";
         }
+
         model.addAttribute("problem", problem.getProblem());
+        model.addAttribute("checker", solutionDepot.getSolution(problem.getProblem().getId()).getChecker());
 
         return "user_problem/user_problem_panel";
     }

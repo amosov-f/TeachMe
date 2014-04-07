@@ -17,7 +17,7 @@ public class IntChecker implements Checker {
     }
 
     @Override
-    public String getName() {
+    public String toString() {
         return "Число";
     }
 

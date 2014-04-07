@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <script type="text/javascript" src="/resources/jquery/js/jquery-2.0.2.js"></script>
+    <script type="text/javascript" src="/resources/jquery/js/jquery-2.1.0.js"></script>
 
     <title>Добавление админа</title>
 </head>

@@ -19,7 +19,7 @@
 
     <script type="text/javascript" src="/resources/utility/js/utility.js"></script>
 
-    <script type="text/javascript" src="/resources/jquery/js/jquery-2.0.2.js"></script>
+    <script type="text/javascript" src="/resources/jquery/js/jquery-2.1.0.js"></script>
     <script type="text/javascript" src="/resources/jquery/js/jquery.form.js"></script>
     <script type="text/javascript" src="/resources/jquery/js/jquery.autocomplete.js"></script>
     <script type="text/javascript" src="/resources/jquery/js/jquery.tags.js"></script>
@@ -78,7 +78,7 @@
                         Map<Integer, Checker> checkers = (Map<Integer, Checker>) request.getAttribute("checkerMap");
 
                         for (Map.Entry<Integer, Checker> checker : checkers.entrySet()) { %>
-                            <option value="<%= checker.getKey() %>"><%= checker.getValue().getName() %></option>
+                            <option value="<%= checker.getKey() %>"><%= checker.getValue().toString() %></option>
             <%          }   %>
                     </select>
                 </div>

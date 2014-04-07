@@ -5,15 +5,15 @@
 
 <%
     Object object = request.getAttribute("userProblemList");
-    if (object != null && !((List<UserProblem>)object).isEmpty()) {
+    if (object != null && !((List<UserProblem>) object).isEmpty()) {
 %>
     <%
-        for (UserProblem userProblem : (List<UserProblem>)object) {
+        for (UserProblem userProblem : (List<UserProblem>) object) {
             request.setAttribute("userProblem", userProblem);
             int id = userProblem.getProblem().getId();
     %>
             <a id="<%= id %>" name="<%= id %>" class="list-group-item" style="cursor: pointer;">
-                <jsp:include page="user_problem_item.jsp"></jsp:include>
+                <jsp:include page="user_problem_item.jsp"/>
             </a>
     <%
         }

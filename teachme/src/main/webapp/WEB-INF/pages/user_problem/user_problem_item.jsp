@@ -5,7 +5,7 @@
 
 <body>
 <%
-    UserProblem userProblem = (UserProblem)request.getAttribute("userProblem");
+    UserProblem userProblem = (UserProblem) request.getAttribute("userProblem");
 %>
     <p>
 

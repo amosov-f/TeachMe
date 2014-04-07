@@ -10,7 +10,7 @@
 
     <script type="text/javascript" src="/resources/utility/js/utility.js"></script>
 
-    <script type="text/javascript" src="/resources/jquery/js/jquery-2.0.2.js"></script>
+    <script type="text/javascript" src="/resources/jquery/js/jquery-2.1.0.js"></script>
     <script type="text/javascript" src="/resources/jquery/js/jquery.autocomplete.js"></script>
     <script type="text/javascript" src="/resources/jquery/js/jquery.tags.js"></script>
 
@@ -117,7 +117,7 @@
         <%
             if (request.getAttribute("problemId") != null) {
         %>
-                curProblemId = <%= (Integer)request.getAttribute("problemId") %>
+                curProblemId = <%= request.getAttribute("problemId") %>
         <%
             }
         %>

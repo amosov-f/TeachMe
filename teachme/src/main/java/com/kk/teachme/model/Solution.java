@@ -26,10 +26,6 @@ public class Solution {
         return checker;
     }
 
-    public void setSolutionText(String solutionText) {
-        this.solutionText = solutionText;
-    }
-
     public void setChecker(Checker checker) {
         this.checker = checker;
     }

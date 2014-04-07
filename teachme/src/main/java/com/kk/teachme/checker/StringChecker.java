@@ -9,17 +9,22 @@ public class StringChecker implements Checker {
 
     @Override
     public SolveStatus check(String userAnswer, String correctAnswer) {
+
         String regexp = "[\\s+\n]";
         String reducedUserAnswer = userAnswer.replace(regexp, " ").trim();
         String reducedCorrectAnswer = correctAnswer.replace(regexp, " ").trim();
 
-        if (option.equals(CaseOption.EqualsIgnoreCase)) {
+        if (userAnswer.isEmpty()) {
+            return SolveStatus.INVALID;
+        }
+
+        if (option == CaseOption.EqualsIgnoreCase) {
             if (reducedUserAnswer.equalsIgnoreCase(reducedCorrectAnswer)) {
                 return SolveStatus.CORRECT;
             }
         }
 
-        if (option.equals(CaseOption.EqualsWithCase)) {
+        if (option == CaseOption.EqualsWithCase) {
             if (reducedUserAnswer.equals(reducedCorrectAnswer)) {
                 return SolveStatus.CORRECT;
             }
@@ -29,7 +34,7 @@ public class StringChecker implements Checker {
     }
 
     @Override
-    public String getName() {
+    public String toString() {
         return "Строка";
     }
 

@@ -1,0 +1,1 @@
+INSERT INTO checker (bean_name) values ("radioChecker");

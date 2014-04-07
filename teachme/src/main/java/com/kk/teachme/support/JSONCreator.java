@@ -52,7 +52,7 @@ public class JSONCreator {
         json.put("name", user.getName());
         //JSONArray tags = new JSONArray();
         //for (Tag t : problem.getTags()) {
-        //    tags.put(t.getName());
+        //    tags.put(t.toString());
         //}
         //json.put("tags", tags);
         return json;

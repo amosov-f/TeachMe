@@ -4,6 +4,4 @@ public interface Checker {
 
     public SolveStatus check(String userAnswer, String correctAnswer);
 
-    public String getName();
-
 }

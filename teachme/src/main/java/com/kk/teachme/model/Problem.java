@@ -124,10 +124,6 @@ public class Problem {
         return Arrays.asList(figures.split(","));
     }
 
-    public void addFigures(List<String> figures) {
-        this.figures.addAll(figures);
-    }
-
     @Override
     public String toString() {
         return "Problem{" +

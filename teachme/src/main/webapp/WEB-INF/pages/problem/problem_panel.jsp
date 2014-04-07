@@ -61,7 +61,7 @@
                 </div>
                 <div>
                     Ответом является
-                    <div class="label label-default"><%= solution.getChecker().getName() %></div>
+                    <div class="label label-default"><%= solution.getChecker().toString() %></div>
                     <div class="label label-success"><%= solution.getSolutionText() %></div>
                 </div>
 
@@ -71,7 +71,7 @@
         <script>
             $(document).ready(function() {
                 $('#problemPanel').click(function() {
-                    document.location = '/edit_problem?problem_id=<%=problem.getId()%>'
+                    document.location = '/edit_problem?problem_id=<%= problem.getId() %>'
                 });
             });
         </script>

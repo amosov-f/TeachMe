@@ -35,7 +35,9 @@ public class ProblemDepot extends AbstractDepot<Problem> {
                     preparedStatement.setBoolean(5, problem.isInMind());
 
                     return preparedStatement;
-                }, keyHolder);
+                },
+                keyHolder
+        );
         if (update > 0) {
             int id = keyHolder.getKey().intValue();
             problem.setId(id);

@@ -8,7 +8,7 @@
 
     <script type="text/javascript" src="/resources/utility/js/utility.js"></script>
 
-    <script type="text/javascript" src="/resources/jquery/js/jquery-2.0.2.js"></script>
+    <script type="text/javascript" src="/resources/jquery/js/jquery-2.1.0.js"></script>
     <script type="text/javascript" src="/resources/jquery/js/jquery.autocomplete.js"></script>
     <script type="text/javascript" src="/resources/jquery/js/jquery.tags.js"></script>
 
@@ -126,9 +126,9 @@
                     '&in_mind=<%= request.getAttribute("inMind") %>';
         }
 
-        function changeProblem(adress) {
+        function changeProblem(address) {
             $.ajax({
-                url: '/' + adress + '_user_problem',
+                url: '/' + address + '_user_problem',
                 data: 'problem_id=' + $('#userProblemPanel').attr('name') +
                         '&tags=<%= (String)request.getAttribute("tags") %>' +
                         '&in_mind=' +  <%= request.getAttribute("inMind") %>,
@@ -139,6 +139,7 @@
                 },
 
                 success: function(data) {
+                    console.log(data);
                     if (data.trim() === '') {
                         $('#status').html('<div class="alert alert-warning">Задача не найдена</div>');
                     } else {

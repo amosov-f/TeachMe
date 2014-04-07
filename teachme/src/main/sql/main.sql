@@ -61,3 +61,4 @@ INSERT INTO status (status) values ("attempted");
 
 INSERT INTO checker (bean_name) values ("intChecker");
 INSERT INTO checker (bean_name) values ("stringChecker");
+INSERT INTO checker (bean_name) values ("radioChecker");
