@@ -113,35 +113,6 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         return result;
     }
 
-
-    public List<Problem> getByTag(Tag tag) {
-        if (tag == null) {
-            return null;
-        }
-
-        return jdbcTemplate.query(
-                "select * from problem inner join (select * from problem_tag where tag_id = ?) t on problem.id = t.problem_id",
-                getProblemIdRowMapper("id"),
-                tag.getId()
-        );
-    }
-
-    public List<Problem> getByTagList(List<Tag> tagList) {
-        if (tagList == null || tagList.size() == 0) {
-            return null;
-        }
-
-        List<Problem> problemList = new ArrayList<>();
-
-        for (Problem problem : getByTag(tagList.get(0))) {
-            if (problem.getTags().containsAll(tagList)) {
-                problemList.add(problem);
-            }
-        }
-
-        return problemList;
-    }
-
     public List<Problem> getAllProblems() {
         return jdbcTemplate.query("select * from problem", getProblemIdRowMapper("id"));
     }
@@ -173,18 +144,6 @@ public class ProblemDepot extends AbstractDepot<Problem> {
 
     public void addTagToProblem(Problem problem, Tag tag) {
         jdbcTemplate.update("insert ignore into problem_tag values (?, ?)", problem.getId(), tag.getId());
-    }
-
-    public void changeProblemStatement(Problem problem, String newStatement) {
-        jdbcTemplate.update("update problem set statement = ? where id = ?", newStatement, problem.getId());
-    }
-
-    public int getProblemsByTagCount(Tag tag) {
-        return jdbcTemplate.query(
-                "select * from problem_tag where tag_id = ?",
-                getProblemIdRowMapper("problem_id"),
-                tag.getId()
-        ).size();
     }
 
     public boolean deleteById(int id) {
@@ -220,13 +179,13 @@ public class ProblemDepot extends AbstractDepot<Problem> {
         );
     }
 
-    protected RowMapper<Problem> getProblemIdRowMapper(final String idTitle) {
-        return (resultSet, i) -> get(resultSet.getInt(idTitle));
+    @Override
+    protected String getTableName() {
+        return "problem";
     }
 
-    @Override
-    protected String getQueryForOne() {
-        return "select * from problem where id = ?";
+    protected RowMapper<Problem> getProblemIdRowMapper(final String idTitle) {
+        return (resultSet, i) -> get(resultSet.getInt(idTitle));
     }
 
     @Required

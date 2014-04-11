@@ -62,7 +62,7 @@
     </bean>
 
     <bean id="fileDepot" class="com.kk.teachme.db.FileDepot">
-        <property name="filesDirectory" value="files/" />
+        <property name="path" value="files/" />
     </bean>
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">

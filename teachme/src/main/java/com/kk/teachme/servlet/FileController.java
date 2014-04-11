@@ -24,7 +24,7 @@ public class FileController {
     @RequestMapping(value = "/{file_id:\\w+}")
     public void get(@PathVariable String file_id, HttpServletResponse response) {
         try {
-            InputStream is = fileDepot.getById(file_id);
+            InputStream is = fileDepot.get(file_id);
             response.addHeader("fileId", file_id);
             IOUtils.copy(is, response.getOutputStream());
             response.flushBuffer();
@@ -39,8 +39,8 @@ public class FileController {
             return null;
         }
         try {
-            //return "<img src='http://localhost:8080/files/" + fileDepot.addNewFile(file.getBytes()) + "' />";
-            return fileDepot.addNewFile(file.getBytes());
+            //return "<img src='http://localhost:8080/files/" + fileDepot.add(file.getBytes()) + "' />";
+            return fileDepot.add(file.getBytes());
         } catch (Exception e) {
             e.printStackTrace();
             return null;

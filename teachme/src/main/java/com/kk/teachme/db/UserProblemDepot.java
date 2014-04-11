@@ -28,12 +28,12 @@ public class UserProblemDepot {
 
     JdbcTemplate jdbcTemplate;
 
-    private void addObject(final int userId, final UserProblem userProblem) {
+    private void add(final int userId, final UserProblem userProblem) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 conn -> {
                     PreparedStatement preparedStatement = conn.prepareStatement(
-                            "insert into user_problem (user_id, problem_id, status_id, attempts) values(?, ?, ?, ?)",
+                            "insert into user_problem (user_id, problem_id, status_id, attempts) values (?, ?, ?, ?)",
                             Statement.RETURN_GENERATED_KEYS
                     );
                     preparedStatement.setInt(1, userId);
@@ -57,14 +57,14 @@ public class UserProblemDepot {
     }
 
     public boolean addUserProblem(int userId, int problemId) {
-        List<UserProblem> userProblems = jdbcTemplate.query("select problem_id, attempts " +
-                "from user_problem where user_id = ? and problem_id = ?",
+        List<UserProblem> userProblems = jdbcTemplate.query(
+                "SELECT problem_id, attempts FROM user_problem WHERE user_id = ? AND problem_id = ?",
                 getRowMapper(),
                 userId,
                 problemId
         );
         if (userProblems.isEmpty()) {
-            addObject(userId, new UserProblem(problemDepot.get(problemId), 0));
+            add(userId, new UserProblem(problemDepot.get(problemId), 0));
             return true;
         }
         return false;
@@ -97,7 +97,7 @@ public class UserProblemDepot {
         UserProblem userProblem;
         if (userProblems.isEmpty()) {
             userProblem = new UserProblem(problemDepot.get(problemId));
-            addObject(userId, userProblem);
+            add(userId, userProblem);
         } else {
             userProblem = userProblems.get(0);
         }

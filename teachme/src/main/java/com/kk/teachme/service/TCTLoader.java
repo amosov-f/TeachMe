@@ -113,7 +113,7 @@ public class TCTLoader {
                     byteStream.flush();
                     byte[] byteArray = byteStream.toByteArray();
                     byteStream.close();
-                    figures.add(fileDepot.addNewFile(byteArray));
+                    figures.add(fileDepot.add(byteArray));
                 } catch (Exception e) {
                     figures.add("");
                 }

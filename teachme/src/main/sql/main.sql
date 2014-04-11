@@ -14,19 +14,22 @@ CREATE TABLE tag (
   name text
 );
 
-CREATE TABLE solution (
+/*CREATE TABLE solution (
   id INTEGER PRIMARY KEY,
   solution_text text,
   checker_id int
-);
+);*/
 
 CREATE TABLE problem (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
-  name text,
-  statement text,
-  figures text,
+  name TEXT,
+  statement TEXT,
+  figures TEXT,
   complexity INTEGER,
-  in_mind boolean
+  in_mind BOOLEAN,
+
+  solution TEXT,
+  checker_id INT
 );
 
 CREATE TABLE problem_tag (
@@ -42,22 +45,22 @@ CREATE TABLE checker (
 CREATE TABLE user_problem (
    user_id INTEGER,
    problem_id INTEGER,
-   status_id INTEGER,
+   /*status_id INTEGER,*/
    attempts INTEGER
 );
 
-CREATE TABLE status (
+/*CREATE TABLE status (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   status text
-);
+);*/
 
 CREATE TABLE admin (
    id INTEGER
 );
 
-INSERT INTO status (status) values ("read");
+/*INSERT INTO status (status) values ("read");
 INSERT INTO status (status) values ("solved");
-INSERT INTO status (status) values ("attempted");
+INSERT INTO status (status) values ("attempted");*/
 
 INSERT INTO checker (bean_name) values ("intChecker");
 INSERT INTO checker (bean_name) values ("stringChecker");

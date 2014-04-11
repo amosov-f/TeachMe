@@ -1,11 +1,11 @@
 package com.kk.teachme.db;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import javax.naming.OperationNotSupportedException;
-import java.util.List;
 
 public abstract class AbstractDepot<T> {
 
@@ -14,16 +14,24 @@ public abstract class AbstractDepot<T> {
     public abstract int add(T t) throws OperationNotSupportedException;
 
     public T get(int id) {
-        final List<T> results = jdbcTemplate.query(getQueryForOne(), getRowMapper(), id);
-        return results.size() == 0 ? null : results.get(0);
+        try {
+            return jdbcTemplate.queryForObject(getSelectQuery() + " WHERE id = ?", getRowMapper(), id);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     public boolean contains(int id) {
-        return !jdbcTemplate.query(getQueryForOne(), getRowMapper(), id).isEmpty();
+        return get(id) != null;
+    }
+
+    private String getSelectQuery() {
+        return "SELECT * FROM " + getTableName();
     }
 
     protected abstract RowMapper<T> getRowMapper();
-    protected abstract String getQueryForOne();
+
+    protected abstract String getTableName();
 
     @Required
     public void setJdbcTemplate(JdbcTemplate simpleJdbcTemplate) {

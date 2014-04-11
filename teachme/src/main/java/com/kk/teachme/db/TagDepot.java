@@ -117,8 +117,8 @@ public class TagDepot extends AbstractDepot<Tag> {
     }
 
     @Override
-    protected String getQueryForOne() {
-        return "select * from tag where id = ?";
+    protected String getTableName() {
+        return "tag";
     }
 
 }

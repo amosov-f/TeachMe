@@ -121,15 +121,15 @@ public class UserProblemController {
 
     @RequestMapping(value = "/read")
     public String read(@RequestParam int problem_id, HttpServletRequest request, Model model) throws JSONException {
-        if (request.getSession().getAttribute("user") == null) {
+        Integer userId = getUserId(request);
+        if (userId == null) {
             return "redirect:/login";
         }
-        User user = (User)request.getSession().getAttribute("user");
 
-        Status status = userProblemDepot.getStatus(user.getId(), problem_id);
+        Status status = userProblemDepot.getStatus(userId, problem_id);
 
-        if (!status.equals(Status.SOLVED)) {
-            userProblemDepot.addUserProblem(user.getId(), problem_id);
+        if (status != Status.SOLVED) {
+            userProblemDepot.addUserProblem(userId, problem_id);
         }
 
         return getItem(problem_id, request, model);
@@ -160,7 +160,7 @@ public class UserProblemController {
         if (request.getSession().getAttribute("user") == null) {
             return null;
         }
-        User user = (User)request.getSession().getAttribute("user");
+        User user = (User) request.getSession().getAttribute("user");
 
         List<UserProblem> userProblems =
                 userProblemDepot.getByFilters(user.getId(), parseTagsString(tags), filter, in_mind, from, to);
@@ -170,8 +170,9 @@ public class UserProblemController {
         return "user_problem/user_problem_list";
     }
 
-    @RequestMapping(value = "/easier_user_problem")
+    @RequestMapping(value = "/{mode:\\w+}_user_problem")
     public String getEasierUserProblem(
+            @PathVariable String mode,
             @RequestParam int problem_id,
             @RequestParam String tags,
             @RequestParam boolean in_mind,
@@ -180,49 +181,19 @@ public class UserProblemController {
     ) throws UnsupportedEncodingException {
         int userId = getUserId(request);
 
-        UserProblem problem = userProblemDepot.getEasierProblem(userId, problem_id, parseTagsString(tags), in_mind);
-        if (problem == null) {
-            return "null";
+        UserProblem problem = null;
+        switch (mode) {
+            case "easier":
+                problem = userProblemDepot.getEasierProblem(userId, problem_id, parseTagsString(tags), in_mind);
+                break;
+            case "similar":
+                problem = userProblemDepot.getSimilarProblem(userId, problem_id, parseTagsString(tags), in_mind);
+                break;
+            case "harder":
+                problem = userProblemDepot.getHarderProblem(userId, problem_id, parseTagsString(tags), in_mind);
+                break;
         }
 
-        model.addAttribute("problem", problem.getProblem());
-        model.addAttribute("checker", solutionDepot.getSolution(problem.getProblem().getId()).getChecker());
-
-        return "user_problem/user_problem_panel";
-    }
-
-    @RequestMapping(value = "/similar_user_problem")
-    public String getSimilarUserProblem(
-            @RequestParam int problem_id,
-            @RequestParam String tags,
-            @RequestParam boolean in_mind,
-            HttpServletRequest request,
-            Model model
-    ) throws UnsupportedEncodingException {
-        int userId = getUserId(request);
-
-        UserProblem problem = userProblemDepot.getSimilarProblem(userId, problem_id, parseTagsString(tags), in_mind);
-        if (problem == null) {
-            return "null";
-        }
-
-        model.addAttribute("problem", problem.getProblem());
-        model.addAttribute("checker", solutionDepot.getSolution(problem.getProblem().getId()).getChecker());
-
-        return "user_problem/user_problem_panel";
-    }
-
-    @RequestMapping(value = "/harder_user_problem")
-    public String getHarderUserProblem(
-            @RequestParam int problem_id,
-            @RequestParam String tags,
-            @RequestParam boolean in_mind,
-            HttpServletRequest request,
-            Model model
-    ) throws UnsupportedEncodingException {
-        int userId = getUserId(request);
-
-        UserProblem problem = userProblemDepot.getHarderProblem(userId, problem_id, parseTagsString(tags), in_mind);
         if (problem == null) {
             return "null";
         }
@@ -249,7 +220,6 @@ public class UserProblemController {
 
     @RequestMapping(value = "/")
     public String home(HttpServletRequest request) {
-
         if (request.getSession().getAttribute("user") == null) {
             return "redirect:/login";
         }

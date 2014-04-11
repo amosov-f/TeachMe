@@ -1,25 +1,14 @@
 package com.kk.teachme.servlet;
 
-import com.kk.teachme.checker.SolveStatus;
 import com.kk.teachme.db.*;
-import com.kk.teachme.model.Problem;
-import com.kk.teachme.model.Tag;
 import com.kk.teachme.support.JSONCreator;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 public class ProblemController {
@@ -57,128 +46,6 @@ public class ProblemController {
         model.addAttribute("problem", problemDepot.get(problem_id));
         model.addAttribute("solution", solutionDepot.getSolution(problem_id));
         return "edit";
-    }
-
-
-
-    @RequestMapping(value = "/by_tag")
-    public String getByTag(@RequestParam(required = false) String tag, Model model) {
-        List<Problem> problems;
-        if (tag == null || tag.isEmpty()) {
-            problems = problemDepot.getAllProblems();
-        } else {
-            problems = problemDepot.getByTag(tagDepot.getByName(tag));
-        }
-
-        model.addAttribute("problemList", problems);
-
-        return "problem/problem_list";
-    }
-
-    @RequestMapping(value = "/by_tag_list")
-    public String getByTagList(@RequestParam String tags, Model model) throws UnsupportedEncodingException {
-        List<Problem> problems;
-
-        if (tags == null || tags.isEmpty()) {
-            problems = problemDepot.getAllProblems();
-        } else {
-            List<Tag> tagList = new ArrayList<>();
-            for (String tag : URLDecoder.decode(tags, "UTF-8").split(",")) {
-                if (tagDepot.getByName(tag) != null) {
-                    tagList.add(tagDepot.getByName(tag));
-                }
-            }
-            problems = problemDepot.getByTagList(tagList);
-        }
-
-
-        model.addAttribute("problemList", problems);
-
-        return  "problem/problem_list";
-    }
-
-    @RequestMapping(value = "/count_by_tag", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String getProblemsByTagIdCount(@RequestParam int tag_id) throws JSONException {
-        Tag tag = tagDepot.getCached(tag_id);
-        if (tag == null) {
-            return JSONCreator.errorJSON("Incorrect id").toString();
-        }
-
-        JSONObject result = new JSONObject();
-        result.put("count", problemDepot.getProblemsByTagCount(tag));
-        return JSONCreator.resultJSON(result).toString();
-    }
-
-    @RequestMapping(value = "/add_tag_to_problem", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String addTagToProblem(@RequestParam int problem_id, @RequestParam int tag_id) throws JSONException {
-        Problem problem = problemDepot.get(problem_id);
-        if (problem == null) {
-            return JSONCreator.errorJSON("Incorrect problem id").toString();
-        }
-
-        Tag tag = tagDepot.getCached(tag_id);
-        if (tag == null) {
-            return JSONCreator.errorJSON("Incorrect tag id").toString();
-        }
-
-        problemDepot.addTagToProblem(problem, tag);
-
-        return JSONCreator.okJson().toString();
-    }
-
-    @RequestMapping(value = "/all_tags", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String getAllTags() throws JSONException {
-        JSONObject result = JSONCreator.okJson();
-        JSONArray tags = new JSONArray();
-        for (Tag tag : tagDepot.getAllTags()) {
-            tags.put(JSONCreator.valueOf(tag));
-        }
-        result.put("tags", tags);
-        return result.toString();
-    }
-
-    @RequestMapping(value = "/change_statement", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String changeProblemStatement(@RequestParam int problem_id, @RequestParam String new_text) throws JSONException {
-        Problem problem = problemDepot.get(problem_id);
-        if (problem == null) {
-            return JSONCreator.errorJSON("Incorrect problem id").toString();
-        }
-        problemDepot.changeProblemStatement(problem, new_text);
-        return JSONCreator.okJson().toString();
-    }
-
-    @RequestMapping(value = "/check_solution", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String checkSolution(@RequestParam int problem_id, @RequestParam String user_answer) throws JSONException {
-        SolveStatus answerStatus = solutionDepot.check(problem_id, user_answer);
-        String methodAnswer = null;
-        switch (answerStatus) {
-            case CORRECT:
-                methodAnswer = JSONCreator.okJson().toString();
-                break;
-            case INCORRECT:
-                methodAnswer = JSONCreator.errorJSON("incorrect answer").toString();
-                break;
-            case INVALID:
-                methodAnswer = JSONCreator.errorJSON("bad answer type").toString();
-                break;
-        }
-        return methodAnswer;
-    }
-
-    @RequestMapping(value = "/delete", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public String deleteById(@RequestParam int problem_id) throws JSONException {
-
-        if (problemDepot.deleteById(problem_id)) {
-            return JSONCreator.okJson().toString();
-        }
-
-        return JSONCreator.errorJSON("Incorrect problem id").toString();
     }
 
     @RequestMapping(value = "/delete_all_problems", produces = "application/json; charset=utf-8")

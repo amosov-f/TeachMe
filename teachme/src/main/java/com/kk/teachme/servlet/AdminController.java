@@ -100,7 +100,6 @@ public class AdminController {
             @RequestParam int checker_id,
             @RequestParam(required = false) String new_tags
     ) throws IOException {
-        System.out.println(in_mind);
 
         name = name.trim();
         statement = statement.trim();

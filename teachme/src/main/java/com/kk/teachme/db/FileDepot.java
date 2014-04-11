@@ -6,26 +6,27 @@ import org.springframework.beans.factory.annotation.Required;
 
 import java.io.*;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 
 public class FileDepot {
 
-    private String filesDirectory;
+    private String path;
 
-    public InputStream getById(String id) {
+    public InputStream get(String id) {
         try {
-            return new BufferedInputStream(new FileInputStream(new File(filesDirectory + id)));
+            return new BufferedInputStream(new FileInputStream(new File(path + id)));
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public String addNewFile(byte[] file) {
+    public String add(byte[] file) {
         try {
 
-            String id = getHash(file);
-            File path = new File(filesDirectory + id);
+            String id = hash(file);
+            File path = new File(this.path + id);
 
             FileOutputStream output = new FileOutputStream(path);
             IOUtils.write(file, output);
@@ -39,18 +40,17 @@ public class FileDepot {
 
     }
 
-    private String getHash(byte[] file) {
+    private static String hash(byte[] file) {
         try {
             return new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(file)));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     @Required
-    public void setFilesDirectory(String filesDirectory) {
-        this.filesDirectory = filesDirectory;
+    public void setPath(String path) {
+        this.path = path;
     }
 
 }

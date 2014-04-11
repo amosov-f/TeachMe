@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
+import javax.naming.OperationNotSupportedException;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CheckerDepot implements ApplicationContextAware {
+public class CheckerDepot extends AbstractDepot<Checker> implements ApplicationContextAware {
 
     ApplicationContext applicationContext;
     JdbcTemplate jdbcTemplate;
@@ -50,6 +52,21 @@ public class CheckerDepot implements ApplicationContextAware {
                 }
             }
         }).start();
+    }
+
+    @Override
+    public int add(Checker checker) throws OperationNotSupportedException {
+        throw new OperationNotSupportedException();
+    }
+
+    @Override
+    protected RowMapper<Checker> getRowMapper() {
+        return (resultSet, i) -> (Checker) applicationContext.getBean(resultSet.getString("bean_name"));
+    }
+
+    @Override
+    protected String getTableName() {
+        return "checker";
     }
 
     @Required
