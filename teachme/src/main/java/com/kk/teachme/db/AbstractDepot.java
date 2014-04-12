@@ -5,13 +5,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-import javax.naming.OperationNotSupportedException;
-
 public abstract class AbstractDepot<T> {
 
     protected JdbcTemplate jdbcTemplate;
-
-    public abstract int add(T t) throws OperationNotSupportedException;
 
     public T get(int id) {
         try {
@@ -25,7 +21,7 @@ public abstract class AbstractDepot<T> {
         return get(id) != null;
     }
 
-    private String getSelectQuery() {
+    protected String getSelectQuery() {
         return "SELECT * FROM " + getTableName();
     }
 

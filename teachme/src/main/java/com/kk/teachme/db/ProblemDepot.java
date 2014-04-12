@@ -19,7 +19,6 @@ public class ProblemDepot extends AbstractDepot<Problem> {
 
     private TagDepot tagDepot;
 
-    @Override
     public int add(final Problem problem) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         final int update = jdbcTemplate.update(

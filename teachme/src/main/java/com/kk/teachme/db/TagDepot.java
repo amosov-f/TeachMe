@@ -84,11 +84,6 @@ public class TagDepot extends AbstractDepot<Tag> {
         return tag;
     }
 
-    @Override
-    public int add(Tag tag) {
-        throw new RuntimeException("Miss it");
-    }
-
     public List<Tag> getAllTags() {
         List<Tag> result = new ArrayList<>();
         result.addAll(id2tag.values());

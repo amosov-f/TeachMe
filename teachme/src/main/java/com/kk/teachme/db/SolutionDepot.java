@@ -8,7 +8,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.List;
 
 public class SolutionDepot {
+
     CheckerDepot checkerDepot;
+
     JdbcTemplate jdbcTemplate;
 
     public SolveStatus check(int problemId, String userAnswer) {
@@ -42,7 +44,7 @@ public class SolutionDepot {
                 "select * from solution where id = ?",
                 (resultSet, i) -> new Solution(
                         resultSet.getString("solution_text"),
-                        checkerDepot.getChecker(resultSet.getInt("checker_id"))
+                        checkerDepot.get(resultSet.getInt("checker_id"))
                 ),
                 problemId
         );

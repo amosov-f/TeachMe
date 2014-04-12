@@ -14,9 +14,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ProblemController {
 
     @Autowired
-    StatusDepot statusDepot;
-
-    @Autowired
     UserDepot userDepot;
 
     @Autowired

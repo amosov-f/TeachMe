@@ -23,7 +23,6 @@ public class UserProblemDepot {
 
     UserDepot userDepot;
     ProblemDepot problemDepot;
-    StatusDepot statusDepot;
     TagDepot tagDepot;
 
     JdbcTemplate jdbcTemplate;
@@ -33,13 +32,12 @@ public class UserProblemDepot {
         jdbcTemplate.update(
                 conn -> {
                     PreparedStatement preparedStatement = conn.prepareStatement(
-                            "insert into user_problem (user_id, problem_id, status_id, attempts) values (?, ?, ?, ?)",
+                            "insert into user_problem (user_id, problem_id, attempts) values (?, ?, ?)",
                             Statement.RETURN_GENERATED_KEYS
                     );
                     preparedStatement.setInt(1, userId);
                     preparedStatement.setInt(2, userProblem.getProblem().getId());
-                    preparedStatement.setInt(3, statusDepot.getStatusId(userProblem.getStatus()));
-                    preparedStatement.setInt(4, userProblem.getRawAttempts());
+                    preparedStatement.setInt(3, userProblem.getRawAttempts());
                     return preparedStatement;
                 },
                 keyHolder
@@ -48,8 +46,7 @@ public class UserProblemDepot {
 
     private void alterObject(final int userId, final UserProblem userProblem) {
         jdbcTemplate.update(
-                "update user_problem set status_id = ?, attempts = ? where user_id = ? and problem_id = ?",
-                statusDepot.getStatusId(userProblem.getStatus()),
+                "update user_problem set attempts = ? where user_id = ? and problem_id = ?",
                 userProblem.getRawAttempts(),
                 userId,
                 userProblem.getProblem().getId()
@@ -262,11 +259,6 @@ public class UserProblemDepot {
     @Required
     public void setProblemDepot(ProblemDepot problemDepot) {
         this.problemDepot = problemDepot;
-    }
-
-    @Required
-    public void setStatusDepot(StatusDepot statusDepot) {
-        this.statusDepot = statusDepot;
     }
 
     @Required

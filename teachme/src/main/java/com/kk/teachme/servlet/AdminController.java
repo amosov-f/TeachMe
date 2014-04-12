@@ -152,7 +152,7 @@ public class AdminController {
             return "redirect:/login";
         }
 
-        model.addAttribute("checkerMap", checkerDepot.getAllCheckers());
+        model.addAttribute("checkerMap", checkerDepot.getAll());
         model.addAttribute("tagList", tagDepot.getAllTags());
 
         return "edit";
@@ -167,7 +167,7 @@ public class AdminController {
         model.addAttribute("problem", problemDepot.get(problem_id));
         model.addAttribute("solutionText", solutionDepot.getSolution(problem_id).getSolutionText());
         model.addAttribute("checkerId", solutionDepot.getCheckerId(problem_id));
-        model.addAttribute("checkerMap", checkerDepot.getAllCheckers());
+        model.addAttribute("checkerMap", checkerDepot.getAll());
         model.addAttribute("tagList", tagDepot.getAllTags());
 
         return "edit";

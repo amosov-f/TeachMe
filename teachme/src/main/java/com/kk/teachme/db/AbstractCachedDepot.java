@@ -2,17 +2,18 @@ package com.kk.teachme.db;
 
 import java.sql.ResultSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractCachedDepot<T> extends AbstractDepot<T> {
 
     protected Map<Integer, T> id2object = new HashMap<>();
 
-    public AbstractCachedDepot() {
+    public void init() {
         new Thread(() -> {
             while (!Thread.interrupted()) {
                 Map<Integer, T> map = new HashMap<>();
-                jdbcTemplate.query("SELECT * FROM " + getTableName(), (ResultSet resultSet) -> {
+                jdbcTemplate.query(getSelectQuery(), (ResultSet resultSet) -> {
                     int id = resultSet.getInt("id");
                     T object = getRowMapper().mapRow(resultSet, -1);
                     map.put(id, object);
@@ -31,5 +32,9 @@ public abstract class AbstractCachedDepot<T> extends AbstractDepot<T> {
     @Override
     public T get(int id) {
         return id2object.get(id);
+    }
+
+    public List<T> getAll() {
+        return jdbcTemplate.query(getSelectQuery(), getRowMapper());
     }
 }

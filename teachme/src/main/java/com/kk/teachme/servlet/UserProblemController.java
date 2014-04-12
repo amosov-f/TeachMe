@@ -30,9 +30,6 @@ public class UserProblemController {
     TagDepot tagDepot;
 
     @Autowired
-    StatusDepot statusDepot;
-
-    @Autowired
     UserProblemDepot userProblemDepot;
 
     @RequestMapping(value = "/user_problem_panel")

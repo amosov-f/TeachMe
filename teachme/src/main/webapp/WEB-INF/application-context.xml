@@ -46,10 +46,6 @@
     </bean>
     <bean id="radioChecker" class="com.kk.teachme.checker.RadioChecker"/>
 
-    <bean id="statusDepot" class="com.kk.teachme.db.StatusDepot" init-method="init">
-        <property name="jdbcTemplate" ref="jdbcTemplate"/>
-    </bean>
-
     <bean id="userDepot" class="com.kk.teachme.db.UserDepot">
     </bean>
 
@@ -57,7 +53,6 @@
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="userDepot" ref="userDepot"/>
         <property name="problemDepot" ref="problemDepot"/>
-        <property name="statusDepot" ref="statusDepot"/>
         <property name="tagDepot" ref="tagDepot"/>
     </bean>
 
