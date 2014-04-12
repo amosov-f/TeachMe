@@ -2,7 +2,6 @@ package com.kk.teachme.model;
 
 
 import com.kk.teachme.checker.Checker;
-import com.kk.teachme.checker.SolveStatus;
 
 public class Solution {
 
@@ -14,8 +13,8 @@ public class Solution {
         this.checker = checker;
     }
 
-    public SolveStatus check(String answer) {
-        return checker.check(answer, solutionText);
+    public Checker.SolveStatus check(String answer) {
+        return checker.check(solutionText, answer);
     }
 
     public String getSolutionText() {

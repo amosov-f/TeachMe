@@ -1,14 +1,15 @@
 package com.kk.teachme.checker;
 
-public class StringChecker implements Checker {
-    private CaseOption option;
+public class StringChecker extends Checker {
 
-    StringChecker(CaseOption option) {
+    private final CaseOption option;
+
+    public StringChecker(CaseOption option) {
         this.option = option;
     }
 
     @Override
-    public SolveStatus check(String userAnswer, String correctAnswer) {
+    public SolveStatus check(String correctAnswer, String userAnswer) {
 
         String regexp = "[\\s+\n]";
         String reducedUserAnswer = userAnswer.replace(regexp, " ").trim();
@@ -34,11 +35,12 @@ public class StringChecker implements Checker {
     }
 
     @Override
-    public String toString() {
+    public String getName() {
         return "Строка";
     }
 
     public static enum CaseOption {
         EqualsIgnoreCase, EqualsWithCase
     }
+
 }

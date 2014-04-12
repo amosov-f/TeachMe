@@ -1,6 +1,7 @@
 package com.kk.teachme.db;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,6 @@ public abstract class AbstractCachedDepot<T> extends AbstractDepot<T> {
     }
 
     public List<T> getAll() {
-        return jdbcTemplate.query(getSelectQuery(), getRowMapper());
+        return new ArrayList(id2object.values());
     }
 }

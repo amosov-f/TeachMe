@@ -12,7 +12,11 @@ public class CheckerDepot extends AbstractCachedDepot<Checker> implements Applic
 
     @Override
     protected RowMapper<Checker> getRowMapper() {
-        return (resultSet, i) -> (Checker) applicationContext.getBean(resultSet.getString("bean_name"));
+        return (resultSet, i) -> {
+            Checker checker = (Checker) applicationContext.getBean(resultSet.getString("bean_name"));
+            checker.setId(resultSet.getInt("id"));
+            return checker;
+        };
     }
 
     @Override

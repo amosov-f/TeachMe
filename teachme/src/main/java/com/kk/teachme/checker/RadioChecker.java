@@ -1,9 +1,9 @@
 package com.kk.teachme.checker;
 
-public class RadioChecker implements Checker {
+public class RadioChecker extends Checker {
 
     @Override
-    public SolveStatus check(String userAnswer, String correctAnswer) {
+    public SolveStatus check(String correctAnswer, String userAnswer) {
         if (userAnswer.isEmpty()) {
             return SolveStatus.INVALID;
         }
@@ -14,7 +14,7 @@ public class RadioChecker implements Checker {
     }
 
     @Override
-    public String toString() {
+    public String getName() {
         return "Выбор";
     }
 }

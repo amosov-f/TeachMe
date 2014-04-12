@@ -1,7 +1,10 @@
 package com.kk.teachme.servlet;
 
-import com.kk.teachme.checker.SolveStatus;
-import com.kk.teachme.db.*;
+import com.kk.teachme.checker.Checker;
+import com.kk.teachme.db.ProblemDepot;
+import com.kk.teachme.db.SolutionDepot;
+import com.kk.teachme.db.TagDepot;
+import com.kk.teachme.db.UserProblemDepot;
 import com.kk.teachme.model.*;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.kk.teachme.checker.Checker.SolveStatus.*;
 
 @Controller
 public class UserProblemController {
@@ -99,11 +104,11 @@ public class UserProblemController {
         User user = (User) request.getSession().getAttribute("user");
         Solution solution = solutionDepot.getSolution(problem_id);
 
-        SolveStatus solveStatus = solution.getChecker().check(solution_text, solution.getSolutionText());
+        Checker.SolveStatus solveStatus = solution.check(solution_text);
 
-        if (solveStatus == SolveStatus.CORRECT) {
+        if (solveStatus == CORRECT) {
             userProblemDepot.attempt(user.getId(), problem_id, true);
-        } else if (solveStatus == SolveStatus.INCORRECT) {
+        } else if (solveStatus == INCORRECT) {
             userProblemDepot.attempt(user.getId(), problem_id, false);
         }
 

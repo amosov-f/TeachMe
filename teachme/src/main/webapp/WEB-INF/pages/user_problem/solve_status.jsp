@@ -1,10 +1,11 @@
-<%@ page import="com.kk.teachme.checker.SolveStatus" %>
+<%@ page import="static com.kk.teachme.checker.Checker.*" %>
+<%@ page %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <body>
 <%
-    SolveStatus solveStatus = (SolveStatus)request.getAttribute("solveStatus");
+    SolveStatus solveStatus = (SolveStatus) request.getAttribute("solveStatus");
 %>
 <%
     if (solveStatus.equals(SolveStatus.CORRECT)) {
